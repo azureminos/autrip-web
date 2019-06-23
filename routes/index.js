@@ -10,14 +10,14 @@ import express from 'express';
 
 const router = express.Router();
 
-
 // GET home page
 router.get('/', (req, res) => {
-  const {hostname} = req;
-  const {DEMO, PORT, LOCAL} = process.env;
-  const socketAddress = (DEMO && LOCAL) ? `http://${hostname}:${PORT}` : `wss://${hostname}`;
+	const { hostname } = req;
+	const { DEMO, PORT, LOCAL } = process.env;
+	const socketAddress
+		= DEMO && LOCAL ? `http://${hostname}:${PORT}` : `wss://${hostname}`;
 
-  res.render('./index', {socketAddress});
+	res.render('./index', { socketAddress });
 });
 
 export default router;

@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-require('dotenv').config();
 // ===== MODULES ===============================================================
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -14,13 +13,13 @@ import favicon from 'serve-favicon';
 import logger from 'morgan';
 import path from 'path';
 import SocketServer from 'socket.io';
-import {Server} from 'http';
+import { Server } from 'http';
 
 // ===== ROUTES ================================================================
 import index from './routes/index';
 
 // ===== SOCKETS ===============================================================
-//import attachSockets from './sockets';
+import attachSockets from './sockets';
 
 /* =============================================
    =                Initialize                 =
@@ -45,7 +44,7 @@ app.use(express.static(path.join(__dirname, 'public'))); // eslint-disable-line
 /* ----------  Parsers  ---------- */
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 /* ----------  Loggers &c  ---------- */
@@ -60,22 +59,24 @@ app.use(logger('dev'));
 
 // Sockets
 export const server = Server(app);
-const io = new SocketServer(server, {pingInterval: 2000, pingTimeout: 5000});
+const io = new SocketServer(server, { pingInterval: 2000, pingTimeout: 5000 });
 
-//attachSockets(io);
+attachSockets(io);
 
 /* ----------  Sockets Hooks  ---------- */
-app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept');
-  res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
-  next();
+app.use(function (req, res, next) {
+	res.header('Access-Control-Allow-Origin', '*');
+	res.header(
+		'Access-Control-Allow-Headers',
+		'Origin, X-Requested-With, Content-Type, Accept'
+	);
+	res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
+	next();
 });
 
-app.use(function(req, res, next) {
-  res.io = io;
-  next();
+app.use(function (req, res, next) {
+	res.io = io;
+	next();
 });
 
 /* =============================================
@@ -88,19 +89,19 @@ app.use('/', index);
 /* ----------  Errors  ---------- */
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
-  const err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+	const err = new Error('Not Found');
+	err.status = 404;
+	next(err);
 });
 
 app.use((err, req, res) => {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+	// set locals, only providing error in development
+	res.locals.message = err.message;
+	res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+	// render the error page
+	res.status(err.status || 500);
+	res.render('error');
 });
 
 /**
@@ -108,10 +109,10 @@ app.use((err, req, res) => {
  * will print stacktrace
  */
 if (app.get('env') === 'development') {
-  app.use((err, req, res) => {
-    res.status(err.status || 500);
-    new Error(err); // eslint-disable-line no-new
-  });
+	app.use((err, req, res) => {
+		res.status(err.status || 500);
+		new Error(err); // eslint-disable-line no-new
+	});
 }
 
 /**
@@ -119,11 +120,11 @@ if (app.get('env') === 'development') {
  * no stacktraces leaked to user
  */
 app.use((err, req, res) => {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {},
-  });
+	res.status(err.status || 500);
+	res.render('error', {
+		message: err.message,
+		error: {},
+	});
 });
 
 /* =============================================
