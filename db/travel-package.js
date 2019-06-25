@@ -16,8 +16,11 @@ const scTravelPackage = new Schema({
 	state: Schema.Types.String,
 	maxParticipant: Schema.Types.Number,
 	totalDays: Schema.Types.Number,
+	retailPrice: Schema.Types.Number,
 	additionalField: Schema.Types.String,
 	image: Schema.Types.Object,
+	titleImage: Schema.Types.Object,
+	carouselImages: [Schema.Types.Object],
 	packageRates: { type: [Schema.Types.ObjectId], ref: 'PackageRate' },
 	flightRates: { type: [Schema.Types.ObjectId], ref: 'FlightRate' },
 });
