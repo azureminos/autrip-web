@@ -4,6 +4,7 @@ import { Route, Switch } from 'react-router-dom';
 import Loader from 'react-loader-advanced';
 // Components
 import Navbar from './components/Navbar';
+import PackageBrick from './components/package-brick';
 import ProductList from './components/ProductList';
 import Details from './components/Details';
 import Default from './components/Default';
@@ -219,12 +220,15 @@ export default class App extends Component {
      ==============================*/
 	getProductList () {
 		return (
-			<ProductList
-				products={this.state.products}
-				handleDetail={this.handleDetail}
-				addToCart={this.addToCart}
-				openModal={this.openModal}
-			/>
+			<div>
+				<ProductList
+					products={this.state.products}
+					handleDetail={this.handleDetail}
+					addToCart={this.addToCart}
+					openModal={this.openModal}
+				/>
+				<PackageBrick />
+			</div>
 		);
 	}
 	getDetails () {
