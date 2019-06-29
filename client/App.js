@@ -1,10 +1,12 @@
 import io from 'socket.io-client';
+import _ from 'lodash';
 import React, { Component, createElement } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import Loader from 'react-loader-advanced';
 // Components
 import Navbar from './components/Navbar';
-import PackageBrick from './components/package-brick';
+import ProductBrick from './components/product-brick';
+import ProductDetails from './components/product-details';
 import ProductList from './components/ProductList';
 import Details from './components/Details';
 import Default from './components/Default';
@@ -38,13 +40,13 @@ export default class App extends Component {
 		this.removeItem = this.removeItem.bind(this);
 		this.clearCart = this.clearCart.bind(this);
 		this.getProductList = this.getProductList.bind(this);
-		this.getDetails = this.getDetails.bind(this);
+		this.getProductDetails = this.getProductDetails.bind(this);
 		this.getCart = this.getCart.bind(this);
 		this.getDefault = this.getDefault.bind(this);
 
 		this.state = {
 			products: [],
-			detailProduct: null,
+			selectedProduct: null,
 			modalOpen: false,
 			modalProduct: null,
 			cart: [],
@@ -105,8 +107,8 @@ export default class App extends Component {
 		this.setState(() => {
 			return {
 				products: [...tempProducts],
-				cart: [...this.state.cart, product],
-				detailProduct: { ...product },
+				cart: [product],
+				selectedProduct: { ...product },
 			};
 		}, this.addTotals);
 	}
@@ -203,14 +205,14 @@ export default class App extends Component {
 		console.log('>>>>App.handleRefreshAllPackages', resp);
 		this.setState({
 			products: resp.packages,
-			detailProduct: null,
+			selectedProduct: null,
 			updating: false,
 		});
 	}
 	handleGetPackageDetails (resp) {
 		console.log('>>>>App.handleGetPackageDetails', resp);
 		this.setState({
-			detailProduct: { ...resp.packageSummary, items: resp.packageItems },
+			selectedProduct: { ...resp.packageSummary, items: resp.packageItems },
 			updating: false,
 		});
 	}
@@ -219,27 +221,22 @@ export default class App extends Component {
      = Components                 =
      ==============================*/
 	getProductList () {
-		return (
-			<div>
-				<ProductList
-					products={this.state.products}
-					handleDetail={this.handleDetail}
-					addToCart={this.addToCart}
-					openModal={this.openModal}
-				/>
-				<PackageBrick />
-			</div>
-		);
-	}
-	getDetails () {
-		if (this.state.detailProduct) {
+		const products = this.state.products;
+		const bricks = _.map(products, p => {
 			return (
-				<Details
-					detailProduct={this.state.detailProduct}
-					addToCart={this.addToCart}
-					openModal={this.openModal}
+				<ProductBrick
+					key={p.name}
+					product={p}
+					handleDetail={this.handleDetail}
 				/>
 			);
+		});
+		return <div>{bricks}</div>;
+	}
+	getProductDetails () {
+		console.log('>>>>Route.getProductDetails()');
+		if (this.state.selectedProduct) {
+			return <ProductDetails product={this.state.selectedProduct} />;
 		}
 		return <div />;
 	}
@@ -309,7 +306,7 @@ export default class App extends Component {
 				<Navbar />
 				<Switch>
 					<Route exact path="/" component={this.getProductList} />
-					<Route path="/details" component={this.getDetails} />
+					<Route path="/product" component={this.getProductDetails} />
 					<Route path="/cart" component={this.getCart} />
 					<Route component={this.getDefault} />
 				</Switch>

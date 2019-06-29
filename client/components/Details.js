@@ -12,7 +12,7 @@ export default class Details extends Component {
 			startingRate,
 			name,
 			inCart,
-		} = this.props.detailProduct;
+		} = this.props.product;
 
 		return (
 			<div className="container py-5">

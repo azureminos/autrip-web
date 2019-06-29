@@ -25,8 +25,8 @@ const scTravelPackage = new Schema({
 	flightRates: { type: [Schema.Types.ObjectId], ref: 'FlightRate' },
 });
 
-scTravelPackage.virtual('startingRate').get(function () {
-	return 500;
+scTravelPackage.virtual('startingPrice').get(function () {
+	return 700;
 });
 
 // Attraction
