@@ -29,6 +29,8 @@ scTravelPackage.virtual('startingPrice').get(function () {
 	return 700;
 });
 
+const TravelPackage = mongoose.model('TravelPackage', scTravelPackage);
+
 // Attraction
 const scAttraction = new Schema({
 	name: Schema.Types.String,
@@ -61,13 +63,12 @@ const scPackageItem = new Schema({
 
 const PackageItem = mongoose.model('PackageItem', scPackageItem);
 
+// Functions
 const getItemsByPackageId = packageId => {
 	console.log('>>>>Model >> PackageItem.getItemsByPackageId', packageId);
 	const params = { package: new mongoose.Types.ObjectId(packageId) };
 	return PackageItem.find(params).populate('attraction');
 };
-
-const TravelPackage = mongoose.model('TravelPackage', scTravelPackage);
 
 const getAllPackages = () => {
 	return TravelPackage.find();

@@ -65,15 +65,15 @@ class ProductBrick extends React.Component {
 	/* ===== State & Event Handlers ===== */
 
 	render () {
-		const { classes, product, key, handleDetail } = this.props;
+		const { classes, product, key, actionGetProduct } = this.props;
 		console.log('>>>>ProductBrick.render()', product);
 		// Register click handler
 		const clickHandler = e => {
 			console.log('>>>>ProductBrick clicked', e);
-			handleDetail(product.id);
+			actionGetProduct(product.id);
 		};
 		// Route Link
-		const routeLink = `/product`;
+		const routeLink = `/product/${product.id}`;
 		// Title Image
 		const titleImageUrl = Helper.resizeImage(
 			product.titleImageUrl,

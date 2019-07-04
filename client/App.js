@@ -7,8 +7,7 @@ import Loader from 'react-loader-advanced';
 import Navbar from './components/Navbar';
 import ProductBrick from './components/product-brick';
 import ProductDetails from './components/product-details';
-import ProductList from './components/ProductList';
-import Details from './components/Details';
+import ProductAvailability from './components/product-availability';
 import Default from './components/Default';
 import Cart from './components/Cart';
 import Modal from './components/Modal';
@@ -25,11 +24,17 @@ export default class App extends Component {
 
 		// Socket actions
 		this.pushToRemote = this.pushToRemote.bind(this);
-		this.handleGetPackageDetails = this.handleGetPackageDetails.bind(this);
-		this.handleRefreshAllPackages = this.handleRefreshAllPackages.bind(this);
+		this.handleRefreshAllProducts = this.handleRefreshAllProducts.bind(this);
+		this.handleGetProductDetails = this.handleGetProductDetails.bind(this);
+		this.handleGetProductRates = this.handleGetProductRates.bind(this);
+		// Component Display Handlers
+		this.getProductList = this.getProductList.bind(this);
+		this.getProductDetails = this.getProductDetails.bind(this);
+		this.getProductAvailability = this.getProductAvailability.bind(this);
 		// Page actions
-		this.handleDetail = this.handleDetail.bind(this);
-		this.getItem = this.getItem.bind(this);
+		this.actionGetProduct = this.actionGetProduct.bind(this);
+		this.actionGetRateByProduct = this.actionGetRateByProduct.bind(this);
+		this.findProduct = this.findProduct.bind(this);
 		this.getTotals = this.getTotals.bind(this);
 		this.addTotals = this.addTotals.bind(this);
 		this.addToCart = this.addToCart.bind(this);
@@ -39,8 +44,6 @@ export default class App extends Component {
 		this.decrement = this.decrement.bind(this);
 		this.removeItem = this.removeItem.bind(this);
 		this.clearCart = this.clearCart.bind(this);
-		this.getProductList = this.getProductList.bind(this);
-		this.getProductDetails = this.getProductDetails.bind(this);
 		this.getCart = this.getCart.bind(this);
 		this.getDefault = this.getDefault.bind(this);
 
@@ -60,11 +63,7 @@ export default class App extends Component {
 	/* ==============================
      = Helper Methods             =
      ============================== */
-	handleDetail (id) {
-		const params = { id: id, isCustomisable: false };
-		this.pushToRemote('package:get', params);
-	}
-	getItem (id) {
+	findProduct (id) {
 		const product = this.state.products.find(item => item.id === id);
 		return product;
 	}
@@ -97,7 +96,7 @@ export default class App extends Component {
 	}
 	addToCart (id) {
 		const tempProducts = [...this.state.products];
-		const index = tempProducts.indexOf(this.getItem(id));
+		const index = tempProducts.indexOf(this.findProduct(id));
 		const product = tempProducts[index];
 		product.inCart = true;
 		product.count = 1;
@@ -113,8 +112,8 @@ export default class App extends Component {
 		}, this.addTotals);
 	}
 	openModal (id) {
-		console.log(`>>>>App.openModal >> Product ID[${id}]`, this.getItem(id));
-		const product = this.getItem(id);
+		console.log(`>>>>App.openModal >> Product ID[${id}]`, this.findProduct(id));
+		const product = this.findProduct(id);
 		this.setState({ modalProduct: product, modalOpen: true });
 	}
 	closeModal () {
@@ -158,7 +157,7 @@ export default class App extends Component {
 		const tempProducts = [...this.state.products];
 		let tempCart = [...this.state.cart];
 
-		const index = tempProducts.indexOf(this.getItem(id));
+		const index = tempProducts.indexOf(this.findProduct(id));
 		const removedProduct = tempProducts[index];
 		removedProduct.inCart = false;
 		removedProduct.count = 0;
@@ -198,28 +197,39 @@ export default class App extends Component {
 			}
 		});
 	}
-	/* ==============================
-     = Socket Event Handlers       =
-     ============================== */
-	handleRefreshAllPackages (resp) {
-		console.log('>>>>App.handleRefreshAllPackages', resp);
+	/* =========== Socket Event Handlers ============ */
+	handleRefreshAllProducts (resp) {
+		console.log('>>>>App.handleRefreshAllProducts', resp);
 		this.setState({
 			products: resp.packages,
 			selectedProduct: null,
 			updating: false,
 		});
 	}
-	handleGetPackageDetails (resp) {
-		console.log('>>>>App.handleGetPackageDetails', resp);
+	handleGetProductDetails (resp) {
+		console.log('>>>>App.handleGetProductDetails', resp);
 		this.setState({
 			selectedProduct: { ...resp.packageSummary, items: resp.packageItems },
 			updating: false,
 		});
 	}
-
-	/* ==============================
-     = Components                 =
-     ==============================*/
+	handleGetProductRates (resp) {
+		console.log('>>>>App.handleGetProductRates', resp);
+		const selectedProduct = this.state.selectedProduct;
+		this.setState({
+			selectedProduct: { ...selectedProduct, rates: resp },
+			updating: false,
+		});
+	}
+	/* ============ Component Action Handler ============*/
+	actionGetProduct (id) {
+		const params = { id: id, isCustomisable: false };
+		this.pushToRemote('product:get', params);
+	}
+	actionGetRateByProduct (params) {
+		this.pushToRemote('rate:getByProduct', params);
+	}
+	/* ============ Component Display Handler ============*/
 	getProductList () {
 		const products = this.state.products;
 		const bricks = _.map(products, p => {
@@ -227,18 +237,34 @@ export default class App extends Component {
 				<ProductBrick
 					key={p.name}
 					product={p}
-					handleDetail={this.handleDetail}
+					actionGetProduct={this.actionGetProduct}
 				/>
 			);
 		});
 		return <div>{bricks}</div>;
 	}
-	getProductDetails () {
-		console.log('>>>>Route.getProductDetails()');
+	getProductDetails (matcher) {
+		console.log('>>>>Route.getProductDetails()', matcher);
 		if (this.state.selectedProduct) {
-			return <ProductDetails product={this.state.selectedProduct} />;
+			return (
+				<ProductDetails
+					product={this.state.selectedProduct}
+					actionGetRateByProduct={this.actionGetRateByProduct}
+				/>
+			);
 		}
 		return <div />;
+	}
+	getProductAvailability () {
+		console.log(
+			'>>>>Route.getProductAvailability()',
+			this.state.selectedProduct
+		);
+		const product = this.state.selectedProduct;
+		if (product && product.rates) {
+			return <ProductAvailability product={product} />;
+		}
+		return '';
 	}
 	getCart () {
 		if (this.state.cart) {
@@ -270,17 +296,20 @@ export default class App extends Component {
 		});
 
 		// Add socket event handlers.
-		socket.on('package:refreshAll', res => {
-			this.handleRefreshAllPackages(res);
+		socket.on('product:refreshAll', res => {
+			this.handleRefreshAllProducts(res);
 		});
-		socket.on('package:get', res => {
-			this.handleGetPackageDetails(res);
+		socket.on('product:get', res => {
+			this.handleGetProductDetails(res);
+		});
+		socket.on('rate:getByProduct', res => {
+			this.handleGetProductRates(res);
 		});
 
 		// Retrieve published packages
 		var params = { state: 'Published' };
 		console.log('>>>>App Client >> getFilteredPackages', params);
-		this.pushToRemote('package:filter', params);
+		this.pushToRemote('product:filter', params);
 	}
 
 	render () {
@@ -306,7 +335,11 @@ export default class App extends Component {
 				<Navbar />
 				<Switch>
 					<Route exact path="/" component={this.getProductList} />
-					<Route path="/product" component={this.getProductDetails} />
+					<Route path="/product/:pid" component={this.getProductDetails} />
+					<Route
+						path="/booking/availability/:pid"
+						component={this.getProductAvailability}
+					/>
 					<Route path="/cart" component={this.getCart} />
 					<Route component={this.getDefault} />
 				</Switch>

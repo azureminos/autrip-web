@@ -4,7 +4,6 @@ import Button from '@material-ui/core/Button';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IconLocationOn from '@material-ui/icons/LocationOn';
 import IconEventAvailable from '@material-ui/icons/EventAvailable';
@@ -82,14 +81,21 @@ class ProductDetails extends React.Component {
 	/* ===== State & Event Handlers ===== */
 
 	render () {
-		const { classes, product } = this.props;
+		const { classes, product, actionGetRateByProduct } = this.props;
 		console.log('>>>>ProductDetails.render()', product);
 		// Route URLs
-		const routeLinkBuy = '/availability';
-		const routeLinkDiy = '/diy';
+		const routeLinkBuy = `/booking/availability/${product.id}`;
+		const routeLinkDiy = `/booking/diy/${product.id}`;
 		// Event Handler
-		const clickHandler = e => {
-			console.log('>>>>ProductDetails clicked', e);
+		const clickDiyHandler = e => {
+			console.log('>>>>ProductDetails clicked DIY', e);
+		};
+		const clickAvailabilityHandler = e => {
+			console.log('>>>>ProductDetails clicked Check Availability', product);
+			actionGetRateByProduct({
+				id: product.id,
+				isCustomisable: product.isCustomisable,
+			});
 		};
 		// Photo Swiper
 		const pSwiper = {
@@ -124,7 +130,7 @@ class ProductDetails extends React.Component {
 				<div>Want to visit somewhere special?</div>
 				<Link to={routeLinkDiy}>
 					<Button
-						onClick={clickHandler}
+						onClick={clickDiyHandler}
 						variant="contained"
 						size="medium"
 						color="primary"
@@ -170,7 +176,7 @@ class ProductDetails extends React.Component {
 											<div>Value up to ${product.retailPrice}</div>
 											<Link to={routeLinkBuy}>
 												<Button
-													onClick={clickHandler}
+													onClick={clickAvailabilityHandler}
 													variant="contained"
 													size="medium"
 													color="primary"
@@ -191,7 +197,10 @@ class ProductDetails extends React.Component {
 						</Grid>
 						<Grid item xs={12}>
 							<div className={classes.otherSection}>
-								<ExpansionPanel className={classes.accordion}>
+								<ExpansionPanel
+									className={classes.accordion}
+									defaultExpanded={true}
+								>
 									<ExpansionPanelSummary
 										expandIcon={<ExpandMoreIcon />}
 										aria-controls="panel1a-content"
@@ -211,7 +220,10 @@ class ProductDetails extends React.Component {
 										</p>
 									</ExpansionPanelDetails>
 								</ExpansionPanel>
-								<ExpansionPanel className={classes.accordion}>
+								<ExpansionPanel
+									className={classes.accordion}
+									defaultExpanded={true}
+								>
 									<ExpansionPanelSummary
 										expandIcon={<ExpandMoreIcon />}
 										aria-controls="panel2a-content"
@@ -223,7 +235,10 @@ class ProductDetails extends React.Component {
 										<p>{product.finePrint}</p>
 									</ExpansionPanelDetails>
 								</ExpansionPanel>
-								<ExpansionPanel className={classes.accordion}>
+								<ExpansionPanel
+									className={classes.accordion}
+									defaultExpanded={true}
+								>
 									<ExpansionPanelSummary
 										expandIcon={<ExpandMoreIcon />}
 										aria-controls="panel3a-content"
