@@ -22,6 +22,7 @@ const attachSockets = io => {
 
 		channel('push:product:filter', PackageSocket.getFilteredPackages);
 		channel('push:product:get', PackageSocket.getPackageDetails);
+		channel('push:product:checkout', PackageSocket.checkoutPackage);
 		channel('push:rate:getByProduct', PackageSocket.getRatesByPackage);
 
 		channel('disconnect', () => {

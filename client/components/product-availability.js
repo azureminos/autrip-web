@@ -115,7 +115,7 @@ class ProductAvailability extends React.Component {
 	/* ===== State & Event Handlers ===== */
 
 	render () {
-		const { classes, product } = this.props;
+		const { classes, product, actionCheckout } = this.props;
 		const {
 			adults,
 			kids,
@@ -128,10 +128,18 @@ class ProductAvailability extends React.Component {
 
 		// Event Handler
 		const clickBackHandler = e => {
-			console.log('>>>>clickBackHandler clicked Checkout', e);
+			console.log('>>>>ProductAvailability clicked Back', e);
 		};
 		const clickCheckoutHandler = e => {
-			console.log('>>>>ProductAvailability clicked Checkout', e);
+			console.log('>>>>clickBackHandler clicked Checkout', e);
+			const extra = {
+				kids: kids,
+				adults: adults,
+				startDate: startDate,
+				contactFirstName: contactFirstName,
+				contactLastName: contactLastName,
+			};
+			actionCheckout({ extra, product });
 		};
 		const inputFirstNameHandler = e => {
 			console.log('>>>>ProductAvailability input FirstName', e);
@@ -154,6 +162,7 @@ class ProductAvailability extends React.Component {
 			this.setState({ startDate: sDate });
 		};
 		// Sub Components
+		const routeLinkCheckout = `/booking/payment`;
 		const pricePerson = 1000;
 		const priceTotal = pricePerson * (this.state.kids + this.state.adults);
 		const tmpEndDate = new Date(startDate);
@@ -210,16 +219,18 @@ class ProductAvailability extends React.Component {
 								className={classes.headerTableCell}
 								style={{ width: '140px', verticalAlign: 'middle' }}
 							>
-								<Button
-									onClick={clickCheckoutHandler}
-									variant="contained"
-									size="large"
-									color="primary"
-									aria-label="Checkout"
-								>
-									Checkout
-									<IconChevronRight className={classes.extendedIcon} />
-								</Button>
+								<Link to={routeLinkCheckout}>
+									<Button
+										onClick={clickCheckoutHandler}
+										variant="contained"
+										size="large"
+										color="primary"
+										aria-label="Checkout"
+									>
+										Checkout
+										<IconChevronRight className={classes.extendedIcon} />
+									</Button>
+								</Link>
 							</div>
 						</Grid>
 					</Grid>

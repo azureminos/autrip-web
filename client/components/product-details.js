@@ -81,7 +81,7 @@ class ProductDetails extends React.Component {
 	/* ===== State & Event Handlers ===== */
 
 	render () {
-		const { classes, product, actionGetRateByProduct } = this.props;
+		const { classes, product, actionGetAvailability } = this.props;
 		console.log('>>>>ProductDetails.render()', product);
 		// Route URLs
 		const routeLinkBuy = `/booking/availability/${product.id}`;
@@ -92,7 +92,7 @@ class ProductDetails extends React.Component {
 		};
 		const clickAvailabilityHandler = e => {
 			console.log('>>>>ProductDetails clicked Check Availability', product);
-			actionGetRateByProduct({
+			actionGetAvailability({
 				id: product.id,
 				isCustomisable: product.isCustomisable,
 			});

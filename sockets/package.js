@@ -1,10 +1,6 @@
 import _ from 'lodash';
 import async from 'async';
-import TravelPackage from '../db/travel-package';
-import PackageHotel from '../db/package-hotel';
-import PackageRate from '../db/package-rate';
-import FlightRate from '../db/flight-rate';
-import City from '../db/city';
+import MongoDB from '../db/schema';
 import helper from '../lib/object-parser';
 
 const getPackageDetails = ({
@@ -21,24 +17,24 @@ const getPackageDetails = ({
 		async.parallel(
 			{
 				packageSummary: callback => {
-					TravelPackage.getPackageById(id).exec(function (err, item) {
+					MongoDB.getPackageById(id).exec(function (err, item) {
 						// console.log('>>>>server async calls for event[push:package:get]', item);
 						return callback(null, helper.parseTravelPackage(item));
 					});
 				},
 				packageItems: callback => {
-					TravelPackage.getItemsByPackageId(id).exec(function (err, items) {
+					MongoDB.getItemsByPackageId(id).exec(function (err, items) {
 						console.log('>>>>Event[push:package:get].packageItems', items);
 						return callback(null, helper.parsePackageItem(items));
 					});
 				},
 				packageHotels: callback => {
-					PackageHotel.getHotels({ package: id }).exec(function (err, items) {
+					MongoDB.getHotels({ package: id }).exec(function (err, items) {
 						return callback(null, helper.parsePackageHotel(items));
 					});
 				},
 				/*packageRates: callback => {
-					TravelPackage.getPackageById(id)
+					MongoDB.getPackageById(id)
 						.populate('packageRates')
 						.exec(function (err, item) {
 							const sortedRates = (item.packageRates || []).sort(function (
@@ -51,7 +47,7 @@ const getPackageDetails = ({
 						});
 				},
 				carRates: callback => {
-					TravelPackage.getPackageById(id)
+					MongoDB.getPackageById(id)
 						.populate('carRates')
 						.exec(function (err, item) {
 							const sortedRates = (item.carRates || []).sort(function (a, b) {
@@ -61,7 +57,7 @@ const getPackageDetails = ({
 						});
 				},
 				flightRates: callback => {
-					TravelPackage.getPackageById(id)
+					MongoDB.getPackageById(id)
 						.populate('flightRates')
 						.exec(function (err, item) {
 							const sortedRates = (item.flightRates || []).sort(function (a, b) {
@@ -71,7 +67,7 @@ const getPackageDetails = ({
 						});
 				},
 				cities: callback => {
-					PackageItem.getItems({ package: id })
+					MongoDB.getItems({ package: id })
 						.populate('attraction')
 						.exec(function (err, items) {
 							const cities = _.map(items, item => {
@@ -97,19 +93,19 @@ const getPackageDetails = ({
 		async.parallel(
 			{
 				packageSummary: callback => {
-					TravelPackage.getPackageById(id).exec(function (err, item) {
+					MongoDB.getPackageById(id).exec(function (err, item) {
 						// console.log('>>>>server async calls for event[push:package:get]', item);
 						return callback(null, helper.parseTravelPackage(item));
 					});
 				},
 				packageItems: callback => {
-					TravelPackage.getItemsByPackageId(id).exec(function (err, items) {
+					MongoDB.getItemsByPackageId(id).exec(function (err, items) {
 						console.log('>>>>Event[push:package:get].packageItems', items);
 						return callback(null, helper.parsePackageItem(items));
 					});
 				},
 				/*packageRates: callback => {
-					TravelPackage.getPackageById(id)
+					MongoDB.getPackageById(id)
 						// .populate('packageRates')
 						.exec(function (err, item) {
 							console.log('>>>>Event[push:package:get].packageRates', item);
@@ -123,7 +119,7 @@ const getPackageDetails = ({
 						});
 				},
 				flightRates: callback => {
-					TravelPackage.getPackageById(id)
+					MongoDB.getPackageById(id)
 						.populate('flightRates')
 						.exec(function (err, item) {
 							console.log('>>>>Event[push:package:get].flightRates', item);
@@ -142,6 +138,10 @@ const getPackageDetails = ({
 	}
 };
 
+const checkoutPackage = ({ request, sendStatus, socket }) => {
+	console.log('>>>>server received event[push:package:checkout]', request);
+};
+
 const getRatesByPackage = ({
 	request: { id, isCustomisable },
 	sendStatus,
@@ -156,7 +156,7 @@ const getRatesByPackage = ({
 		async.parallel(
 			{
 				packageRates: callback => {
-					PackageRate.getPackageRatesByPackageId(id).exec(function (err, item) {
+					MongoDB.getPackageRatesByPackageId(id).exec(function (err, item) {
 						console.log('>>>>Event[push:rate:getByProduct].packageRates', item);
 						const sortedRates = (item.packageRates || []).sort(function (a, b) {
 							return b.priority - a.priority;
@@ -165,7 +165,7 @@ const getRatesByPackage = ({
 					});
 				},
 				flightRates: callback => {
-					FlightRate.getFlightRatesByPackageId(id).exec(function (err, item) {
+					MongoDB.getFlightRatesByPackageId(id).exec(function (err, item) {
 						console.log('>>>>Event[push:rate:getByProduct].flightRates', item);
 						const sortedRates = (item.flightRates || []).sort(function (a, b) {
 							return b.priority - a.priority;
@@ -174,7 +174,7 @@ const getRatesByPackage = ({
 					});
 				},
 				carRates: callback => {
-					TravelPackage.getPackageById(id)
+					MongoDB.getPackageById(id)
 						.populate('carRates')
 						.exec(function (err, item) {
 							const sortedRates = (item.carRates || []).sort(function (a, b) {
@@ -184,14 +184,14 @@ const getRatesByPackage = ({
 						});
 				},
 				/*cities: callback => {
-					PackageItem.getItems({ package: id })
+					MongoDB.getItems({ package: id })
 						.populate('attraction')
 						.exec(function (err, items) {
 							const cities = _.map(items, item => {
 								return item.attraction ? item.attraction.city : null;
 							});
 							// console.log('>>>>getRatesByPackage.cityAttractions : cities', cities);
-							return City.getCities({ _id: { $in: cities } })
+							return MongoDB.getCities({ _id: { $in: cities } })
 								.populate('attractions hotels')
 								.exec(function (err, items) {
 									// console.log('>>>>getRatesByPackage.cityAttractions : result', items);
@@ -210,7 +210,7 @@ const getRatesByPackage = ({
 		async.parallel(
 			{
 				packageRates: callback => {
-					PackageRate.getPackageRatesByPackageId(id).exec(function (err, items) {
+					MongoDB.getPackageRatesByPackageId(id).exec(function (err, items) {
 						console.log(
 							'>>>>Event[push:rate:getByProduct].packageRates',
 							items
@@ -222,7 +222,7 @@ const getRatesByPackage = ({
 					});
 				},
 				flightRates: callback => {
-					FlightRate.getFlightRatesByPackageId(id).exec(function (err, items) {
+					MongoDB.getFlightRatesByPackageId(id).exec(function (err, items) {
 						console.log('>>>>Event[push:rate:getByProduct].flightRates', items);
 						const sortedRates = (items || []).sort(function (a, b) {
 							return b.priority - a.priority;
@@ -241,7 +241,7 @@ const getRatesByPackage = ({
 
 const getFilteredPackages = ({ request, sendStatus, socket }) => {
 	// console.log('>>>>server received event[push:package:filter]', request);
-	TravelPackage.getFilteredPackages(request).exec((err, items) => {
+	MongoDB.getFilteredPackages(request).exec((err, items) => {
 		// console.log('>>>>Result of event[push:package:filter]', items);
 		socket.emit('product:refreshAll', {
 			packages: helper.parseTravelPackage(items),
@@ -249,4 +249,9 @@ const getFilteredPackages = ({ request, sendStatus, socket }) => {
 	});
 };
 
-export default { getFilteredPackages, getPackageDetails, getRatesByPackage };
+export default {
+	getFilteredPackages,
+	getPackageDetails,
+	getRatesByPackage,
+	checkoutPackage,
+};
