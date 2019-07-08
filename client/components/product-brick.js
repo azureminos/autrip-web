@@ -157,7 +157,6 @@ class ProductBrick extends React.Component {
 									</Grid>
 									<Grid item xs={2}>
 										<Button
-											onClick={clickHandler}
 											variant="contained"
 											size="medium"
 											color="primary"

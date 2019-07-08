@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import mongoose from './mongoose';
 const Schema = mongoose.Schema;
 
@@ -17,6 +18,31 @@ const scAttraction = new Schema({
 	additionalField: Schema.Types.String,
 });
 const Attraction = mongoose.model('Attraction', scAttraction);
+// Hotel
+const scHotel = new mongoose.Schema({
+	city: { type: Schema.Types.ObjectId, ref: 'City' },
+	name: Schema.Types.String,
+	description: Schema.Types.String,
+	image: Schema.Types.Object,
+	stars: Schema.Types.Number,
+	type: Schema.Types.String,
+	notes: Schema.Types.String,
+	additionalField: Schema.Types.String,
+});
+const Hotel = mongoose.model('Hotel', scHotel);
+// Hotel Room
+const scHotelRoom = new mongoose.Schema({
+	hotel: { type: Schema.Types.ObjectId, ref: 'Hotel' },
+	name: Schema.Types.String,
+	isDefault: Schema.Types.Boolean,
+	ratePeak: Schema.Types.Number,
+	rateOffPeak: Schema.Types.Number,
+	rangeFrom: Schema.Types.Date,
+	rangeTo: Schema.Types.Date,
+	notes: Schema.Types.String,
+	additionalField: Schema.Types.String,
+});
+const HotelRoom = mongoose.model('HotelRoom', scHotelRoom);
 // Travel Package
 const scTravelPackage = new Schema({
 	name: Schema.Types.String,
@@ -164,25 +190,45 @@ const getPackageById = id => {
 };
 // Package Item
 const getItemsByPackageId = packageId => {
-	console.log('>>>>Model >> PackageItem.getItemsByPackageId', packageId);
+	// console.log('>>>>Model >> PackageItem.getItemsByPackageId', packageId);
 	const params = { package: new mongoose.Types.ObjectId(packageId) };
 	return PackageItem.find(params).populate('attraction');
 };
 // Package Hotel
 const getHotelsByPackageId = packageId => {
-	console.log('>>>>Model >> PackageHotel.getHotelsByPackageId', packageId);
+	// console.log('>>>>Model >> PackageHotel.getHotelsByPackageId', packageId);
 	const params = { package: new mongoose.Types.ObjectId(packageId) };
 	return PackageHotel.find(params);
 };
+// Hotel
+const getHotelsByIds = ids => {
+	const input = _.filter(ids, id => {
+		return !!id;
+	});
+	// console.log('>>>>Model >> Hotel.getHotelsByIds', input);
+	return Hotel.find()
+		.where('_id')
+		.in(input);
+};
+// Hotel Room
+const getRoomsByHotels = ids => {
+	const input = _.filter(ids, id => {
+		return !!id;
+	});
+	// console.log('>>>>Model >> HotelRoom.getRoomsByHotels', input);
+	return HotelRoom.find()
+		.where('hotel')
+		.in(input);
+};
 // Flight Rate
 const getFlightRatesByPackageId = packageId => {
-	console.log('>>>>Model >> FlightRate.getFlightRatesByPackageId', packageId);
+	// console.log('>>>>Model >> FlightRate.getFlightRatesByPackageId', packageId);
 	const params = { package: new mongoose.Types.ObjectId(packageId) };
 	return FlightRate.find(params);
 };
 // Package Rate
 const getPackageRatesByPackageId = packageId => {
-	console.log('>>>>Model >> PackageRate.getPackageRatesByPackageId', packageId);
+	// console.log('>>>>Model >> PackageRate.getPackageRatesByPackageId', packageId);
 	const params = { package: new mongoose.Types.ObjectId(packageId) };
 	return PackageRate.find(params);
 };
@@ -192,7 +238,9 @@ export default {
 	getAllPackages,
 	getFilteredPackages,
 	getItemsByPackageId,
+	getHotelsByIds,
 	getHotelsByPackageId,
+	getRoomsByHotels,
 	getFlightRatesByPackageId,
 	getPackageRatesByPackageId,
 };
