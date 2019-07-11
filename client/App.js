@@ -82,7 +82,11 @@ export default class App extends Component {
 	handleGetDetails (resp) {
 		console.log('>>>>App.handleGetDetails', resp);
 		this.setState({
-			selectedProduct: { ...resp.packageSummary, items: resp.packageItems },
+			selectedProduct: {
+				...resp.packageSummary,
+				items: resp.packageItems,
+				hotels: resp.packageHotels,
+			},
 			updating: false,
 		});
 	}

@@ -110,7 +110,7 @@ const getPackageDetails = ({
 						async.parallel(
 							{
 								dayHotels: callback => {
-									return callback(null, items);
+									return callback(null, helper.parsePackageHotel(items));
 								},
 								hotels: callback => {
 									const hotelIds = _.map(items, item => {
@@ -119,7 +119,7 @@ const getPackageDetails = ({
 									// console.log('>>>>Event[push:package:get].getRoomsByHotels Input', hotelIds);
 									MongoDB.getHotelsByIds(hotelIds).exec(function (err, items) {
 										// console.log('>>>>Event[push:package:get].getRoomsByHotels Output',	items);
-										return callback(null, items);
+										return callback(null, helper.parseHotel(items));
 									});
 								},
 								rooms: callback => {
@@ -129,7 +129,7 @@ const getPackageDetails = ({
 									// console.log('>>>>Event[push:package:get].getRoomsByHotels Input', hotelIds);
 									MongoDB.getRoomsByHotels(hotelIds).exec(function (err, items) {
 										// console.log('>>>>Event[push:package:get].getRoomsByHotels Output', items);
-										return callback(null, items);
+										return callback(null, helper.parseHotelRoom(items));
 									});
 								},
 							},
