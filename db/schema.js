@@ -48,6 +48,7 @@ const scTravelPackage = new Schema({
 	name: Schema.Types.String,
 	description: Schema.Types.String,
 	finePrint: Schema.Types.String,
+	highlight: Schema.Types.String,
 	notes: Schema.Types.String,
 	departureDate: Schema.Types.String,
 	effectiveTo: Schema.Types.Date,
@@ -130,6 +131,7 @@ const PackageRate = mongoose.model('PackageRate', scPackageRate);
 // Instance - Travel Package
 const scInstPackage = new mongoose.Schema({
 	package: { type: Schema.Types.ObjectId, ref: 'TravelPackage' },
+	status: Schema.Types.String,
 	startDate: Schema.Types.Date,
 	endDate: Schema.Types.Date,
 	isCustomised: Schema.Types.Boolean,
@@ -139,6 +141,12 @@ const scInstPackage = new mongoose.Schema({
 	cost: Schema.Types.Number,
 	notes: Schema.Types.String,
 	additionalField: Schema.Types.String,
+	name: Schema.Types.String,
+	slug: Schema.Types.String,
+	createdAt: Schema.Types.Date,
+	createdBy: Schema.Types.String,
+	updatedAt: Schema.Types.Date,
+	updatedBy: Schema.Types.String,
 });
 const InstPackage = mongoose.model('InstPackage', scInstPackage);
 // Instance - Package Item
@@ -232,6 +240,12 @@ const getPackageRatesByPackageId = packageId => {
 	const params = { package: new mongoose.Types.ObjectId(packageId) };
 	return PackageRate.find(params);
 };
+// Inst Package
+const createInstPackage = (ip, callback) => {
+	// console.log('>>>>Model >> PackageRate.getPackageRatesByPackageId', packageId);
+	const instPackage = new InstPackage(ip);
+	return instPackage.save(callback);
+};
 
 export default {
 	getPackageById,
@@ -243,4 +257,5 @@ export default {
 	getRoomsByHotels,
 	getFlightRatesByPackageId,
 	getPackageRatesByPackageId,
+	createInstPackage,
 };

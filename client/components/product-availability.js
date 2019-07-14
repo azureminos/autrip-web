@@ -104,7 +104,9 @@ class ProductAvailability extends React.Component {
 		this.state = {
 			adults: 1,
 			kids: 0,
+			rate: 1000,
 			startDate: '',
+			endDate: '',
 			contactFirstName: '',
 			contactLastName: '',
 		};
@@ -115,11 +117,13 @@ class ProductAvailability extends React.Component {
 	/* ===== State & Event Handlers ===== */
 
 	render () {
-		const { classes, product, actionCheckout } = this.props;
+		const { classes, product, actionCheckout, user, isOwner } = this.props;
 		const {
 			adults,
 			kids,
 			startDate,
+			endDate,
+			rate,
 			contactFirstName,
 			contactLastName,
 		} = this.state;
@@ -133,12 +137,22 @@ class ProductAvailability extends React.Component {
 		const clickCheckoutHandler = e => {
 			console.log('>>>>clickBackHandler clicked Checkout', e);
 			const extra = {
+				isOwner: isOwner,
 				kids: kids,
 				adults: adults,
+				rate: rate,
 				startDate: startDate,
+				endDate: endDate,
 				contactFirstName: contactFirstName,
 				contactLastName: contactLastName,
 			};
+			if (isOwner) {
+				extra.createdBy = user.fullName;
+				extra.createdAt = new Date();
+			} else {
+				extra.updatedBy = user.fullName;
+				extra.updatedAt = new Date();
+			}
 			actionCheckout({ extra, product });
 		};
 		const inputFirstNameHandler = e => {
@@ -157,19 +171,18 @@ class ProductAvailability extends React.Component {
 			console.log('>>>>ProductAvailability selected Kid', e);
 			this.setState({ kids: e.target.value });
 		};
-		const selectStartDateHandler = sDate => {
-			console.log('>>>>ProductAvailability selected Start Date', sDate);
-			this.setState({ startDate: sDate });
+		const selectStartDateHandler = input => {
+			console.log('>>>>ProductAvailability selected Start Date', input);
+			const { startDate, endDate } = input;
+			this.setState({ startDate: startDate, endDate: endDate });
 		};
 		// Sub Components
 		const routeLinkCheckout = `/booking/payment`;
-		const pricePerson = 1000;
+		const pricePerson = this.state.rate;
 		const priceTotal = pricePerson * (this.state.kids + this.state.adults);
-		const tmpEndDate = new Date(startDate);
-		tmpEndDate.setDate(tmpEndDate.getDate() + product.totalDays);
 		// Get data string
 		const strStartDate = startDate ? startDate.toLocaleDateString() : '';
-		const strEndDate = startDate ? tmpEndDate.toLocaleDateString() : '';
+		const strEndDate = endDate ? endDate.toLocaleDateString() : '';
 		const listStartDate = _.map(product.departureDate.split(','), st => {
 			const d = st.trim().split('/');
 			const tStartDate = new Date();
@@ -177,9 +190,11 @@ class ProductAvailability extends React.Component {
 			tStartDate.setDate(Number(d[0]));
 			tStartDate.setMonth(Number(d[1]));
 			tStartDate.setFullYear(Number(d[2]));
+			tStartDate.setTime(Helper.forceDate(tStartDate).getTime());
 			tEndDate.setDate(Number(d[0]) + product.totalDays);
 			tEndDate.setMonth(Number(d[1]));
 			tEndDate.setFullYear(Number(d[2]));
+			tEndDate.setTime(Helper.forceDate(tEndDate).getTime());
 			const strTravelDates = `${tStartDate.toLocaleDateString()} >> ${tEndDate.toLocaleDateString()}`;
 			return (
 				<ListItem
@@ -187,7 +202,10 @@ class ProductAvailability extends React.Component {
 					button
 					selected={false}
 					onClick={e => {
-						selectStartDateHandler(tStartDate);
+						selectStartDateHandler({
+							startDate: tStartDate,
+							endDate: tEndDate,
+						});
 					}}
 				>
 					<ListItemIcon>

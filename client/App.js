@@ -150,6 +150,8 @@ export default class App extends Component {
 		if (product && product.rates) {
 			return (
 				<ProductAvailability
+					isOwner={true}
+					user={{ fullName: 'David Xia' }}
 					product={product}
 					actionCheckout={this.actionCheckout}
 				/>

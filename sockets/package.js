@@ -149,10 +149,6 @@ const getPackageDetails = ({
 	}
 };
 
-const checkoutPackage = ({ request, sendStatus, socket }) => {
-	console.log('>>>>server received event[push:package:checkout]', request);
-};
-
 const getRatesByPackage = ({
 	request: { id, isCustomisable },
 	sendStatus,
@@ -258,6 +254,36 @@ const getFilteredPackages = ({ request, sendStatus, socket }) => {
 			packages: helper.parseTravelPackage(items),
 		});
 	});
+};
+
+const checkoutPackage = ({ request, sendStatus, socket }) => {
+	console.log('>>>>server received event[push:product:checkout]', request);
+	const instPackage = _.pick(
+		request,
+		'status',
+		'startDate',
+		'endDate',
+		'isCustomised',
+		'rate'
+	);
+	instPackage.package = request.packageId;
+	instPackage.createdBy = request.createdBy;
+	instPackage.createdAt = new Date(request.createdAt);
+	console.log('>>>>request.createdAt: ', typeof request.createdAt);
+	console.log('>>>>instPackage.createdAt: ', typeof instPackage.createdAt);
+	instPackage.slug = `${request.createdBy}_${request.packageId}`;
+	instPackage.totalKids = _.sumBy(request.members, o => {
+		return o.kids || 0;
+	});
+	instPackage.totalAdults = _.sumBy(request.members, o => {
+		return o.adults || 0;
+	});
+	console.log('>>>>Instance', instPackage);
+	const handleInstPackage = (err, doc) => {
+		if (err) return console.log(err);
+		console.log('>>>>Instance Saved', { doc, instPackage });
+	};
+	MongoDB.createInstPackage(instPackage, handleInstPackage);
 };
 
 export default {
