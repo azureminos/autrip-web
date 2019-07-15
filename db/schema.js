@@ -141,7 +141,6 @@ const scInstPackage = new mongoose.Schema({
 	cost: Schema.Types.Number,
 	notes: Schema.Types.String,
 	additionalField: Schema.Types.String,
-	name: Schema.Types.String,
 	slug: Schema.Types.String,
 	createdAt: Schema.Types.Date,
 	createdBy: Schema.Types.String,
@@ -158,6 +157,11 @@ const scInstPackageItem = new mongoose.Schema({
 	attraction: { type: Schema.Types.ObjectId, ref: 'Attraction' },
 	notes: Schema.Types.String,
 	additionalField: Schema.Types.String,
+	slug: Schema.Types.String,
+	createdAt: Schema.Types.Date,
+	createdBy: Schema.Types.String,
+	updatedAt: Schema.Types.Date,
+	updatedBy: Schema.Types.String,
 });
 const InstPackageItem = mongoose.model('InstPackageItem', scInstPackageItem);
 // Instance - Package Hotel
@@ -169,6 +173,11 @@ const scInstPackageHotel = new mongoose.Schema({
 	room: { type: Schema.Types.ObjectId, ref: 'HotelRoom' },
 	notes: Schema.Types.String,
 	additionalField: Schema.Types.String,
+	slug: Schema.Types.String,
+	createdAt: Schema.Types.Date,
+	createdBy: Schema.Types.String,
+	updatedAt: Schema.Types.Date,
+	updatedBy: Schema.Types.String,
 });
 const InstPackageHotel = mongoose.model('InstPackageHotel', scInstPackageHotel);
 // Instance - Package Member
@@ -180,6 +189,11 @@ const scInstPackageMember = new mongoose.Schema({
 	adults: Schema.Types.Number,
 	notes: Schema.Types.String,
 	additionalField: Schema.Types.String,
+	slug: Schema.Types.String,
+	createdAt: Schema.Types.Date,
+	createdBy: Schema.Types.String,
+	updatedAt: Schema.Types.Date,
+	updatedBy: Schema.Types.String,
 });
 const InstPackageMember = mongoose.model(
 	'InstPackageMember',

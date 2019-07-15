@@ -258,6 +258,11 @@ const getFilteredPackages = ({ request, sendStatus, socket }) => {
 
 const checkoutPackage = ({ request, sendStatus, socket }) => {
 	console.log('>>>>server received event[push:product:checkout]', request);
+	if (!request._id) {
+		// New Instance
+	} else {
+		// Existing Instance
+	}
 	const instPackage = _.pick(
 		request,
 		'status',
@@ -269,19 +274,68 @@ const checkoutPackage = ({ request, sendStatus, socket }) => {
 	instPackage.package = request.packageId;
 	instPackage.createdBy = request.createdBy;
 	instPackage.createdAt = new Date(request.createdAt);
-	console.log('>>>>request.createdAt: ', typeof request.createdAt);
-	console.log('>>>>instPackage.createdAt: ', typeof instPackage.createdAt);
-	instPackage.slug = `${request.createdBy}_${request.packageId}`;
+	instPackage.slug = `${request.createdBy}_${
+		request.packageId
+	}_${instPackage.createdAt.getTime()}`;
 	instPackage.totalKids = _.sumBy(request.members, o => {
 		return o.kids || 0;
 	});
 	instPackage.totalAdults = _.sumBy(request.members, o => {
 		return o.adults || 0;
 	});
-	console.log('>>>>Instance', instPackage);
 	const handleInstPackage = (err, doc) => {
 		if (err) return console.log(err);
-		console.log('>>>>Instance Saved', { doc, instPackage });
+		console.log('>>>>createInstPackage', { doc, instPackage });
+		const instPackageItems = _.map(request.items, item => {
+			const instPackageItem = { ...item };
+			instPackageItem.instPackage = doc._id;
+			return instPackageItem;
+		});
+		const instPackageHotels = _.map(request.hotels, hotel => {
+			const instPackageHotel = { ...hotel };
+			instPackageHotel.instPackage = doc._id;
+			return instPackageHotel;
+		});
+		const instPackageMembers = _.map(request.members, member => {
+			const instPackageMember = { ...member };
+			instPackageMember.instPackage = doc._id;
+			return instPackageMember;
+		});
+
+		async.parallel(
+			{
+				items: callback => {
+					MongoDB.createInstPackageItems(instPackageItems).exec(function (
+						err,
+						docs
+					) {
+						console.log('>>>>createInstPackageItems', docs);
+						return callback(null, docs);
+					});
+				},
+				hotels: callback => {
+					MongoDB.createInstPackageHotels(instPackageHotels).exec(function (
+						err,
+						docs
+					) {
+						console.log('>>>>createInstPackageHotels', docs);
+						return callback(null, docs);
+					});
+				},
+				members: callback => {
+					MongoDB.createInstPackageItems(instPackageMembers).exec(function (
+						err,
+						docs
+					) {
+						console.log('>>>>createInstPackageItems', docs);
+						return callback(null, docs);
+					});
+				},
+			},
+			function (err, results) {
+				console.log('>>>>Instance Saved', { doc, results });
+			}
+		);
 	};
 	MongoDB.createInstPackage(instPackage, handleInstPackage);
 };
