@@ -255,10 +255,24 @@ const getPackageRatesByPackageId = packageId => {
 	return PackageRate.find(params);
 };
 // Inst Package
-const createInstPackage = (ip, callback) => {
-	// console.log('>>>>Model >> PackageRate.getPackageRatesByPackageId', packageId);
-	const instPackage = new InstPackage(ip);
+const createInstPackage = (inst, callback) => {
+	const instPackage = new InstPackage(inst);
 	return instPackage.save(callback);
+};
+// Inst Package Items
+const createInstPackageItems = (items, callback) => {
+	console.log('>>>>Model >> InstPackageItem.createInstPackageItems', items);
+	return InstPackageItem.insertMany(items, callback);
+};
+// Inst Package Hotels
+const createInstPackageHotels = (hotels, callback) => {
+	console.log('>>>>Model >> InstPackageHotel.createInstPackageHotels', hotels);
+	return InstPackageHotel.insertMany(hotels, callback);
+};
+// Inst Package Members
+const createInstPackageMembers = (members, callback) => {
+	console.log('>>>>Model >> InstPackageMember.createInstPackageMembers', members);
+	return InstPackageMember.insertMany(members, callback);
 };
 
 export default {
@@ -272,4 +286,7 @@ export default {
 	getFlightRatesByPackageId,
 	getPackageRatesByPackageId,
 	createInstPackage,
+	createInstPackageItems,
+	createInstPackageHotels,
+	createInstPackageMembers,
 };
