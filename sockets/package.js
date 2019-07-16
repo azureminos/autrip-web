@@ -256,17 +256,11 @@ const getFilteredPackages = ({ request, sendStatus, socket }) => {
 	});
 };
 
-const joinPackage = ({ request, sendStatus, socket }) => {
+const joinPackage = ({ request, sendStatus, socket }) => {};
 
-};
+const customisePackage = ({ request, sendStatus, socket }) => {};
 
-const customisePackage = ({ request, sendStatus, socket }) => {
-
-};
-
-const payPackage = ({ request, sendStatus, socket }) => {
-
-};
+const payPackage = ({ request, sendStatus, socket }) => {};
 
 const checkoutPackage = ({ request, sendStatus, socket }) => {
 	console.log('>>>>server received event[push:product:checkout]', request);
@@ -319,7 +313,7 @@ const checkoutPackage = ({ request, sendStatus, socket }) => {
 				instPackageMember.slug = `${doc._id}_member_${instPackageMember.loginId}`;
 				return instPackageMember;
 			});
-	
+
 			async.parallel(
 				{
 					items: callback => {
@@ -352,6 +346,11 @@ const checkoutPackage = ({ request, sendStatus, socket }) => {
 				},
 				function (err, results) {
 					console.log('>>>>Instance Saved', { doc, results });
+					const inst = { ...doc };
+					inst.items = results.items;
+					inst.hotels = results.hotels;
+					inst.members = results.members;
+					socket.emit('product:checkout', inst);
 				}
 			);
 		};

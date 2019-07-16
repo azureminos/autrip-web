@@ -44,7 +44,7 @@ export default class App extends Component {
 		this.state = {
 			products: [],
 			selectedProduct: null,
-			cart: [],
+			cart: null,
 			updating: false,
 		};
 	}
@@ -100,9 +100,8 @@ export default class App extends Component {
 	}
 	handleGetCheckout (resp) {
 		console.log('>>>>App.handleGetCheckout', resp);
-		const selectedProduct = this.state.selectedProduct;
 		this.setState({
-			selectedProduct: { ...selectedProduct, rates: resp },
+			cart: resp,
 			updating: false,
 		});
 	}
