@@ -298,16 +298,25 @@ const checkoutPackage = ({ request, sendStatus, socket }) => {
 			const instPackageItems = _.map(request.items, item => {
 				const instPackageItem = { ...item };
 				instPackageItem.instPackage = doc._id;
+				instPackageItem.createdBy = instPackage.createdBy;
+				instPackageItem.createdAt = instPackage.createdAt;
+				instPackageItem.slug = `${doc._id}_item_${instPackageItem.dayNo}_${instPackageItem.daySeq}`;
 				return instPackageItem;
 			});
 			const instPackageHotels = _.map(request.hotels, hotel => {
 				const instPackageHotel = { ...hotel };
 				instPackageHotel.instPackage = doc._id;
+				instPackageHotel.createdBy = instPackage.createdBy;
+				instPackageHotel.createdAt = instPackage.createdAt;
+				instPackageHotel.slug = `${doc._id}_hotel_${instPackageHotel.dayNo}`;
 				return instPackageHotel;
 			});
 			const instPackageMembers = _.map(request.members, member => {
 				const instPackageMember = { ...member };
 				instPackageMember.instPackage = doc._id;
+				instPackageMember.createdBy = instPackage.createdBy;
+				instPackageMember.createdAt = instPackage.createdAt;
+				instPackageMember.slug = `${doc._id}_member_${instPackageMember.loginId}`;
 				return instPackageMember;
 			});
 	
