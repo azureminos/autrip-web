@@ -70,7 +70,7 @@ const onListening = () => {
 };
 
 // Listen on provided port, on all network interfaces.
-if (process.env.LOCAL) {
+if (process.env.LOCAL === 'true') {
   server.listen(port);
 }
 
