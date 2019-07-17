@@ -346,7 +346,7 @@ const checkoutPackage = ({ request, sendStatus, socket }) => {
 				},
 				function (err, results) {
 					console.log('>>>>Instance Saved', { doc, results });
-					const inst = { ...doc };
+					const inst = { ...doc._doc };
 					inst.items = results.items;
 					inst.hotels = results.hotels;
 					inst.members = results.members;
