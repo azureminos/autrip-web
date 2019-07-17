@@ -173,7 +173,7 @@ export default class App extends Component {
 		console.log('>>>>Route.renderCheckout()');
 		if (this.state.cart) {
 			return (
-				<ProductAvailability
+				<ProductPayment
 					user={this.state.user}
 					product={this.state.selectedProduct}
 					cart={this.state.cart}
