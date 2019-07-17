@@ -51,10 +51,10 @@ class ProductPayment extends React.Component {
                     </h3>
                     <Grid container spacing={0} className={classes.panelBody}>
                         <Grid item xs={12}>Country</Grid>
-                        <Grid item xs={12}>
-                            <Grid item xs={5}>Name</Grid>
-                            <Grid item xs={4}>Date</Grid>
-                            <Grid item xs={3}>Image</Grid>
+                        <Grid item xs={12} className={classes.bodyContext}>
+                            <Grid item xs={5} className={classes.bodyBlock}>Name</Grid>
+                            <Grid item xs={4} className={classes.bodyBlock}>Date</Grid>
+                            <Grid item xs={3} className={classes.bodyBlock}>Image</Grid>
                         </Grid>
                         <Grid item xs={12}>Additional request</Grid>
                     </Grid>
@@ -65,13 +65,13 @@ class ProductPayment extends React.Component {
                     </h3>
                     <Grid container spacing={0} className={classes.panelBody}>
                         <Grid item xs={12}><h4>Primary Contact</h4></Grid>
-                        <Grid item xs={12}>
-                            <Grid item xs={6}>First Name</Grid>
-                            <Grid item xs={6}>Last Name</Grid>
+                        <Grid item xs={12} className={classes.bodyContext}>
+                            <Grid item xs={6} className={classes.bodyBlock}>First Name</Grid>
+                            <Grid item xs={6} className={classes.bodyBlock}>Last Name</Grid>
                         </Grid>
-                        <Grid item xs={12}>
-                            <Grid item xs={6}>Mobile Number</Grid>
-                            <Grid item xs={6}></Grid>
+                        <Grid item xs={12} className={classes.bodyContext}>
+                            <Grid item xs={6} className={classes.bodyBlock}>Mobile Number</Grid>
+                            <Grid item xs={6} className={classes.bodyBlock}></Grid>
                         </Grid>
                     </Grid>
                 </div>
