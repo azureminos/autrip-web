@@ -1,6 +1,9 @@
 import React from 'react';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
+import IconLocationOn from '@material-ui/icons/LocationOnOutlined';
+import IconCalendarToday from '@material-ui/icons/CalendarTodayOutlined';
+import IconPeople from '@material-ui/icons/PeopleOutlined';
 import Helper from '../../lib/helper';
 // ==== Styles ==============================================
 import { withStyles } from '@material-ui/core/styles';
@@ -15,6 +18,32 @@ const styles = theme => ({
 		paddingLeft: 200,
 		boxSizing: 'border-box',
 	},
+	panelHeader: {
+		paddingTop: 10,
+		paddingBottom: 10,
+	},
+	panelBody: {
+		backgroundColor: 'white',
+		borderWidth: 1,
+		borderStyle: 'solid',
+		borderColor: 'rgb(214, 217, 218)',
+		paddingTop: 10,
+		paddingRight: 20,
+		paddingBottom: 10,
+		paddingLeft: 20,
+	},
+	bodyContext: {
+		display: 'flex',
+		paddingTop: 4,
+		paddingBottom: 4,
+	},
+	bodyBlock: {
+		display: 'block',
+	},
+	icon: {
+		color: 'blue',
+		paddingRight: 8,
+	},
 });
 
 class ProductPayment extends React.Component {
@@ -22,8 +51,7 @@ class ProductPayment extends React.Component {
 		super(props);
 		// Bind handler
 		// Set state
-		this.state = {
-		};
+		this.state = {};
 	}
 
 	/* ===== Helper Methods ===== */
@@ -36,77 +64,122 @@ class ProductPayment extends React.Component {
 		// Route URLs
 
 		// Event Handler
-		
+
 		// Sub Components
-        
-        // Get data string
-		
+
+		// Get data string
+		const dtStart = new Date(cart.startDate);
+		const dtEnd = new Date(cart.endDate);
+		const totalTravelers = '1 traveller';
+		const titleImageUrl = Helper.resizeImage(
+			product.imageUrl,
+			'w_200,h_100,c_scale'
+		);
 		// Display Component
 		return (
-            <div className={classes.panel}>
-                <h1>Review & Payment</h1>
-			    <div>
-                    <h3 className={classes.panelHeader}>
-                        Tour
-                    </h3>
-                    <Grid container spacing={0} className={classes.panelBody}>
-                        <Grid item xs={12}>Country</Grid>
-                        <Grid item xs={12} className={classes.bodyContext}>
-                            <Grid item xs={5} className={classes.bodyBlock}>Name</Grid>
-                            <Grid item xs={4} className={classes.bodyBlock}>Date</Grid>
-                            <Grid item xs={3} className={classes.bodyBlock}>Image</Grid>
-                        </Grid>
-                        <Grid item xs={12}>Additional request</Grid>
-                    </Grid>
-                </div>
-			    <div>
-                    <h3 className={classes.panelHeader}>
-                        Traveller Details
-                    </h3>
-                    <Grid container spacing={0} className={classes.panelBody}>
-                        <Grid item xs={12}><h4>Primary Contact</h4></Grid>
-                        <Grid item xs={12} className={classes.bodyContext}>
-                            <Grid item xs={6} className={classes.bodyBlock}>First Name</Grid>
-                            <Grid item xs={6} className={classes.bodyBlock}>Last Name</Grid>
-                        </Grid>
-                        <Grid item xs={12} className={classes.bodyContext}>
-                            <Grid item xs={6} className={classes.bodyBlock}>Mobile Number</Grid>
-                            <Grid item xs={6} className={classes.bodyBlock}></Grid>
-                        </Grid>
-                    </Grid>
-                </div>
-                <div>
-                    <h3 className={classes.panelHeader}>
-                        Summary
-                    </h3>
-                    <Grid container spacing={0} className={classes.panelBody}>
-                        <Grid item xs={12}>
-                            <Grid item xs={12}><h4>Your Itinerary</h4></Grid>
-                            <Grid item xs={12}>Itinerary blah blah...</Grid>
-                        </Grid>
-                        <Divider />
-                        <Grid item xs={12}>
-                            <Grid item xs={12}><h4>X Days Tour, Price</h4></Grid>
-                            <Grid item xs={12}>Adults ?, Kids ?</Grid>
-                        </Grid>
-                        <Divider />
-                        <Grid item xs={12}>
-                            <Grid item xs={12}><h4>Subtotal</h4></Grid>
-                            <Grid item xs={12}><h2>Grand Total</h2></Grid>
-                        </Grid>
-                        <Divider />
-                        <Grid item xs={12}>Agree?</Grid>
-                    </Grid>
-                </div>
-                <div>
-                    <h3 className={classes.panelHeader}>
-                        Payment
-                    </h3>
-                    <div className={classes.panelBody}>
-                        Payment Content
-                    </div>
-                </div>
-            </div>
+			<div className={classes.panel}>
+				<h1>Review & Payment</h1>
+				<div>
+					<h3 className={classes.panelHeader}>Tour</h3>
+					<Grid container spacing={0} className={classes.panelBody}>
+						<Grid item xs={12} className={classes.bodyContext}>
+							<IconLocationOn fontSize="default" className={classes.icon} />
+							<div>China</div>
+						</Grid>
+						<Grid item xs={12} className={classes.bodyContext}>
+							<Grid item xs={5} className={classes.bodyBlock}>
+								<div className={classes.bodyContext}>{product.name}</div>
+							</Grid>
+							<Grid item xs={4} className={classes.bodyBlock}>
+								<div className={classes.bodyContext}>
+									<IconCalendarToday
+										fontSize="default"
+										className={classes.icon}
+									/>
+									<div>
+										{dtStart.toLocaleDateString()}
+										{' - '}
+										{dtEnd.toLocaleDateString()}
+									</div>
+								</div>
+								<div className={classes.bodyContext}>
+									<IconPeople fontSize="default" className={classes.icon} />
+									<div>{totalTravelers}</div>
+								</div>
+							</Grid>
+							<Grid item xs={3} className={classes.bodyBlock}>
+								<div className={classes.bodyContext}>
+									<img src={titleImageUrl} alt={product.name} />
+								</div>
+							</Grid>
+						</Grid>
+						<Grid item xs={12}>
+							Additional request
+						</Grid>
+					</Grid>
+				</div>
+				<div>
+					<h3 className={classes.panelHeader}>Traveller Details</h3>
+					<Grid container spacing={0} className={classes.panelBody}>
+						<Grid item xs={12}>
+							<h4>Primary Contact</h4>
+						</Grid>
+						<Grid item xs={12} className={classes.bodyContext}>
+							<Grid item xs={6} className={classes.bodyBlock}>
+								First Name
+							</Grid>
+							<Grid item xs={6} className={classes.bodyBlock}>
+								Last Name
+							</Grid>
+						</Grid>
+						<Grid item xs={12} className={classes.bodyContext}>
+							<Grid item xs={6} className={classes.bodyBlock}>
+								Mobile Number
+							</Grid>
+							<Grid item xs={6} className={classes.bodyBlock}></Grid>
+						</Grid>
+					</Grid>
+				</div>
+				<div>
+					<h3 className={classes.panelHeader}>Summary</h3>
+					<Grid container spacing={0} className={classes.panelBody}>
+						<Grid item xs={12}>
+							<Grid item xs={12}>
+								<h4>Your Itinerary</h4>
+							</Grid>
+							<Grid item xs={12}>
+								Itinerary blah blah...
+							</Grid>
+						</Grid>
+						<Divider />
+						<Grid item xs={12}>
+							<Grid item xs={12}>
+								<h4>X Days Tour, Price</h4>
+							</Grid>
+							<Grid item xs={12}>
+								Adults ?, Kids ?
+							</Grid>
+						</Grid>
+						<Divider />
+						<Grid item xs={12}>
+							<Grid item xs={12}>
+								<h4>Subtotal</h4>
+							</Grid>
+							<Grid item xs={12}>
+								<h2>Grand Total</h2>
+							</Grid>
+						</Grid>
+						<Divider />
+						<Grid item xs={12}>
+							Agree?
+						</Grid>
+					</Grid>
+				</div>
+				<div>
+					<h3 className={classes.panelHeader}>Payment</h3>
+					<div className={classes.panelBody}>Payment Content</div>
+				</div>
+			</div>
 		);
 	}
 }
