@@ -8,6 +8,7 @@ import Navbar from './components/Navbar';
 import ProductBrick from './components/product-brick';
 import ProductDetails from './components/product-details';
 import ProductAvailability from './components/product-availability';
+import ProductPayment from './components/product-payment';
 import Default from './components/Default';
 import LoadingSpinner from './components/loading-spinner';
 // Stylesheets
@@ -45,6 +46,16 @@ export default class App extends Component {
 			products: [],
 			selectedProduct: null,
 			cart: null,
+			user: {
+				firstName: 'David',
+				lastName: 'Xia',
+				fullName: 'David Xia',
+				loginId: 'David Xia',
+				mobile: '0410562699',
+				email: 'david.xia83@gmail.com',
+				source: 'email' // ['email', 'facebook', 'google']
+			},
+			isOwner: true,
 			updating: false,
 		};
 	}
@@ -149,8 +160,8 @@ export default class App extends Component {
 		if (product && product.rates) {
 			return (
 				<ProductAvailability
-					isOwner={true}
-					user={{ fullName: 'David Xia' }}
+					isOwner={this.state.isOwner}
+					user={this.state.user}
 					product={product}
 					actionCheckout={this.actionCheckout}
 				/>
@@ -161,7 +172,13 @@ export default class App extends Component {
 	renderCheckout () {
 		console.log('>>>>Route.renderCheckout()');
 		if (this.state.cart) {
-			return <div>This is cart</div>;
+			return (
+				<ProductAvailability
+					user={this.state.user}
+					product={this.state.selectedProduct}
+					cart={this.state.cart}
+				/>
+			);
 		}
 		return <div />;
 	}
