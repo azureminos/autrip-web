@@ -49,9 +49,15 @@ const styles = theme => ({
 class ProductPayment extends React.Component {
 	constructor (props) {
 		super(props);
+		// Pre-work
+		const member = _.find(props.cart.members, { loginId: user.loginId });
 		// Bind handler
 		// Set state
-		this.state = {};
+		this.state = {
+			contactFirstName: member.contactFirstName || '',
+			contactLastName: member.contactLastName || '',
+			contactMobile: member.contactMobile || '',
+		};
 	}
 
 	/* ===== Helper Methods ===== */
@@ -60,17 +66,29 @@ class ProductPayment extends React.Component {
 
 	render () {
 		const { classes, product, cart, user } = this.props;
+		const { contactFirstName, contactLastName, contactMobile } = this.state;
 		console.log('>>>>ProductPayment.render()', { product, cart, user });
 		// Route URLs
 
 		// Event Handler
-
+		const inputMobileHandler = e => {
+			console.log('>>>>ProductPayment input Mobile', e);
+			this.setState({ contactMobile: e.target.value });
+		};
+		const inputFirstNameHandler = e => {
+			console.log('>>>>ProductPayment input FirstName', e);
+			this.setState({ contactFirstName: e.target.value });
+		};
+		const inputLastNameHandler = e => {
+			console.log('>>>>ProductPayment input LastName', e);
+			this.setState({ contactLastName: e.target.value });
+		};
 		// Sub Components
 
 		// Get data string
 		const dtStart = new Date(cart.startDate);
 		const dtEnd = new Date(cart.endDate);
-		const totalTravelers = '1 traveller';
+		const totalTravelers = (cart.totalKids || 0) + (cart.totalAdults || 0);
 		const titleImageUrl = Helper.resizeImage(
 			product.imageUrl,
 			'w_200,h_100,c_scale'
@@ -124,17 +142,32 @@ class ProductPayment extends React.Component {
 						<Grid item xs={12}>
 							<h4>Primary Contact</h4>
 						</Grid>
-						<Grid item xs={12} className={classes.bodyContext}>
-							<Grid item xs={6} className={classes.bodyBlock}>
-								First Name
-							</Grid>
-							<Grid item xs={6} className={classes.bodyBlock}>
-								Last Name
-							</Grid>
+						<Grid item xs={12} className={classes.bodyTable}>
+							<div className={classes.bodyTableCell}>
+								<InputLabel htmlFor="first-name">First name</InputLabel>
+								<Input
+									id="first-name"
+									value={contactFirstName}
+									onChange={inputFirstNameHandler}
+								/>
+							</div>
+							<div className={classes.bodyTableCell}>
+								<InputLabel htmlFor="last-name">Last name</InputLabel>
+								<Input
+									id="last-name"
+									value={contactLastName}
+									onChange={inputLastNameHandler}
+								/>
+							</div>
 						</Grid>
 						<Grid item xs={12} className={classes.bodyContext}>
 							<Grid item xs={6} className={classes.bodyBlock}>
-								Mobile Number
+								<InputLabel htmlFor="contact-mobile">Mobile Number</InputLabel>
+								<Input
+									id="contact-mobile"
+									value={contactMobile}
+									onChange={inputMobileHandler}
+								/>
 							</Grid>
 							<Grid item xs={6} className={classes.bodyBlock}></Grid>
 						</Grid>
