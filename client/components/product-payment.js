@@ -143,8 +143,8 @@ class ProductPayment extends React.Component {
 			this.setState({ contactLastName: e.target.value });
 		};
 		// Sub Components
-		const payDeposit = reference.payment.payDeposit;
-		const divDeposit = payDeposit > 0 ? (
+		const amountDeposit = reference.payment.amountDeposit;
+		const divDeposit = amountDeposit > 0 ? (
 			<Grid item xs={12} className={classes.bodyBlock}>
 				<div className={classes.bodyElementLeft}>
 					<h2>
@@ -152,7 +152,7 @@ class ProductPayment extends React.Component {
 					</h2>
 				</div>
 				<div className={classes.bodyElementRight}>
-					<h2 className={classes.bodyContext}>{payDeposit}</h2>
+					<h2 className={classes.bodyContext}>{amountDeposit}</h2>
 				</div>
 			</Grid>
 		) : '';
@@ -373,7 +373,7 @@ class ProductPayment extends React.Component {
 								<div>
 									<PaypalButton
 										env={reference.payment.paypalEnv}
-										total={payDeposit > 0 ? payDeposit : rateTotal}
+										total={amountDeposit > 0 ? amountDeposit : rateTotal}
 										client={paypalClient}
 										currency={user.currency}
 									/>
