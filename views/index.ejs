@@ -39,7 +39,11 @@
     <script src="/bundle.js"></script>
     <script>
       window.attachApp({
-        socketAddress: "<%= socketAddress %>"
+        socketAddress: "<%= socketAddress %>",
+        paypalEnv: "<%= paypalEnv %>",
+        paypalId: "<%= paypalId %>",
+        paypalIdDummy: "<%= paypalIdDummy %>",
+        amountDeposit: "<%= amountDeposit %>"
       });
     </script>
   </body>
