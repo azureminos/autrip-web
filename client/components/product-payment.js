@@ -12,6 +12,7 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import PaypalButton from './paypal-button';
 import Helper from '../../lib/helper';
 // ==== Styles ==============================================
 import { withStyles } from '@material-ui/core/styles';
@@ -142,8 +143,19 @@ class ProductPayment extends React.Component {
 			this.setState({ contactLastName: e.target.value });
 		};
 		// Sub Components
-
-		// Get data string
+		const payDeposit = process.env.PAY_DEPOSIT ? Number(process.env.PAY_DEPOSIT) : 0;
+		const divDeposit = payDeposit > 0 ? (
+			<Grid item xs={12} className={classes.bodyBlock}>
+				<div className={classes.bodyElementLeft}>
+					<h2>
+						<b>Deposit</b>
+					</h2>
+				</div>
+				<div className={classes.bodyElementRight}>
+					<h2 className={classes.bodyContext}>{payDeposit}</h2>
+				</div>
+			</Grid>
+		) : '';
 		const dtStart = new Date(cart.startDate);
 		const dtEnd = new Date(cart.endDate);
 		const totalTravelers = (cart.totalKids || 0) + (cart.totalAdults || 0);
@@ -164,6 +176,10 @@ class ProductPayment extends React.Component {
 			product.imageUrl,
 			'w_200,h_100,c_scale'
 		);
+		const paypalClient = {
+			sandbox: process.env.PAYPAL_APP_ID_DUMMY,
+			production: process.env.PAYPAL_APP_ID,
+		};
 		// Display Component
 		return (
 			<div className={classes.panel}>
@@ -309,6 +325,7 @@ class ProductPayment extends React.Component {
 								<h2 className={classes.bodyContext}>{rateTotal}</h2>
 							</div>
 						</Grid>
+						{divDeposit}
 					</Grid>
 				</div>
 				<div>
@@ -353,7 +370,14 @@ class ProductPayment extends React.Component {
 								<div>Paypal</div>
 							</ExpansionPanelSummary>
 							<ExpansionPanelDetails>
-								<div>ToDo: Add Paypal button here</div>
+								<div>
+									<PaypalButton
+										env={process.env.PAYPAL_ENV}
+										total={payDeposit > 0 ? payDeposit : rateTotal}
+										client={paypalClient}
+										currency={user.currency}
+									/>
+								</div>
 							</ExpansionPanelDetails>
 						</ExpansionPanel>
 					</div>
