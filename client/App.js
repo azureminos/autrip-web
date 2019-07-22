@@ -57,6 +57,14 @@ export default class App extends Component {
 				currency: 'AUD',
 				source: 'email' // ['email', 'facebook', 'google']
 			},
+			reference: {
+				payment: {
+					paypalEnv: this.props.paypalEnv,
+					paypalId: this.props.paypalId,
+					paypalIdDummy: this.props.paypalIdDummy,
+					amountDeposit: this.props.amountDeposit,
+				},
+			},
 			isOwner: true,
 			updating: false,
 		};
@@ -179,6 +187,7 @@ export default class App extends Component {
 					user={this.state.user}
 					product={this.state.selectedProduct}
 					cart={this.state.cart}
+					reference={this.state.reference}
 				/>
 			);
 		}
