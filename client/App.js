@@ -53,6 +53,8 @@ export default class App extends Component {
 				loginId: 'David Xia',
 				mobile: '0410562699',
 				email: 'david.xia83@gmail.com',
+				location: 'Australia',
+				currency: 'AUD',
 				source: 'email' // ['email', 'facebook', 'google']
 			},
 			isOwner: true,
