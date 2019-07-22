@@ -5,14 +5,20 @@ import App from './App';
 import InvalidPage from './invalid-page';
 import { BrowserRouter as Router } from 'react-router-dom';
 
-window.attachApp = ({ socketAddress }) => {
-	console.log('>>>>window.attachApp()', socketAddress);
-
+window.attachApp = (params) => {
+	console.log('>>>>window.attachApp()', params);
+	const {socketAddress, paypalEnv, paypalId, paypalIdDummy, amountDeposit } = params;
 	let app;
 	if (socketAddress) {
 		app = (
 			<Router>
-				<App />
+				<App 
+					socketAddress={socketAddress}
+					paypalEnv={paypalEnv}
+					paypalId={paypalId}
+					paypalIdDummy={paypalIdDummy}
+					amountDeposit={Number(amountDeposit)}
+				/>
 			</Router>
 		);
 	} else {
