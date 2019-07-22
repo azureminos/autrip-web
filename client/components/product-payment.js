@@ -1,23 +1,23 @@
 import React from 'react';
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
-import IconLocationOn from '@material-ui/icons/LocationOnOutlined';
-import IconCalendarToday from '@material-ui/icons/CalendarTodayOutlined';
-import IconPeople from '@material-ui/icons/PeopleOutlined';
-import IconFlightLand from '@material-ui/icons/FlightLand';
-import IconFlightTakeoff from '@material-ui/icons/FlightTakeoff';
-import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Input from '@material-ui/core/Input';
 import PaypalButton from './paypal-button';
 import Helper from '../../lib/helper';
 // ==== Styles ==============================================
 import { withStyles } from '@material-ui/core/styles';
 import helper from '../../lib/helper';
 // ==== Additional CSS ======================================
+import IconLocationOn from '@material-ui/icons/LocationOnOutlined';
+import IconCalendarToday from '@material-ui/icons/CalendarTodayOutlined';
+import IconPeople from '@material-ui/icons/PeopleOutlined';
+import IconFlightLand from '@material-ui/icons/FlightLand';
+import IconFlightTakeoff from '@material-ui/icons/FlightTakeoff';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const styles = theme => ({
 	panel: {
@@ -144,18 +144,21 @@ class ProductPayment extends React.Component {
 		};
 		// Sub Components
 		const amountDeposit = reference.payment.amountDeposit;
-		const divDeposit = amountDeposit > 0 ? (
-			<Grid item xs={12} className={classes.bodyBlock}>
-				<div className={classes.bodyElementLeft}>
-					<h2>
-						<b>Deposit</b>
-					</h2>
-				</div>
-				<div className={classes.bodyElementRight}>
-					<h2 className={classes.bodyContext}>{amountDeposit}</h2>
-				</div>
-			</Grid>
-		) : '';
+		const divDeposit
+			= amountDeposit > 0 ? (
+				<Grid item xs={12} className={classes.bodyBlock}>
+					<div className={classes.bodyElementLeft}>
+						<h2>
+							<b>Deposit</b>
+						</h2>
+					</div>
+					<div className={classes.bodyElementRight}>
+						<h2 className={classes.bodyContext}>{amountDeposit}</h2>
+					</div>
+				</Grid>
+			) : (
+				''
+			);
 		const dtStart = new Date(cart.startDate);
 		const dtEnd = new Date(cart.endDate);
 		const totalTravelers = (cart.totalKids || 0) + (cart.totalAdults || 0);
@@ -341,6 +344,7 @@ class ProductPayment extends React.Component {
 				<div>
 					<h3 className={classes.panelHeader}>Payment</h3>
 					<div className={classes.panelBody}>
+						<h4>Select your preferred payment method:</h4>
 						<ExpansionPanel
 							expanded={payType === helper.vars.payTypeCreditCard}
 							onChange={clickPayTypeHandler(helper.vars.payTypeCreditCard)}
@@ -370,14 +374,12 @@ class ProductPayment extends React.Component {
 								<div>Paypal</div>
 							</ExpansionPanelSummary>
 							<ExpansionPanelDetails>
-								<div>
-									<PaypalButton
-										env={reference.payment.paypalEnv}
-										total={amountDeposit > 0 ? amountDeposit : rateTotal}
-										client={paypalClient}
-										currency={user.currency}
-									/>
-								</div>
+								<PaypalButton
+									env={reference.payment.paypalEnv}
+									total={amountDeposit > 0 ? amountDeposit : rateTotal}
+									client={paypalClient}
+									currency={user.currency}
+								/>
 							</ExpansionPanelDetails>
 						</ExpansionPanel>
 					</div>
