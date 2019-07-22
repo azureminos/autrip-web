@@ -110,7 +110,7 @@ class ProductPayment extends React.Component {
 	/* ===== State & Event Handlers ===== */
 
 	render () {
-		const { classes, product, cart, user } = this.props;
+		const { classes, product, cart, user, reference } = this.props;
 		const {
 			contactFirstName,
 			contactLastName,
@@ -143,7 +143,7 @@ class ProductPayment extends React.Component {
 			this.setState({ contactLastName: e.target.value });
 		};
 		// Sub Components
-		const payDeposit = process.env.REACT_APP_PAY_DEPOSIT ? Number(process.env.REACT_APP_PAY_DEPOSIT) : 0;
+		const payDeposit = reference.payment.payDeposit;
 		const divDeposit = payDeposit > 0 ? (
 			<Grid item xs={12} className={classes.bodyBlock}>
 				<div className={classes.bodyElementLeft}>
@@ -177,8 +177,8 @@ class ProductPayment extends React.Component {
 			'w_200,h_100,c_scale'
 		);
 		const paypalClient = {
-			sandbox: process.env.REACT_APP_PAYPAL_ID_DUMMY,
-			production: process.env.REACT_APP_PAYPAL_ID,
+			sandbox: reference.payment.paypalIdDummy,
+			production: reference.payment.paypalId,
 		};
 		// Display Component
 		return (
@@ -372,7 +372,7 @@ class ProductPayment extends React.Component {
 							<ExpansionPanelDetails>
 								<div>
 									<PaypalButton
-										env={process.env.REACT_APP_PAYPAL_ENV}
+										env={reference.payment.paypalEnv}
 										total={payDeposit > 0 ? payDeposit : rateTotal}
 										client={paypalClient}
 										currency={user.currency}
