@@ -391,7 +391,7 @@ class ProductPayment extends React.Component {
 								<div>Paypal</div>
 							</ExpansionPanelSummary>
 							<ExpansionPanelDetails>
-								
+								<div>ToDo: Pay by paypal</div>
 							</ExpansionPanelDetails>
 						</ExpansionPanel>
 					</div>
