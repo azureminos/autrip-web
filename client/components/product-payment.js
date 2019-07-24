@@ -179,6 +179,7 @@ class ProductPayment extends React.Component {
 			product.imageUrl,
 			'w_200,h_100,c_scale'
 		);
+		const env = reference.payment.paypalEnv;
 		const paypalClient = {
 			sandbox: reference.payment.paypalIdDummy,
 			production: reference.payment.paypalId,
