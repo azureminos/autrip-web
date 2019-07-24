@@ -179,7 +179,6 @@ class ProductPayment extends React.Component {
 			product.imageUrl,
 			'w_200,h_100,c_scale'
 		);
-		const env = reference.payment.paypalEnv;
 		const paypalClient = {
 			sandbox: reference.payment.paypalIdDummy,
 			production: reference.payment.paypalId,
@@ -377,7 +376,7 @@ class ProductPayment extends React.Component {
 							<ExpansionPanelDetails>
 								<PaypalButton
 									options={{
-										clientId: paypalClient[env],
+										clientId: paypalClient[reference.payment.paypalEnv],
 									}}
 									amount={amountDeposit > 0 ? amountDeposit : rateTotal}
 									currency={user.currency}
@@ -397,7 +396,7 @@ class ProductPayment extends React.Component {
 												}
 											}]
 										});*/
-										alert(`ID: ${paypalClient[env]}, Currency: ${user.currency}, Money: ${amountDeposit > 0 ? amountDeposit : rateTotal}`);
+										alert(`ID: ${paypalClient[reference.payment.paypalEnv]}, Currency: ${user.currency}, Money: ${amountDeposit > 0 ? amountDeposit : rateTotal}`);
 									}}
 								/>
 							</ExpansionPanelDetails>
