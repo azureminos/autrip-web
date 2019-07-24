@@ -396,7 +396,7 @@ class ProductPayment extends React.Component {
 												}
 											}]
 										});*/
-										alert(`ID: ${client[env]}, Currency: ${{user.currency}}, Money: ${amountDeposit > 0 ? amountDeposit : rateTotal}`);
+										alert(`ID: ${client[env]}, Currency: ${user.currency}, Money: ${amountDeposit > 0 ? amountDeposit : rateTotal}`);
 									}}
 								/>
 							</ExpansionPanelDetails>
