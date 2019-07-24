@@ -183,6 +183,23 @@ class ProductPayment extends React.Component {
 			sandbox: reference.payment.paypalIdDummy,
 			production: reference.payment.paypalId,
 		};
+		const btnPaypal = (
+			<PaypalButton
+				options={{
+					clientId: paypalClient[reference.payment.paypalEnv],
+				}}
+				style={{
+					layout: 'vertical',
+					color: 'gold',
+					shape: 'rect',
+					label: 'paypal',
+					tagline : false,
+				}}
+				createOrder={(data, actions) => {
+					alert(`ID: ${paypalClient[reference.payment.paypalEnv]}, Currency: ${user.currency}, Money: ${amountDeposit > 0 ? amountDeposit : rateTotal}`);
+				}}
+			/>
+		);
 		// Display Component
 		return (
 			<div className={classes.panel}>
@@ -374,21 +391,7 @@ class ProductPayment extends React.Component {
 								<div>Paypal</div>
 							</ExpansionPanelSummary>
 							<ExpansionPanelDetails>
-								<PaypalButton
-									options={{
-										clientId: paypalClient[reference.payment.paypalEnv],
-									}}
-									style={{
-										layout: 'vertical',
-										color: 'gold',
-										shape: 'rect',
-										label: 'paypal',
-										tagline : false,
-									}}
-									createOrder={(data, actions) => {
-										alert(`ID: ${paypalClient[reference.payment.paypalEnv]}, Currency: ${user.currency}, Money: ${amountDeposit > 0 ? amountDeposit : rateTotal}`);
-									}}
-								/>
+								
 							</ExpansionPanelDetails>
 						</ExpansionPanel>
 					</div>
