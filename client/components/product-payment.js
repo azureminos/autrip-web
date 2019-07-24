@@ -6,7 +6,7 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Input from '@material-ui/core/Input';
-import PaypalButton from './paypal-button';
+import PaypalButton from 'react-paypal-button-v2';
 import Helper from '../../lib/helper';
 // ==== Styles ==============================================
 import { withStyles } from '@material-ui/core/styles';
@@ -375,10 +375,29 @@ class ProductPayment extends React.Component {
 							</ExpansionPanelSummary>
 							<ExpansionPanelDetails>
 								<PaypalButton
-									env={reference.payment.paypalEnv}
-									total={amountDeposit > 0 ? amountDeposit : rateTotal}
-									client={paypalClient}
+									options={{
+										clientId: client[env],
+									}}
+									amount={amountDeposit > 0 ? amountDeposit : rateTotal}
 									currency={user.currency}
+									style={{
+										layout: 'vertical',
+										color: 'gold',
+										shape: 'rect',
+										label: 'paypal',
+										tagline : false,
+									}}
+									createOrder={(data, actions) => {
+										/*return actions.order.create({
+											purchase_units: [{
+												amount: {
+													currency_code: "USD",
+													value: "0.01"
+												}
+											}]
+										});*/
+										alert(`ID: ${client[env]}, Currency: ${{user.currency}}, Money: ${amountDeposit > 0 ? amountDeposit : rateTotal}`);
+									}}
 								/>
 							</ExpansionPanelDetails>
 						</ExpansionPanel>
