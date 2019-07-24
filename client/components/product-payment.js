@@ -6,7 +6,7 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Input from '@material-ui/core/Input';
-import PaypalButton from 'react-paypal-button-v2';
+import {PaypalButton} from 'react-paypal-button-v2';
 import Helper from '../../lib/helper';
 // ==== Styles ==============================================
 import { withStyles } from '@material-ui/core/styles';
