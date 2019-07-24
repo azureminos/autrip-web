@@ -54,6 +54,8 @@
     "react-dom": "^16.3.0",
     "react-id-swiper": "^1.6.8",
     "react-loader-advanced": "^1.7.1",
+    "react-paypal-button-v2": "^2.3.2",
+    "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
     "react-scripts": "2.1.1",
     "react-scroll-to-component": "^1.0.2",

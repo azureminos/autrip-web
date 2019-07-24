@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import _ from 'lodash';
 import React, { Component, createElement } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, withRouter } from 'react-router-dom';
 import Loader from 'react-loader-advanced';
 // Components
 import Navbar from './components/Navbar';
@@ -9,6 +9,7 @@ import ProductBrick from './components/product-brick';
 import ProductDetails from './components/product-details';
 import ProductAvailability from './components/product-availability';
 import ProductPayment from './components/product-payment';
+import PaymentConfirmation from './components/payment-confirmation';
 import Default from './components/Default';
 import LoadingSpinner from './components/loading-spinner';
 // Stylesheets
@@ -18,7 +19,7 @@ import helper from '../lib/helper';
 
 let socket;
 
-export default class App extends Component {
+class App extends Component {
 	constructor (props) {
 		super(props);
 
@@ -28,16 +29,19 @@ export default class App extends Component {
 		this.handleGetDetails = this.handleGetDetails.bind(this);
 		this.handleGetAvailability = this.handleGetAvailability.bind(this);
 		this.handleGetCheckout = this.handleGetCheckout.bind(this);
+		this.handleGetPaid = this.handleGetPaid.bind(this);
 		// Component Display Handlers
 		this.renderList = this.renderList.bind(this);
 		this.renderDetails = this.renderDetails.bind(this);
 		this.renderAvailability = this.renderAvailability.bind(this);
 		this.renderCheckout = this.renderCheckout.bind(this);
+		this.renderConfirmation = this.renderConfirmation.bind(this);
 		this.renderDefault = this.renderDefault.bind(this);
 		// Page actions
 		this.actionGetProduct = this.actionGetProduct.bind(this);
 		this.actionGetAvailability = this.actionGetAvailability.bind(this);
 		this.actionCheckout = this.actionCheckout.bind(this);
+		this.actionPaid = this.actionPaid.bind(this);
 		// Helpers
 		this.findProduct = this.findProduct.bind(this);
 		this.initInstance = this.initInstance.bind(this);
@@ -55,7 +59,7 @@ export default class App extends Component {
 				email: 'david.xia83@gmail.com',
 				location: 'Australia',
 				currency: 'AUD',
-				source: 'email' // ['email', 'facebook', 'google']
+				source: 'email', // ['email', 'facebook', 'google']
 			},
 			reference: {
 				payment: {
@@ -126,6 +130,15 @@ export default class App extends Component {
 			updating: false,
 		});
 	}
+	handleGetPaid (resp) {
+		console.log('>>>>App.handleGetPaid', resp);
+		// Go to purchase confirmation page
+		this.props.history.push('/booking/confirmation');
+		this.setState({
+			cart: { ...this.state.cart, status: resp.status },
+			updating: false,
+		});
+	}
 	/* ============ Component Action Handler ============*/
 	actionGetProduct (id) {
 		const params = { id: id, isCustomisable: false };
@@ -137,6 +150,9 @@ export default class App extends Component {
 	actionCheckout (params) {
 		const inst = this.initInstance(params);
 		this.pushToRemote('product:checkout', inst);
+	}
+	actionPaid (params) {
+		this.pushToRemote('product:paid', params);
 	}
 	/* ============ Component Display Handler ============*/
 	renderList () {
@@ -188,6 +204,24 @@ export default class App extends Component {
 					product={this.state.selectedProduct}
 					cart={this.state.cart}
 					reference={this.state.reference}
+					actionPaid={this.actionPaid}
+				/>
+			);
+		}
+		return <div />;
+	}
+	renderConfirmation () {
+		console.log('>>>>Route.renderConfirmation()');
+		const status = this.state.cart.status;
+		if (
+			status === helper.vars.statusDepositPaid
+			|| status === helper.vars.statusFullyPaid
+		) {
+			return (
+				<PaymentConfirmation
+					user={this.state.user}
+					product={this.state.selectedProduct}
+					cart={this.state.cart}
 				/>
 			);
 		}
@@ -217,6 +251,9 @@ export default class App extends Component {
 		socket.on('product:checkout', res => {
 			this.handleGetCheckout(res);
 		});
+		socket.on('product:paid', res => {
+			this.handleGetPaid(res);
+		});
 
 		// Retrieve published packages
 		var params = { state: 'Published' };
@@ -242,9 +279,15 @@ export default class App extends Component {
 						component={this.renderAvailability}
 					/>
 					<Route path="/booking/payment" component={this.renderCheckout} />
+					<Route
+						path="/booking/confirmation"
+						component={this.renderConfirmation}
+					/>
 					<Route component={this.renderDefault} />
 				</Switch>
 			</Loader>
 		);
 	}
 }
+
+export default withRouter(App);

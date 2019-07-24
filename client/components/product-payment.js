@@ -6,11 +6,10 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Input from '@material-ui/core/Input';
-import {PaypalButton} from 'react-paypal-button-v2';
+import { PayPalButton } from 'react-paypal-button-v2';
 import Helper from '../../lib/helper';
 // ==== Styles ==============================================
 import { withStyles } from '@material-ui/core/styles';
-import helper from '../../lib/helper';
 // ==== Additional CSS ======================================
 import IconLocationOn from '@material-ui/icons/LocationOnOutlined';
 import IconCalendarToday from '@material-ui/icons/CalendarTodayOutlined';
@@ -101,7 +100,7 @@ class ProductPayment extends React.Component {
 			contactLastName: member.contactLastName || '',
 			contactMobile: member.contactMobile || '',
 			agreed: false,
-			payType: helper.vars.payTypeCreditCard,
+			payType: Helper.vars.payTypeCreditCard,
 		};
 	}
 
@@ -110,7 +109,7 @@ class ProductPayment extends React.Component {
 	/* ===== State & Event Handlers ===== */
 
 	render () {
-		const { classes, product, cart, user, reference } = this.props;
+		const { classes, product, cart, user, reference, actionPaid } = this.props;
 		const {
 			contactFirstName,
 			contactLastName,
@@ -183,22 +182,84 @@ class ProductPayment extends React.Component {
 			sandbox: reference.payment.paypalIdDummy,
 			production: reference.payment.paypalId,
 		};
+		const { statusDepositPaid, statusFullyPaid } = Helper.vars;
 		const btnPaypal = (
-			<PaypalButton
+			<PayPalButton
 				options={{
 					clientId: paypalClient[reference.payment.paypalEnv],
+					currency: user.currency,
 				}}
 				style={{
-					layout: 'vertical',
+					layout: 'horizontal',
 					color: 'gold',
 					shape: 'rect',
-					label: 'paypal',
-					tagline : false,
+					label: 'pay',
+					tagline: false,
 				}}
-				createOrder={(data, actions) => {
-					alert(`ID: ${paypalClient[reference.payment.paypalEnv]}, Currency: ${user.currency}, Money: ${amountDeposit > 0 ? amountDeposit : rateTotal}`);
+				amount={String(amountDeposit > 0 ? amountDeposit : rateTotal)}
+				onSuccess={details => {
+					console.log('paypal integration success', { details, cart });
+					if (details.status === 'COMPLETED') {
+						const params = {
+							id: cart._id,
+							user: user.loginId,
+							status: amountDeposit > 0 ? statusDepositPaid : statusFullyPaid,
+						};
+						actionPaid(params);
+					}
+				}}
+				onError={err => {
+					console.log('paypal integration generic error', err);
+				}}
+				catchError={err => {
+					console.log('paypal integration transaction error', err);
 				}}
 			/>
+		);
+		const divPayment = (
+			<div className={classes.panelBody}>
+				<h4>Select your preferred payment method:</h4>
+				<ExpansionPanel
+					expanded={payType === Helper.vars.payTypeCreditCard}
+					onChange={clickPayTypeHandler(Helper.vars.payTypeCreditCard)}
+					style={{ margin: 0 }}
+				>
+					<ExpansionPanelSummary
+						expandIcon={<ExpandMoreIcon />}
+						aria-controls="panel1bh-content"
+						id="panel1bh-header"
+					>
+						<div>Credit Cards</div>
+					</ExpansionPanelSummary>
+					<ExpansionPanelDetails>
+						<div>ToDo: Pay by credit card</div>
+					</ExpansionPanelDetails>
+				</ExpansionPanel>
+				<ExpansionPanel
+					expanded={payType === Helper.vars.payTypePaypal}
+					onChange={clickPayTypeHandler(Helper.vars.payTypePaypal)}
+					style={{ margin: 0 }}
+				>
+					<ExpansionPanelSummary
+						expandIcon={<ExpandMoreIcon />}
+						aria-controls="panel2bh-content"
+						id="panel2bh-header"
+					>
+						<div>Paypal</div>
+					</ExpansionPanelSummary>
+					<ExpansionPanelDetails>
+						<div style={{ width: '100%' }}>{btnPaypal}</div>
+					</ExpansionPanelDetails>
+				</ExpansionPanel>
+			</div>
+		);
+		const divReadTerms = (
+			<div className={classes.panelBody}>
+				<h4 style={{ color: 'red' }}>
+					In order to proceed with the payment, please read the terms and
+					conditions, then tick the checkbox above.
+				</h4>
+			</div>
 		);
 		// Display Component
 		return (
@@ -360,41 +421,7 @@ class ProductPayment extends React.Component {
 				</div>
 				<div>
 					<h3 className={classes.panelHeader}>Payment</h3>
-					<div className={classes.panelBody}>
-						<h4>Select your preferred payment method:</h4>
-						<ExpansionPanel
-							expanded={payType === helper.vars.payTypeCreditCard}
-							onChange={clickPayTypeHandler(helper.vars.payTypeCreditCard)}
-							style={{ margin: 0 }}
-						>
-							<ExpansionPanelSummary
-								expandIcon={<ExpandMoreIcon />}
-								aria-controls="panel1bh-content"
-								id="panel1bh-header"
-							>
-								<div>Credit Cards</div>
-							</ExpansionPanelSummary>
-							<ExpansionPanelDetails>
-								<div>ToDo: Pay by credit card</div>
-							</ExpansionPanelDetails>
-						</ExpansionPanel>
-						<ExpansionPanel
-							expanded={payType === helper.vars.payTypePaypal}
-							onChange={clickPayTypeHandler(helper.vars.payTypePaypal)}
-							style={{ margin: 0 }}
-						>
-							<ExpansionPanelSummary
-								expandIcon={<ExpandMoreIcon />}
-								aria-controls="panel2bh-content"
-								id="panel2bh-header"
-							>
-								<div>Paypal</div>
-							</ExpansionPanelSummary>
-							<ExpansionPanelDetails>
-								<div>ToDo: Pay by paypal</div>
-							</ExpansionPanelDetails>
-						</ExpansionPanel>
-					</div>
+					{agreed ? divPayment : divReadTerms}
 				</div>
 			</div>
 		);

@@ -20,9 +20,10 @@ const attachSockets = io => {
 
 		console.log('>>>>User connected', socket.id);
 
-		channel('push:product:filter', PackageSocket.getFilteredPackages);
-		channel('push:product:get', PackageSocket.getPackageDetails);
+		channel('push:product:filter', PackageSocket.filterPackage);
+		channel('push:product:get', PackageSocket.getPackage);
 		channel('push:product:checkout', PackageSocket.checkoutPackage);
+		channel('push:product:paid', PackageSocket.paidPackage);
 		channel('push:rate:getByProduct', PackageSocket.getRatesByPackage);
 
 		channel('disconnect', () => {

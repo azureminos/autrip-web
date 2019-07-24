@@ -3,7 +3,7 @@ import async from 'async';
 import MongoDB from '../db/schema';
 import helper from '../lib/object-parser';
 
-const getPackageDetails = ({
+const getPackage = ({
 	request: { id, isCustomisable },
 	sendStatus,
 	socket,
@@ -73,11 +73,11 @@ const getPackageDetails = ({
 							const cities = _.map(items, item => {
 								return item.attraction ? item.attraction.city : null;
 							});
-							// console.log('>>>>getPackageDetails.cityAttractions : cities', cities);
+							// console.log('>>>>getPackage.cityAttractions : cities', cities);
 							return City.getCities({ _id: { $in: cities } })
 								.populate('attractions hotels')
 								.exec(function (err, items) {
-									// console.log('>>>>getPackageDetails.cityAttractions : result', items);
+									// console.log('>>>>getPackage.cityAttractions : result', items);
 									return callback(null, helper.parseCity(items, 'all'));
 								});
 						});
@@ -246,8 +246,14 @@ const getRatesByPackage = ({
 	}
 };
 
-const getFilteredPackages = ({ request, sendStatus, socket }) => {
+const filterPackage = ({ request, sendStatus, socket }) => {
 	// console.log('>>>>server received event[push:package:filter]', request);
+	if (process.env.LOCAL === 'true') {
+		MongoDB.deleteAllInstPackageMembers();
+		MongoDB.deleteAllInstPackageItems();
+		MongoDB.deleteAllInstPackageHotels();
+		MongoDB.deleteAllInstPackage();
+	}
 	MongoDB.getFilteredPackages(request).exec((err, items) => {
 		// console.log('>>>>Result of event[push:package:filter]', items);
 		socket.emit('product:refreshAll', {
@@ -260,7 +266,19 @@ const joinPackage = ({ request, sendStatus, socket }) => {};
 
 const customisePackage = ({ request, sendStatus, socket }) => {};
 
-const payPackage = ({ request, sendStatus, socket }) => {};
+const paidPackage = ({ request, sendStatus, socket }) => {
+	console.log('>>>>server received event[push:product:paid]', request);
+	const callback = (error, writeOpResult) => {
+		console.log('Callback of updateInstPackageStatus()', {
+			error,
+			writeOpResult,
+		});
+		if (!error) {
+			socket.emit('product:paid', request);
+		}
+	};
+	MongoDB.updateInstPackageStatus(request, callback);
+};
 
 const checkoutPackage = ({ request, sendStatus, socket }) => {
 	console.log('>>>>server received event[push:product:checkout]', request);
@@ -361,11 +379,11 @@ const checkoutPackage = ({ request, sendStatus, socket }) => {
 };
 
 export default {
-	getFilteredPackages,
-	getPackageDetails,
+	filterPackage,
+	getPackage,
 	getRatesByPackage,
 	joinPackage,
 	customisePackage,
 	checkoutPackage,
-	payPackage,
+	paidPackage,
 };

@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import mongoose from './mongoose';
+import helper from '../lib/helper';
 const Schema = mongoose.Schema;
 
 /* ============= Schemas ============= */
@@ -259,20 +260,44 @@ const createInstPackage = (inst, callback) => {
 	const instPackage = new InstPackage(inst);
 	return instPackage.save(callback);
 };
+const updateInstPackageStatus = (params, callback) => {
+	const filter = { _id: params.id };
+	const doc = {
+		status: params.status,
+		updatedBy: params.user,
+		updatedAt: new Date(),
+	};
+	return InstPackage.updateOne(filter, doc, callback);
+};
+const deleteAllInstPackage = () => {
+	return InstPackage.deleteMany();
+};
 // Inst Package Items
 const createInstPackageItems = (items, callback) => {
 	console.log('>>>>Model >> InstPackageItem.createInstPackageItems', items);
 	return InstPackageItem.insertMany(items, callback);
+};
+const deleteAllInstPackageItems = () => {
+	return InstPackageItem.deleteMany();
 };
 // Inst Package Hotels
 const createInstPackageHotels = (hotels, callback) => {
 	console.log('>>>>Model >> InstPackageHotel.createInstPackageHotels', hotels);
 	return InstPackageHotel.insertMany(hotels, callback);
 };
+const deleteAllInstPackageHotels = () => {
+	return InstPackageHotel.deleteMany();
+};
 // Inst Package Members
 const createInstPackageMembers = (members, callback) => {
-	console.log('>>>>Model >> InstPackageMember.createInstPackageMembers', members);
+	console.log(
+		'>>>>Model >> InstPackageMember.createInstPackageMembers',
+		members
+	);
 	return InstPackageMember.insertMany(members, callback);
+};
+const deleteAllInstPackageMembers = () => {
+	return InstPackageMember.deleteMany();
 };
 
 export default {
@@ -289,4 +314,9 @@ export default {
 	createInstPackageItems,
 	createInstPackageHotels,
 	createInstPackageMembers,
+	updateInstPackageStatus,
+	deleteAllInstPackage,
+	deleteAllInstPackageItems,
+	deleteAllInstPackageHotels,
+	deleteAllInstPackageMembers,
 };
