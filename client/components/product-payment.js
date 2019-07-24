@@ -378,8 +378,6 @@ class ProductPayment extends React.Component {
 									options={{
 										clientId: paypalClient[reference.payment.paypalEnv],
 									}}
-									amount={amountDeposit > 0 ? amountDeposit : rateTotal}
-									currency={user.currency}
 									style={{
 										layout: 'vertical',
 										color: 'gold',
@@ -388,14 +386,6 @@ class ProductPayment extends React.Component {
 										tagline : false,
 									}}
 									createOrder={(data, actions) => {
-										/*return actions.order.create({
-											purchase_units: [{
-												amount: {
-													currency_code: "USD",
-													value: "0.01"
-												}
-											}]
-										});*/
 										alert(`ID: ${paypalClient[reference.payment.paypalEnv]}, Currency: ${user.currency}, Money: ${amountDeposit > 0 ? amountDeposit : rateTotal}`);
 									}}
 								/>
