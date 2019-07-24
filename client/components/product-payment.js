@@ -376,7 +376,7 @@ class ProductPayment extends React.Component {
 							<ExpansionPanelDetails>
 								<PaypalButton
 									options={{
-										clientId: client[env],
+										clientId: paypalClient[env],
 									}}
 									amount={amountDeposit > 0 ? amountDeposit : rateTotal}
 									currency={user.currency}
@@ -396,7 +396,7 @@ class ProductPayment extends React.Component {
 												}
 											}]
 										});*/
-										alert(`ID: ${client[env]}, Currency: ${user.currency}, Money: ${amountDeposit > 0 ? amountDeposit : rateTotal}`);
+										alert(`ID: ${paypalClient[env]}, Currency: ${user.currency}, Money: ${amountDeposit > 0 ? amountDeposit : rateTotal}`);
 									}}
 								/>
 							</ExpansionPanelDetails>
