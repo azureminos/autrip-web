@@ -270,7 +270,7 @@ const updateInstPackageStatus = (params, callback) => {
 	return InstPackage.updateOne(filter, doc, callback);
 };
 const deleteAllInstPackage = () => {
-	return InstPackage.deleteMany();
+	return InstPackage.deleteMany({ createdBy: 'David Xia' });
 };
 // Inst Package Items
 const createInstPackageItems = (items, callback) => {
@@ -278,7 +278,7 @@ const createInstPackageItems = (items, callback) => {
 	return InstPackageItem.insertMany(items, callback);
 };
 const deleteAllInstPackageItems = () => {
-	return InstPackageItem.deleteMany();
+	return InstPackageItem.deleteMany({ createdBy: 'David Xia' });
 };
 // Inst Package Hotels
 const createInstPackageHotels = (hotels, callback) => {
@@ -286,7 +286,7 @@ const createInstPackageHotels = (hotels, callback) => {
 	return InstPackageHotel.insertMany(hotels, callback);
 };
 const deleteAllInstPackageHotels = () => {
-	return InstPackageHotel.deleteMany();
+	return InstPackageHotel.deleteMany({ createdBy: 'David Xia' });
 };
 // Inst Package Members
 const createInstPackageMembers = (members, callback) => {
@@ -297,7 +297,7 @@ const createInstPackageMembers = (members, callback) => {
 	return InstPackageMember.insertMany(members, callback);
 };
 const deleteAllInstPackageMembers = () => {
-	return InstPackageMember.deleteMany();
+	return InstPackageMember.deleteMany({ createdBy: 'David Xia' });
 };
 
 export default {

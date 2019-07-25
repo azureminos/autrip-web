@@ -4,7 +4,6 @@ import React, { Component, createElement } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import Loader from 'react-loader-advanced';
 // Components
-import Navbar from './components/Navbar';
 import ProductBrick from './components/product-brick';
 import ProductDetails from './components/product-details';
 import ProductAvailability from './components/product-availability';
@@ -12,6 +11,7 @@ import ProductPayment from './components/product-payment';
 import PaymentConfirmation from './components/payment-confirmation';
 import Default from './components/Default';
 import LoadingSpinner from './components/loading-spinner';
+import AppBarMain from './components/app-bar-main';
 // Stylesheets
 import '../public/App.css';
 import '../public/bootstrap.min.css';
@@ -42,6 +42,7 @@ class App extends Component {
 		this.actionGetAvailability = this.actionGetAvailability.bind(this);
 		this.actionCheckout = this.actionCheckout.bind(this);
 		this.actionPaid = this.actionPaid.bind(this);
+		this.actionGoHome = this.actionGoHome.bind(this);
 		// Helpers
 		this.findProduct = this.findProduct.bind(this);
 		this.initInstance = this.initInstance.bind(this);
@@ -154,6 +155,15 @@ class App extends Component {
 	actionPaid (params) {
 		this.pushToRemote('product:paid', params);
 	}
+	actionGoHome () {
+		this.setState({
+			products: [],
+			selectedProduct: null,
+			cart: null,
+		});
+		var params = { state: 'Published' };
+		this.pushToRemote('product:filter', params);
+	}
 	/* ============ Component Display Handler ============*/
 	renderList () {
 		const products = this.state.products;
@@ -166,7 +176,13 @@ class App extends Component {
 				/>
 			);
 		});
-		return <div>{bricks}</div>;
+		return (
+			<div>
+				<AppBarMain />
+				<div style={{ height: 80 }} />
+				{bricks}
+			</div>
+		);
 	}
 	renderDetails (matcher) {
 		console.log('>>>>Route.renderDetails()', matcher);
@@ -222,6 +238,7 @@ class App extends Component {
 					user={this.state.user}
 					product={this.state.selectedProduct}
 					cart={this.state.cart}
+					actionGoHome={this.actionGoHome}
 				/>
 			);
 		}
@@ -270,7 +287,6 @@ class App extends Component {
 				foregroundStyle={{ color: 'white' }}
 				backgroundStyle={{ backgroundColor: 'white' }}
 			>
-				<Navbar />
 				<Switch>
 					<Route exact path="/" component={this.renderList} />
 					<Route path="/product/:pid" component={this.renderDetails} />
