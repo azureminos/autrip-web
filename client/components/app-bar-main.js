@@ -169,7 +169,7 @@ class AppHeaderBar extends React.Component {
 						<div className={classes.links}>
 							<div onClick={actionGoHome}>
 								<Link to={routeGoHome}>
-									<a>Holiday Packages</a>
+									Holiday Packages
 								</Link>
 							</div>
 						</div>
