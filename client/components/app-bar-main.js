@@ -35,14 +35,15 @@ const styles = theme => ({
 		},
 	},
 	links: {
-		'position': 'relative',
-		'borderRadius': theme.shape.borderRadius,
+		color: theme.palette.common.white,
+		position: 'relative',
+		borderRadius: theme.shape.borderRadius,
 		'&:hover': {
 			textDecoration: 'underline',
 			cursor: 'pointer',
 		},
-		'marginRight': 2,
-		'marginLeft': 0,
+		marginRight: 2,
+		marginLeft: 0,
 	},
 	sectionDesktop: {
 		display: 'none',
@@ -101,8 +102,8 @@ class AppHeaderBar extends React.Component {
 			});
 		};
 		// Sub Component
-	        const isMenuOpen = Boolean(anchorEl);
-	        const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+		const isMenuOpen = Boolean(anchorEl);
+		const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 		const menuId = 'primary-search-account-menu';
 		const renderMenu = (
 			<Menu
