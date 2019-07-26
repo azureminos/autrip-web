@@ -12,6 +12,7 @@ import PaymentConfirmation from './components/payment-confirmation';
 import Default from './components/Default';
 import LoadingSpinner from './components/loading-spinner';
 import AppBarMain from './components/app-bar-main';
+import AppProgressMain from './components/app-bar-product';
 // Stylesheets
 import '../public/App.css';
 import '../public/bootstrap.min.css';
@@ -43,6 +44,7 @@ class App extends Component {
 		this.actionCheckout = this.actionCheckout.bind(this);
 		this.actionPaid = this.actionPaid.bind(this);
 		this.actionGoHome = this.actionGoHome.bind(this);
+		this.actionGoBack = this.actionGoBack.bind(this);
 		// Helpers
 		this.findProduct = this.findProduct.bind(this);
 		this.initInstance = this.initInstance.bind(this);
@@ -164,6 +166,9 @@ class App extends Component {
 		var params = { state: 'Published' };
 		this.pushToRemote('product:filter', params);
 	}
+	actionGoBack () {
+		console.log('>>>>Triggered App.actionGoBack');
+	}
 	/* ============ Component Display Handler ============*/
 	renderList () {
 		const products = this.state.products;
@@ -197,6 +202,10 @@ class App extends Component {
 
 		return (
 			<div>
+				<AppProgressMain
+					actionGoBack={this.actionGoHome}
+					product={this.state.selectedProduct}
+				/>
 				<div style={{ height: 80 }} />
 				{divDetails}
 			</div>
@@ -215,6 +224,10 @@ class App extends Component {
 		) : '';
 		return (
 			<div>
+				<AppProgressMain
+					actionGoBack={this.actionGoHome}
+					product={this.state.selectedProduct}
+				/>
 				<div style={{ height: 80 }} />
 				{divAvailability}
 			</div>
@@ -234,6 +247,10 @@ class App extends Component {
 
 		return (
 			<div>
+				<AppProgressMain
+					actionGoBack={this.actionGoHome}
+					product={this.state.selectedProduct}
+				/>
 				<div style={{ height: 80 }} />
 				{divCheckout}
 			</div>
