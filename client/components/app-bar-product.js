@@ -167,7 +167,7 @@ class AppProgressBar extends React.Component {
 						>
 							<ArrowBackIcon />
 						</IconButton>
-						<Typography className={classes.title} variant="h6" nowrap>
+						<Typography className={classes.title} variant="h6" noWrap>
 							{product.name}
 						</Typography>
 						<div className={classes.grow} />
