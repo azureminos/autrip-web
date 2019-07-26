@@ -167,7 +167,7 @@ class App extends Component {
 	/* ============ Component Display Handler ============*/
 	renderList () {
 		const products = this.state.products;
-		const bricks = _.map(products, p => {
+		const divBricks = _.map(products, p => {
 			return (
 				<ProductBrick
 					key={p.name}
@@ -178,71 +178,91 @@ class App extends Component {
 		});
 		return (
 			<div>
-				<AppBarMain />
+				<AppBarMain
+					actionGoHome={this.actionGoHome}
+				/>
 				<div style={{ height: 80 }} />
-				{bricks}
+				{divBricks}
 			</div>
 		);
 	}
 	renderDetails (matcher) {
 		console.log('>>>>Route.renderDetails()', matcher);
-		if (this.state.selectedProduct) {
-			return (
-				<ProductDetails
-					product={this.state.selectedProduct}
-					actionGetAvailability={this.actionGetAvailability}
-				/>
-			);
-		}
-		return <div />;
+		const divDetails = this.state.selectedProduct ? (
+			<ProductDetails
+				product={this.state.selectedProduct}
+				actionGetAvailability={this.actionGetAvailability}
+			/>
+		) : '';
+
+		return (
+			<div>
+				<div style={{ height: 80 }} />
+				{divDetails}
+			</div>
+		);
 	}
 	renderAvailability (matcher) {
 		console.log('>>>>Route.renderAvailability()', matcher);
 		const product = this.state.selectedProduct;
-		if (product && product.rates) {
-			return (
-				<ProductAvailability
-					isOwner={this.state.isOwner}
-					user={this.state.user}
-					product={product}
-					actionCheckout={this.actionCheckout}
-				/>
-			);
-		}
-		return '';
+		const divAvailability = (product && product.rates) ? (
+			<ProductAvailability
+				isOwner={this.state.isOwner}
+				user={this.state.user}
+				product={product}
+				actionCheckout={this.actionCheckout}
+			/>
+		) : '';
+		return (
+			<div>
+				<div style={{ height: 80 }} />
+				{divAvailability}
+			</div>
+		);
 	}
 	renderCheckout () {
 		console.log('>>>>Route.renderCheckout()');
-		if (this.state.cart) {
-			return (
-				<ProductPayment
-					user={this.state.user}
-					product={this.state.selectedProduct}
-					cart={this.state.cart}
-					reference={this.state.reference}
-					actionPaid={this.actionPaid}
-				/>
-			);
-		}
-		return <div />;
+		const divCheckout = this.state.cart ? (
+			<ProductPayment
+				user={this.state.user}
+				product={this.state.selectedProduct}
+				cart={this.state.cart}
+				reference={this.state.reference}
+				actionPaid={this.actionPaid}
+			/>
+		) : '';
+
+		return (
+			<div>
+				<div style={{ height: 80 }} />
+				{divCheckout}
+			</div>
+		);
 	}
 	renderConfirmation () {
 		console.log('>>>>Route.renderConfirmation()');
 		const status = this.state.cart.status;
-		if (
+		const divConfirmation = (
 			status === helper.vars.statusDepositPaid
 			|| status === helper.vars.statusFullyPaid
-		) {
-			return (
-				<PaymentConfirmation
-					user={this.state.user}
-					product={this.state.selectedProduct}
-					cart={this.state.cart}
+		) ? (
+			<PaymentConfirmation
+				user={this.state.user}
+				product={this.state.selectedProduct}
+				cart={this.state.cart}
+				actionGoHome={this.actionGoHome}
+			/>
+		) : '';
+
+		return (
+			<div>
+				<AppBarMain
 					actionGoHome={this.actionGoHome}
 				/>
-			);
-		}
-		return <div />;
+				<div style={{ height: 80 }} />
+				{divConfirmation}
+			</div>
+		);
 	}
 	renderDefault () {
 		return <Default />;
