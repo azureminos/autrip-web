@@ -205,7 +205,7 @@ class App extends Component {
 			<AppBarProgress
 				product={product}
 				step={''}
-				actionGoBack={this.actionGoHome}
+				actionGoBack={this.actionGoBack}
 			/>
 		) : '';
 		return (
@@ -231,7 +231,7 @@ class App extends Component {
 			<AppBarProgress
 				product={product}
 				step={''}
-				actionGoBack={this.actionGoHome}
+				actionGoBack={this.actionGoBack}
 			/>
 		) : '';
 		return (
@@ -258,7 +258,7 @@ class App extends Component {
 			<AppBarProgress
 				product={product}
 				step={''}
-				actionGoBack={this.actionGoHome}
+				actionGoBack={this.actionGoBack}
 			/>
 		) : '';
 		return (
