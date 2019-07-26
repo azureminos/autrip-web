@@ -35,7 +35,6 @@ const styles = theme => ({
 		},
 	},
 	links: {
-		color: theme.palette.common.white,
 		position: 'relative',
 		borderRadius: theme.shape.borderRadius,
 		'&:hover': {
@@ -170,7 +169,7 @@ class AppHeaderBar extends React.Component {
 						<div className={classes.links}>
 							<div onClick={actionGoHome}>
 								<Link to={routeGoHome}>
-									Holiday Packages
+									<div style={{color: 'white'}}>Holiday Packages</div>
 								</Link>
 							</div>
 						</div>
