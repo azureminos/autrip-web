@@ -168,6 +168,7 @@ class App extends Component {
 	}
 	actionGoBack () {
 		console.log('>>>>Triggered App.actionGoBack');
+		this.props.history.goBack();
 	}
 	/* ============ Component Display Handler ============*/
 	renderList () {
