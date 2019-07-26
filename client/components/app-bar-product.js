@@ -1,5 +1,5 @@
 import React from 'react';
-import { fade, withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -11,53 +11,32 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import { Link } from 'react-router-dom';
+import productAvailability from './product-availability';
 
 const styles = theme => ({
 	grow: {
 		flexGrow: 1,
 	},
-	menuButton: {
-		marginRight: theme.spacing(2),
+	appBar: {
+		top: 0,
+		bottom: 'auto',
 	},
+	toolBar: {
+		paddingLeft: 200,
+		paddingRight: 200,
+	},
+	menuButton: {
+		marginRight: 2,
+	  },
 	title: {
 		display: 'none',
 		[theme.breakpoints.up('sm')]: {
 			display: 'block',
-		},
-	},
-	search: {
-		'position': 'relative',
-		'borderRadius': theme.shape.borderRadius,
-		'backgroundColor': fade(theme.palette.common.white, 0.15),
-		'&:hover': {
-			backgroundColor: fade(theme.palette.common.white, 0.25),
-		},
-		'marginRight': theme.spacing(2),
-		'marginLeft': 0,
-		'width': '100%',
-		[theme.breakpoints.up('sm')]: {
-			marginLeft: theme.spacing(3),
-			width: 'auto',
-		},
-	},
-	searchIcon: {
-		width: theme.spacing(7),
-		height: '100%',
-		position: 'absolute',
-		pointerEvents: 'none',
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	inputRoot: {
-		color: 'inherit',
-	},
-	inputInput: {
-		padding: theme.spacing(1, 1, 1, 7),
-		transition: theme.transitions.create('width'),
-		width: '100%',
-		[theme.breakpoints.up('md')]: {
-			width: 200,
+			marginLeft: 8,
+			marginRight: 24,
+			color: theme.palette.common.white,
 		},
 	},
 	sectionDesktop: {
@@ -74,12 +53,15 @@ const styles = theme => ({
 	},
 });
 
-class AppHeaderBar extends React.Component {
+class AppProgressBar extends React.Component {
 	constructor (props) {
 		super(props);
 		// Bind handler
 		// Set state
-		this.state = {};
+		this.state = {
+			anchorEl: null,
+			mobileMoreAnchorEl: null,
+		};
 	}
 
 	/* ===== Helper Methods ===== */
@@ -87,30 +69,35 @@ class AppHeaderBar extends React.Component {
 	/* ===== State & Event Handlers ===== */
 
 	render () {
-		const { classes } = this.props;
-		const [anchorEl, setAnchorEl] = React.useState(null);
-		const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
+		const { classes, product, actionGoBack } = this.props;
+		const { anchorEl, mobileMoreAnchorEl } = this.state;
+		// Route URLs
+		const routeGoHome = `/`;
+		// Event Handler
+		const handleProfileMenuOpen = event => {
+			this.setState({
+				anchorEl: event.currentTarget,
+			});
+		};
+		const handleMobileMenuClose = () => {
+			this.setState({
+				mobileMoreAnchorEl: null,
+			});
+		};
+		const handleMenuClose = () => {
+			this.setState({
+				anchorEl: null,
+			});
+			handleMobileMenuClose();
+		};
+		const handleMobileMenuOpen = event => {
+			this.setState({
+				mobileMoreAnchorEl: event.currentTarget,
+			});
+		};
+		// Sub Component
 		const isMenuOpen = Boolean(anchorEl);
 		const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-		function handleProfileMenuOpen (event) {
-			setAnchorEl(event.currentTarget);
-		}
-
-		function handleMobileMenuClose () {
-			setMobileMoreAnchorEl(null);
-		}
-
-		function handleMenuClose () {
-			setAnchorEl(null);
-			handleMobileMenuClose();
-		}
-
-		function handleMobileMenuOpen (event) {
-			setMobileMoreAnchorEl(event.currentTarget);
-		}
-
 		const menuId = 'primary-search-account-menu';
 		const renderMenu = (
 			<Menu
@@ -126,7 +113,6 @@ class AppHeaderBar extends React.Component {
 				<MenuItem onClick={handleMenuClose}>My account</MenuItem>
 			</Menu>
 		);
-
 		const mobileMenuId = 'primary-search-account-menu-mobile';
 		const renderMobileMenu = (
 			<Menu
@@ -170,32 +156,20 @@ class AppHeaderBar extends React.Component {
 
 		return (
 			<div className={classes.grow}>
-				<AppBar position="static">
-					<Toolbar>
+				<AppBar position="fixed" color="primary" className={classes.appBar}>
+					<Toolbar className={classes.toolBar}>
 						<IconButton
 							edge="start"
 							className={classes.menuButton}
 							color="inherit"
-							aria-label="open drawer"
+							aria-label="go back"
+							onClick={actionGoBack}
 						>
-							<MenuIcon />
+							<ArrowBackIcon />
 						</IconButton>
-						<Typography className={classes.title} variant="h6" noWrap>
-							Material-UI
+						<Typography className={classes.title} variant="h6" nowrap>
+							{product.name}
 						</Typography>
-						<div className={classes.search}>
-							<div className={classes.searchIcon}>
-								<SearchIcon />
-							</div>
-							<InputBase
-								placeholder="Search…"
-								classes={{
-									root: classes.inputRoot,
-									input: classes.inputInput,
-								}}
-								inputProps={{ 'aria-label': 'search' }}
-							/>
-						</div>
 						<div className={classes.grow} />
 						<div className={classes.sectionDesktop}>
 							<IconButton aria-label="show 4 new mails" color="inherit">
@@ -242,4 +216,4 @@ class AppHeaderBar extends React.Component {
 	}
 }
 
-export default withStyles(styles)(AppHeaderBar);
+export default withStyles(styles)(AppProgressBar);
