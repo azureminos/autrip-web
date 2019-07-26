@@ -101,6 +101,8 @@ class AppHeaderBar extends React.Component {
 			});
 		};
 		// Sub Component
+	        const isMenuOpen = Boolean(anchorEl);
+	        const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 		const menuId = 'primary-search-account-menu';
 		const renderMenu = (
 			<Menu
