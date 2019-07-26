@@ -12,7 +12,7 @@ import PaymentConfirmation from './components/payment-confirmation';
 import Default from './components/Default';
 import LoadingSpinner from './components/loading-spinner';
 import AppBarMain from './components/app-bar-main';
-import AppProgressMain from './components/app-bar-product';
+import AppBarProgress from './components/app-bar-product';
 // Stylesheets
 import '../public/App.css';
 import '../public/bootstrap.min.css';
@@ -193,19 +193,23 @@ class App extends Component {
 	}
 	renderDetails (matcher) {
 		console.log('>>>>Route.renderDetails()', matcher);
-		const divDetails = this.state.selectedProduct ? (
+		const product = this.state.selectedProduct;
+		const divDetails = product ? (
 			<ProductDetails
 				product={this.state.selectedProduct}
 				actionGetAvailability={this.actionGetAvailability}
 			/>
 		) : '';
-
+		var divProgressBar = (product) ? (
+			<AppBarProgress
+				product={product}
+				step={''}
+				actionGoBack={this.actionGoHome}
+			/>
+		) : '';
 		return (
 			<div>
-				<AppProgressMain
-					actionGoBack={this.actionGoHome}
-					product={this.state.selectedProduct}
-				/>
+				{divProgressBar}
 				<div style={{ height: 80 }} />
 				{divDetails}
 			</div>
@@ -222,12 +226,16 @@ class App extends Component {
 				actionCheckout={this.actionCheckout}
 			/>
 		) : '';
+		var divProgressBar = (product) ? (
+			<AppBarProgress
+				product={product}
+				step={''}
+				actionGoBack={this.actionGoHome}
+			/>
+		) : '';
 		return (
 			<div>
-				<AppProgressMain
-					actionGoBack={this.actionGoHome}
-					product={this.state.selectedProduct}
-				/>
+				{divProgressBar}
 				<div style={{ height: 80 }} />
 				{divAvailability}
 			</div>
@@ -235,22 +243,26 @@ class App extends Component {
 	}
 	renderCheckout () {
 		console.log('>>>>Route.renderCheckout()');
+		const product = this.state.selectedProduct;
 		const divCheckout = this.state.cart ? (
 			<ProductPayment
 				user={this.state.user}
-				product={this.state.selectedProduct}
+				product={product}
 				cart={this.state.cart}
 				reference={this.state.reference}
 				actionPaid={this.actionPaid}
 			/>
 		) : '';
-
+		var divProgressBar = (product) ? (
+			<AppBarProgress
+				product={product}
+				step={''}
+				actionGoBack={this.actionGoHome}
+			/>
+		) : '';
 		return (
 			<div>
-				<AppProgressMain
-					actionGoBack={this.actionGoHome}
-					product={this.state.selectedProduct}
-				/>
+				{divProgressBar}
 				<div style={{ height: 80 }} />
 				{divCheckout}
 			</div>
