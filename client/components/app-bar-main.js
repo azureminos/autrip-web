@@ -11,6 +11,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import { Link } from 'react-router-dom';
 
 const styles = theme => ({
 	grow: {
@@ -73,37 +74,33 @@ class AppHeaderBar extends React.Component {
 	/* ===== State & Event Handlers ===== */
 
 	render () {
-		const { classes } = this.props;
+		const { classes, actionGoHome } = this.props;
 		const { anchorEl, mobileMoreAnchorEl } = this.state;
-
-		const isMenuOpen = Boolean(anchorEl);
-		const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
+		// Route URLs
+		const routeGoHome = `/`;
+		// Event Handler
 		const handleProfileMenuOpen = event => {
 			this.setState({
 				anchorEl: event.currentTarget,
 			});
 		};
-
 		const handleMobileMenuClose = () => {
 			this.setState({
 				mobileMoreAnchorEl: null,
 			});
 		};
-
 		const handleMenuClose = () => {
 			this.setState({
 				anchorEl: null,
 			});
 			handleMobileMenuClose();
 		};
-
 		const handleMobileMenuOpen = event => {
 			this.setState({
 				mobileMoreAnchorEl: event.currentTarget,
 			});
 		};
-
+		// Sub Component
 		const menuId = 'primary-search-account-menu';
 		const renderMenu = (
 			<Menu
@@ -119,7 +116,6 @@ class AppHeaderBar extends React.Component {
 				<MenuItem onClick={handleMenuClose}>My account</MenuItem>
 			</Menu>
 		);
-
 		const mobileMenuId = 'primary-search-account-menu-mobile';
 		const renderMobileMenu = (
 			<Menu
@@ -169,8 +165,10 @@ class AppHeaderBar extends React.Component {
 							AUTrip
 						</Typography>
 						<div className={classes.links}>
-							<div>
-								<a>Holiday Packages</a>
+							<div onClick={actionGoHome}>
+								<Link to={routeGoHome}>
+									<a>Holiday Packages</a>
+								</Link>
 							</div>
 						</div>
 						<div className={classes.grow} />
