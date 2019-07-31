@@ -6,6 +6,7 @@ import Loader from 'react-loader-advanced';
 // Components
 import ProductBrick from './components/product-brick';
 import ProductDetails from './components/product-details';
+import ProductCustomisation from './components/product-customization';
 import ProductAvailability from './components/product-availability';
 import ProductPayment from './components/product-payment';
 import PaymentConfirmation from './components/payment-confirmation';
@@ -17,6 +18,7 @@ import AppBarProgress from './components/app-bar-product';
 import '../public/App.css';
 import '../public/bootstrap.min.css';
 import helper from '../lib/helper';
+import ProductHelper from '../lib/product-helper';
 
 let socket;
 
@@ -28,6 +30,7 @@ class App extends Component {
 		this.pushToRemote = this.pushToRemote.bind(this);
 		this.handleRefreshAllProducts = this.handleRefreshAllProducts.bind(this);
 		this.handleGetDetails = this.handleGetDetails.bind(this);
+		this.handleGetCustomise = this.handleGetCustomise.bind(this);
 		this.handleGetAvailability = this.handleGetAvailability.bind(this);
 		this.handleGetCheckout = this.handleGetCheckout.bind(this);
 		this.handleGetPaid = this.handleGetPaid.bind(this);
@@ -35,19 +38,21 @@ class App extends Component {
 		this.renderList = this.renderList.bind(this);
 		this.renderDetails = this.renderDetails.bind(this);
 		this.renderAvailability = this.renderAvailability.bind(this);
+		this.renderCustomisation = this.renderCustomisation.bind(this);
 		this.renderCheckout = this.renderCheckout.bind(this);
 		this.renderConfirmation = this.renderConfirmation.bind(this);
 		this.renderDefault = this.renderDefault.bind(this);
 		// Page actions
 		this.actionGetProduct = this.actionGetProduct.bind(this);
 		this.actionGetAvailability = this.actionGetAvailability.bind(this);
+		this.actionCustomise = this.actionCustomise.bind(this);
 		this.actionCheckout = this.actionCheckout.bind(this);
 		this.actionPaid = this.actionPaid.bind(this);
 		this.actionGoHome = this.actionGoHome.bind(this);
 		this.actionGoBack = this.actionGoBack.bind(this);
 		// Helpers
 		this.findProduct = this.findProduct.bind(this);
-		this.initInstance = this.initInstance.bind(this);
+		this.getInstance = this.getInstance.bind(this);
 
 		this.state = {
 			products: [],
@@ -71,6 +76,8 @@ class App extends Component {
 					paypalIdDummy: this.props.paypalIdDummy,
 					amountDeposit: this.props.amountDeposit,
 				},
+				hotels: {},
+				attractions: {},
 			},
 			isOwner: true,
 			updating: false,
@@ -78,9 +85,9 @@ class App extends Component {
 	}
 
 	/* ----------  Helper Methods  ---------- */
-	initInstance (params) {
+	getInstance (params) {
 		// params: {extra, product}
-		return helper.initInstance(params);
+		return helper.getInstance(params);
 	}
 	findProduct (id) {
 		return helper.findProductById(id, this.state.products);
@@ -126,6 +133,13 @@ class App extends Component {
 			updating: false,
 		});
 	}
+	handleGetCustomise (resp) {
+		console.log('>>>>App.handleGetCustomise', resp);
+		this.setState({
+			cart: resp,
+			updating: false,
+		});
+	}
 	handleGetCheckout (resp) {
 		console.log('>>>>App.handleGetCheckout', resp);
 		this.setState({
@@ -150,8 +164,12 @@ class App extends Component {
 	actionGetAvailability (params) {
 		this.pushToRemote('rate:getByProduct', params);
 	}
+	actionCustomise (params) {
+		const inst = this.getInstance(params);
+		this.pushToRemote('product:customise', inst);
+	}
 	actionCheckout (params) {
-		const inst = this.initInstance(params);
+		const inst = this.getInstance(params);
 		this.pushToRemote('product:checkout', inst);
 	}
 	actionPaid (params) {
@@ -173,20 +191,23 @@ class App extends Component {
 	/* ============ Component Display Handler ============*/
 	renderList () {
 		const products = this.state.products;
-		const divBricks = _.map(products, p => {
-			return (
-				<ProductBrick
-					key={p.name}
-					product={p}
-					actionGetProduct={this.actionGetProduct}
-				/>
+		const divBricks
+			= products && products.length > 0 ? (
+				_.map(products, p => {
+					return (
+						<ProductBrick
+							key={p.name}
+							product={p}
+							actionGetProduct={this.actionGetProduct}
+						/>
+					);
+				})
+			) : (
+				<div style={{ height: 600 }} />
 			);
-		});
 		return (
 			<div>
-				<AppBarMain
-					actionGoHome={this.actionGoHome}
-				/>
+				<AppBarMain actionGoHome={this.actionGoHome} />
 				<div style={{ height: 80 }} />
 				{divBricks}
 			</div>
@@ -194,20 +215,28 @@ class App extends Component {
 	}
 	renderDetails (matcher) {
 		console.log('>>>>Route.renderDetails()', matcher);
+		const pid = matcher.match.params.pid;
 		const product = this.state.selectedProduct;
+		const tmpProduct = ProductHelper.findProductById(pid, this.state.products);
 		const divDetails = product ? (
 			<ProductDetails
+				isOwner={this.state.isOwner}
+				user={this.state.user}
 				product={this.state.selectedProduct}
 				actionGetAvailability={this.actionGetAvailability}
+				actionCustomise={this.actionCustomise}
 			/>
-		) : '';
-		var divProgressBar = (product) ? (
+		) : (
+			<div style={{ height: 600 }} />
+		);
+		var divProgressBar = (
 			<AppBarProgress
-				product={product}
 				step={''}
+				product={tmpProduct}
+				isOwner={this.state.isOwner}
 				actionGoBack={this.actionGoBack}
 			/>
-		) : '';
+		);
 		return (
 			<div>
 				{divProgressBar}
@@ -216,24 +245,59 @@ class App extends Component {
 			</div>
 		);
 	}
+	renderCustomisation (matcher) {
+		console.log('>>>>Route.renderCustomisation()', matcher);
+		const product = this.state.selectedProduct;
+		const divCustomisation = this.state.cart ? (
+			<ProductCustomisation
+				product={product}
+				cart={this.state.cart}
+				user={this.state.user}
+				isOwner={this.state.isOwner}
+				reference={this.state.reference}
+				actionGetAvailability={this.actionGetAvailability}
+			/>
+		) : (
+			<div style={{ height: 600 }} />
+		);
+		var divProgressBar = (
+			<AppBarProgress
+				step={''}
+				product={product}
+				isOwner={this.state.isOwner}
+				actionGoBack={this.actionGoBack}
+			/>
+		);
+		return (
+			<div>
+				{divProgressBar}
+				<div style={{ height: 80 }} />
+				{divCustomisation}
+			</div>
+		);
+	}
 	renderAvailability (matcher) {
 		console.log('>>>>Route.renderAvailability()', matcher);
 		const product = this.state.selectedProduct;
-		const divAvailability = (product && product.rates) ? (
-			<ProductAvailability
-				isOwner={this.state.isOwner}
-				user={this.state.user}
-				product={product}
-				actionCheckout={this.actionCheckout}
-			/>
-		) : '';
-		var divProgressBar = (product) ? (
+		const divAvailability
+			= product && product.rates ? (
+				<ProductAvailability
+					isOwner={this.state.isOwner}
+					product={product}
+					user={this.state.user}
+					actionCheckout={this.actionCheckout}
+				/>
+			) : (
+				<div style={{ height: 600 }} />
+			);
+		var divProgressBar = (
 			<AppBarProgress
-				product={product}
 				step={''}
+				product={product}
+				isOwner={this.state.isOwner}
 				actionGoBack={this.actionGoBack}
 			/>
-		) : '';
+		);
 		return (
 			<div>
 				{divProgressBar}
@@ -247,20 +311,23 @@ class App extends Component {
 		const product = this.state.selectedProduct;
 		const divCheckout = this.state.cart ? (
 			<ProductPayment
-				user={this.state.user}
 				product={product}
+				user={this.state.user}
 				cart={this.state.cart}
 				reference={this.state.reference}
 				actionPaid={this.actionPaid}
 			/>
-		) : '';
-		var divProgressBar = (product) ? (
+		) : (
+			<div style={{ height: 600 }} />
+		);
+		var divProgressBar = (
 			<AppBarProgress
-				product={product}
 				step={''}
+				product={product}
+				isOwner={this.state.isOwner}
 				actionGoBack={this.actionGoBack}
 			/>
-		) : '';
+		);
 		return (
 			<div>
 				{divProgressBar}
@@ -272,23 +339,22 @@ class App extends Component {
 	renderConfirmation () {
 		console.log('>>>>Route.renderConfirmation()');
 		const status = this.state.cart.status;
-		const divConfirmation = (
-			status === helper.vars.statusDepositPaid
-			|| status === helper.vars.statusFullyPaid
-		) ? (
-			<PaymentConfirmation
-				user={this.state.user}
-				product={this.state.selectedProduct}
-				cart={this.state.cart}
-				actionGoHome={this.actionGoHome}
-			/>
-		) : '';
+		const divConfirmation
+			= status === helper.vars.statusDepositPaid
+			|| status === helper.vars.statusFullyPaid ? (
+				<PaymentConfirmation
+					user={this.state.user}
+					product={this.state.selectedProduct}
+					cart={this.state.cart}
+					actionGoHome={this.actionGoHome}
+				/>
+			) : (
+				<div style={{ height: 600 }} />
+			);
 
 		return (
 			<div>
-				<AppBarMain
-					actionGoHome={this.actionGoHome}
-				/>
+				<AppBarMain actionGoHome={this.actionGoHome} />
 				<div style={{ height: 80 }} />
 				{divConfirmation}
 			</div>
@@ -312,14 +378,17 @@ class App extends Component {
 		socket.on('product:get', res => {
 			this.handleGetDetails(res);
 		});
-		socket.on('rate:getByProduct', res => {
-			this.handleGetAvailability(res);
+		socket.on('product:customise', res => {
+			this.handleGetCustomise(res);
 		});
 		socket.on('product:checkout', res => {
 			this.handleGetCheckout(res);
 		});
 		socket.on('product:paid', res => {
 			this.handleGetPaid(res);
+		});
+		socket.on('rate:getByProduct', res => {
+			this.handleGetAvailability(res);
 		});
 
 		// Retrieve published packages
@@ -340,6 +409,10 @@ class App extends Component {
 				<Switch>
 					<Route exact path="/" component={this.renderList} />
 					<Route path="/product/:pid" component={this.renderDetails} />
+					<Route
+						path="/booking/diy/:pid"
+						component={this.renderCustomisation}
+					/>
 					<Route
 						path="/booking/availability/:pid"
 						component={this.renderAvailability}

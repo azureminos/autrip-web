@@ -117,7 +117,14 @@ class ProductAvailability extends React.Component {
 	/* ===== State & Event Handlers ===== */
 
 	render () {
-		const { classes, product, actionCheckout, user, isOwner } = this.props;
+		const {
+			classes,
+			cart,
+			product,
+			actionCheckout,
+			user,
+			isOwner,
+		} = this.props;
 		const {
 			adults,
 			kids,
@@ -129,29 +136,36 @@ class ProductAvailability extends React.Component {
 		} = this.state;
 		console.log('>>>>ProductAvailability.render()', product);
 		// Route URLs
-
 		// Event Handler
-		const clickBackHandler = e => {
-			console.log('>>>>ProductAvailability clicked Back', e);
-		};
 		const clickCheckoutHandler = e => {
-			console.log('>>>>clickBackHandler clicked Checkout', e);
+			console.log('>>>>clickCheckoutHandler clicked Checkout', e);
+			const status = Helper.vars.statusUnpaid;
+			const isCustomised = cart ? cart.isCustomised : false;
+			const members = cart
+				? cart.members
+				: [
+					{
+						loginId: user.loginId,
+						isOwner: isOwner,
+						kids: kids,
+						adults: adults,
+						contact: `${contactFirstName} ${contactLastName}`,
+					},
+				  ];
 			const extra = {
-				isOwner: isOwner,
-				kids: kids,
-				adults: adults,
+				status: status,
+				isCustomised: isCustomised,
 				rate: rate,
 				startDate: startDate,
 				endDate: endDate,
-				contactFirstName: contactFirstName,
-				contactLastName: contactLastName,
+				members: members,
 			};
-			if (isOwner) {
-				extra.createdBy = user.fullName;
-				extra.createdAt = new Date();
-			} else {
+			if (cart) {
 				extra.updatedBy = user.fullName;
 				extra.updatedAt = new Date();
+			} else {
+				extra.createdBy = user.fullName;
+				extra.createdAt = new Date();
 			}
 			actionCheckout({ extra, product });
 		};

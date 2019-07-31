@@ -15,6 +15,7 @@ import Helper from '../../lib/helper';
 import { withStyles } from '@material-ui/core/styles';
 // ==== Additional CSS ==============================================
 import 'react-id-swiper/src/styles/css/swiper.css';
+import helper from '../../lib/helper';
 
 const styles = theme => ({
 	panel: {
@@ -58,6 +59,7 @@ const styles = theme => ({
 	},
 	extendedIcon: {
 		marginLeft: 8,
+		marginRight: 8,
 	},
 	buttons: {
 		marginTop: 16,
@@ -81,7 +83,14 @@ class ProductDetails extends React.Component {
 	/* ===== State & Event Handlers ===== */
 
 	render () {
-		const { classes, product, actionGetAvailability } = this.props;
+		const {
+			classes,
+			product,
+			user,
+			isOwner,
+			actionGetAvailability,
+			actionCustomise,
+		} = this.props;
 		console.log('>>>>ProductDetails.render()', product);
 		// Route URLs
 		const routeLinkBuy = `/booking/availability/${product.id}`;
@@ -89,15 +98,38 @@ class ProductDetails extends React.Component {
 		// Event Handler
 		const clickDiyHandler = e => {
 			console.log('>>>>ProductDetails clicked DIY', e);
+			const members = [
+				{
+					loginId: user.loginId,
+					isOwner: isOwner,
+					kids: 0,
+					adults: 1,
+					contact: user.fullName,
+				},
+			];
+			const extra = {
+				status: helper.vars.statusCustomise,
+				isCustomised: false,
+				rate: 0,
+				startDate: null,
+				endDate: null,
+				members: members,
+				createdBy: user.fullName,
+				createdAt: new Date(),
+			};
+			actionCustomise({ extra, product });
 		};
 		const clickAvailabilityHandler = e => {
 			console.log('>>>>ProductDetails clicked Check Availability', product);
-			actionGetAvailability({
+			const params = {
 				id: product.id,
-				isCustomisable: product.isCustomisable,
-			});
+				isCustomised: false,
+			};
+			actionGetAvailability(params);
 		};
-		// Photo Swiper
+		// Sub Component
+		const isLoggedIn = !!user;
+		const { isCustomisable } = product;
 		const pSwiper = {
 			navigation: {
 				nextEl: '.swiper-button-next',
@@ -123,28 +155,29 @@ class ProductDetails extends React.Component {
 				</div>
 			);
 		});
-		// Check DIY posibility
-		const diyProduct = product.isCustomisable ? (
-			<div className={classes.productPremium}>
-				<div>Premium Tour</div>
-				<div>Want to visit somewhere special?</div>
-				<Link to={routeLinkDiy}>
-					<Button
-						onClick={clickDiyHandler}
-						variant="contained"
-						size="medium"
-						color="primary"
-						aria-label="DIY Product"
-						className={classes.buttons}
-					>
-						DIY Premium Package
-						<IconSettings className={classes.extendedIcon} />
-					</Button>
-				</Link>
-			</div>
-		) : (
-			''
-		);
+		const diyProduct
+			= isLoggedIn && isCustomisable && isOwner ? (
+				<div className={classes.productPremium}>
+					<h4>Premium Tour</h4>
+					<div>Want to visit somewhere special?</div>
+					<Link to={routeLinkDiy}>
+						<Button
+							onClick={clickDiyHandler}
+							variant="contained"
+							size="medium"
+							color="primary"
+							aria-label="DIY Product"
+							className={classes.buttons}
+						>
+							<IconSettings className={classes.extendedIcon} />
+							DIY Premium Package
+						</Button>
+					</Link>
+				</div>
+			) : (
+				''
+			);
+		// Display Component
 		return (
 			<div className={classes.paper}>
 				<Grid container spacing={0} className={classes.swiper}>
@@ -169,11 +202,26 @@ class ProductDetails extends React.Component {
 								<Grid item xs={4}>
 									<div className={classes.rateSection}>
 										<div className={classes.productRegular}>
-											<div>Regular Tour</div>
-											<div>{product.totalDays} Days From</div>
-											<div>${product.startingPrice} per person</div>
-											<div>Twin Share</div>
-											<div>Value up to ${product.retailPrice}</div>
+											<h4>Regular Tour</h4>
+											<table style={{ width: '100%' }}>
+												<tbody>
+													<tr>
+														<td style={{ width: '50%' }}>
+															{product.totalDays} Days From
+														</td>
+														<td style={{ width: '50%' }}>
+															${product.startingPrice} per person
+														</td>
+													</tr>
+													<tr>
+														<td style={{ width: '50%' }}>Twin Share</td>
+														<td style={{ width: '50%' }}>
+															Value up to ${product.retailPrice}
+														</td>
+													</tr>
+												</tbody>
+											</table>
+
 											<Link to={routeLinkBuy}>
 												<Button
 													onClick={clickAvailabilityHandler}
@@ -183,10 +231,10 @@ class ProductDetails extends React.Component {
 													aria-label="Check Availability"
 													className={classes.buttons}
 												>
-													Check Availability
 													<IconEventAvailable
 														className={classes.extendedIcon}
 													/>
+													Check Availability
 												</Button>
 											</Link>
 										</div>

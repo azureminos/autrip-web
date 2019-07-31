@@ -35,14 +35,14 @@ const styles = theme => ({
 		},
 	},
 	links: {
-		position: 'relative',
-		borderRadius: theme.shape.borderRadius,
+		'position': 'relative',
+		'borderRadius': theme.shape.borderRadius,
 		'&:hover': {
 			textDecoration: 'underline',
 			cursor: 'pointer',
 		},
-		marginRight: 2,
-		marginLeft: 0,
+		'marginRight': 2,
+		'marginLeft': 0,
 	},
 	sectionDesktop: {
 		display: 'none',
@@ -74,7 +74,7 @@ class AppHeaderBar extends React.Component {
 	/* ===== State & Event Handlers ===== */
 
 	render () {
-		const { classes, actionGoHome } = this.props;
+		const { classes, user, isAllowAnonymous, actionGoHome } = this.props;
 		const { anchorEl, mobileMoreAnchorEl } = this.state;
 		// Route URLs
 		const routeGoHome = `/`;
@@ -169,7 +169,7 @@ class AppHeaderBar extends React.Component {
 						<div className={classes.links}>
 							<div onClick={actionGoHome}>
 								<Link to={routeGoHome}>
-									<div style={{color: 'white'}}>Holiday Packages</div>
+									<div style={{ color: 'white' }}>Holiday Packages</div>
 								</Link>
 							</div>
 						</div>

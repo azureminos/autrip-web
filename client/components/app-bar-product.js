@@ -12,8 +12,6 @@ import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { Link } from 'react-router-dom';
-import productAvailability from './product-availability';
 
 const styles = theme => ({
 	grow: {
@@ -29,7 +27,7 @@ const styles = theme => ({
 	},
 	menuButton: {
 		marginRight: 2,
-	  },
+	},
 	title: {
 		display: 'none',
 		[theme.breakpoints.up('sm')]: {
@@ -72,7 +70,6 @@ class AppProgressBar extends React.Component {
 		const { classes, product, actionGoBack } = this.props;
 		const { anchorEl, mobileMoreAnchorEl } = this.state;
 		// Route URLs
-		const routeGoHome = `/`;
 		// Event Handler
 		const handleProfileMenuOpen = event => {
 			this.setState({

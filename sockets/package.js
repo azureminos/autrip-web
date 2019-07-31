@@ -150,15 +150,15 @@ const getPackage = ({
 };
 
 const getRatesByPackage = ({
-	request: { id, isCustomisable },
+	request: { id, isCustomised },
 	sendStatus,
 	socket,
 }) => {
 	console.log('>>>>server received event[push:rate:getByProduct]', {
 		id,
-		isCustomisable,
+		isCustomised,
 	});
-	if (isCustomisable) {
+	if (isCustomised) {
 		// async calls
 		async.parallel(
 			{
@@ -264,8 +264,6 @@ const filterPackage = ({ request, sendStatus, socket }) => {
 
 const joinPackage = ({ request, sendStatus, socket }) => {};
 
-const customisePackage = ({ request, sendStatus, socket }) => {};
-
 const paidPackage = ({ request, sendStatus, socket }) => {
 	console.log('>>>>server received event[push:product:paid]', request);
 	const callback = (error, writeOpResult) => {
@@ -278,6 +276,97 @@ const paidPackage = ({ request, sendStatus, socket }) => {
 		}
 	};
 	MongoDB.updateInstPackageStatus(request, callback);
+};
+
+const customisePackage = ({ request, sendStatus, socket }) => {
+	console.log('>>>>server received event[push:product:checkout]', request);
+	// New Instance: insert inst/items/hotels/members
+	const instPackage = _.pick(
+		request,
+		'status',
+		'startDate',
+		'endDate',
+		'isCustomised',
+		'rate'
+	);
+	instPackage.package = request.packageId;
+	instPackage.createdBy = request.createdBy;
+	instPackage.createdAt = new Date(request.createdAt);
+	instPackage.slug = `${request.createdBy}_${
+		request.packageId
+	}_${instPackage.createdAt.getTime()}`;
+	instPackage.totalKids = _.sumBy(request.members, o => {
+		return o.kids || 0;
+	});
+	instPackage.totalAdults = _.sumBy(request.members, o => {
+		return o.adults || 0;
+	});
+	const handleInstPackage = (err, doc) => {
+		if (err) return console.log(err);
+		console.log('>>>>createInstPackage', { request, doc, instPackage });
+		const instPackageItems = _.map(request.items, item => {
+			const instPackageItem = { ...item };
+			instPackageItem.instPackage = doc._id;
+			instPackageItem.createdBy = instPackage.createdBy;
+			instPackageItem.createdAt = instPackage.createdAt;
+			instPackageItem.slug = `${doc._id}_item_${instPackageItem.dayNo}_${instPackageItem.daySeq}`;
+			return instPackageItem;
+		});
+		const instPackageHotels = _.map(request.hotels, hotel => {
+			const instPackageHotel = { ...hotel };
+			instPackageHotel.instPackage = doc._id;
+			instPackageHotel.createdBy = instPackage.createdBy;
+			instPackageHotel.createdAt = instPackage.createdAt;
+			instPackageHotel.slug = `${doc._id}_hotel_${instPackageHotel.dayNo}`;
+			return instPackageHotel;
+		});
+		const instPackageMembers = _.map(request.members, member => {
+			const instPackageMember = { ...member };
+			instPackageMember.instPackage = doc._id;
+			instPackageMember.createdBy = instPackage.createdBy;
+			instPackageMember.createdAt = instPackage.createdAt;
+			instPackageMember.slug = `${doc._id}_member_${instPackageMember.loginId}`;
+			return instPackageMember;
+		});
+
+		async.parallel(
+			{
+				items: callback => {
+					MongoDB.createInstPackageItems(instPackageItems, function (err, docs) {
+						console.log('>>>>createInstPackageItems', docs);
+						return callback(null, docs);
+					});
+				},
+				hotels: callback => {
+					MongoDB.createInstPackageHotels(instPackageHotels, function (
+						err,
+						docs
+					) {
+						console.log('>>>>createInstPackageHotels', docs);
+						return callback(null, docs);
+					});
+				},
+				members: callback => {
+					MongoDB.createInstPackageMembers(instPackageMembers, function (
+						err,
+						docs
+					) {
+						console.log('>>>>createInstPackageMembers', docs);
+						return callback(null, docs);
+					});
+				},
+			},
+			function (err, results) {
+				console.log('>>>>Instance Saved', { doc, results });
+				const inst = { ...doc._doc };
+				inst.items = results.items;
+				inst.hotels = results.hotels;
+				inst.members = results.members;
+				socket.emit('product:customise', inst);
+			}
+		);
+	};
+	MongoDB.createInstPackage(instPackage, handleInstPackage);
 };
 
 const checkoutPackage = ({ request, sendStatus, socket }) => {

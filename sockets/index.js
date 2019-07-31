@@ -22,6 +22,7 @@ const attachSockets = io => {
 
 		channel('push:product:filter', PackageSocket.filterPackage);
 		channel('push:product:get', PackageSocket.getPackage);
+		channel('push:product:customise', PackageSocket.customisePackage);
 		channel('push:product:checkout', PackageSocket.checkoutPackage);
 		channel('push:product:paid', PackageSocket.paidPackage);
 		channel('push:rate:getByProduct', PackageSocket.getRatesByPackage);
