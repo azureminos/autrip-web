@@ -14,11 +14,14 @@ import Default from './components/Default';
 import LoadingSpinner from './components/loading-spinner';
 import AppBarMain from './components/app-bar-main';
 import AppBarProgress from './components/app-bar-product';
+// Libs
+import helper from '../lib/helper';
+import ProductHelper from '../lib/product-helper';
+import CONSTANT from '../lib/constants';
+const { status } = CONSTANT.get().TravelPackage;
 // Stylesheets
 import '../public/App.css';
 import '../public/bootstrap.min.css';
-import helper from '../lib/helper';
-import ProductHelper from '../lib/product-helper';
 
 let socket;
 
@@ -181,7 +184,7 @@ class App extends Component {
 			selectedProduct: null,
 			cart: null,
 		});
-		var params = { state: 'Published' };
+		var params = { isSnapshot: true, status: status.PUBLISHED };
 		this.pushToRemote('product:filter', params);
 	}
 	actionGoBack () {
@@ -392,7 +395,7 @@ class App extends Component {
 		});
 
 		// Retrieve published packages
-		var params = { state: 'Published' };
+		var params = { isSnapshot: true, status: status.PUBLISHED };
 		console.log('>>>>App Client >> getFilteredPackages', params);
 		this.pushToRemote('product:filter', params);
 	}
