@@ -15,59 +15,56 @@ const scAttraction = new Schema({
 	timeTraffic: Schema.Types.Number,
 	timeVisit: Schema.Types.Number,
 	nearByAttractions: { type: [Schema.Types.ObjectId], ref: 'Attraction' },
+	parentAttractions: { type: [Schema.Types.ObjectId], ref: 'Attraction' },
 	notes: Schema.Types.String,
 	additionalField: Schema.Types.String,
 });
 const Attraction = mongoose.model('Attraction', scAttraction);
 // Hotel
 const scHotel = new mongoose.Schema({
-	city: { type: Schema.Types.ObjectId, ref: 'City' },
 	name: Schema.Types.String,
 	description: Schema.Types.String,
-	image: Schema.Types.Object,
+	city: { type: Schema.Types.ObjectId, ref: 'City' },
 	stars: Schema.Types.Number,
 	type: Schema.Types.String,
+	defaultRate: Schema.Types.Number,
+	rateExtraBed: Schema.Types.Number,
+	image: Schema.Types.Object,
+	timeTraffic: Schema.Types.Number,
+	nearByAttractions: { type: [Schema.Types.ObjectId], ref: 'Attraction' },
 	notes: Schema.Types.String,
 	additionalField: Schema.Types.String,
 });
 const Hotel = mongoose.model('Hotel', scHotel);
-// Hotel Room
-const scHotelRoom = new mongoose.Schema({
-	hotel: { type: Schema.Types.ObjectId, ref: 'Hotel' },
-	name: Schema.Types.String,
-	isDefault: Schema.Types.Boolean,
-	ratePeak: Schema.Types.Number,
-	rateOffPeak: Schema.Types.Number,
-	rangeFrom: Schema.Types.Date,
-	rangeTo: Schema.Types.Date,
-	notes: Schema.Types.String,
-	additionalField: Schema.Types.String,
-});
-const HotelRoom = mongoose.model('HotelRoom', scHotelRoom);
 // Travel Package
 const scTravelPackage = new Schema({
 	name: Schema.Types.String,
 	description: Schema.Types.String,
 	finePrint: Schema.Types.String,
 	highlight: Schema.Types.String,
-	notes: Schema.Types.String,
-	departureDate: Schema.Types.String,
-	effectiveTo: Schema.Types.Date,
-	effectiveFrom: Schema.Types.Date,
-	isSnapshot: Schema.Types.Boolean,
-	isExtention: Schema.Types.Boolean,
-	isCustomisable: Schema.Types.Boolean,
-	isPromoted: Schema.Types.Boolean,
-	status: Schema.Types.String,
-	maxParticipant: Schema.Types.Number,
+	// country: { type: Schema.Types.ObjectId, ref: 'Country' },
 	totalDays: Schema.Types.Number,
+	maxParticipant: Schema.Types.Number,
+	minParticipant: Schema.Types.Number,
+	departureDate: Schema.Types.String,
 	retailPrice: Schema.Types.Number,
-	additionalField: Schema.Types.String,
+	isSnapshot: { type: Schema.Types.Boolean },
+	status: Schema.Types.String,
+	carOption: Schema.Types.String,
+	isPromoted: Schema.Types.Boolean,
+	isCustomisable: Schema.Types.Boolean,
+	isExtention: Schema.Types.Boolean,
 	image: Schema.Types.Object,
 	titleImage: Schema.Types.Object,
 	carouselImages: [Schema.Types.Object],
-	packageRates: { type: [Schema.Types.ObjectId], ref: 'PackageRate' },
+	effectiveTo: Schema.Types.Date,
+	effectiveFrom: Schema.Types.Date,
 	flightRates: { type: [Schema.Types.ObjectId], ref: 'FlightRate' },
+	packageRates: { type: [Schema.Types.ObjectId], ref: 'PackageRate' },
+	packageItems: { type: [Schema.Types.ObjectId], ref: 'PackageItem' },
+	packageHotels: { type: [Schema.Types.ObjectId], ref: 'PackageHotel' },
+	notes: Schema.Types.String,
+	additionalField: Schema.Types.String,
 });
 scTravelPackage.virtual('startingPrice').get(function () {
 	return 700;
@@ -93,7 +90,6 @@ const scPackageHotel = new mongoose.Schema({
 	description: Schema.Types.String,
 	dayNo: Schema.Types.Number,
 	isOvernight: Schema.Types.Boolean,
-	timePlannable: Schema.Types.Number,
 	hotel: { type: Schema.Types.ObjectId, ref: 'Hotel' },
 	notes: Schema.Types.String,
 	additionalField: Schema.Types.String,
@@ -104,14 +100,15 @@ const scFlightRate = new mongoose.Schema({
 	package: { type: Schema.Types.ObjectId, ref: 'FlightRate' },
 	name: Schema.Types.String,
 	description: Schema.Types.String,
-	priority: Schema.Types.Number,
-	rate: Schema.Types.Number,
-	rangeFrom: Schema.Types.Date,
-	rangeTo: Schema.Types.Date,
 	airline: Schema.Types.String,
 	type: Schema.Types.String,
-	additionalField: Schema.Types.String,
+	rangeFrom: Schema.Types.Date,
+	rangeTo: Schema.Types.Date,
+	rate: Schema.Types.Number,
+	rateDomesticTotal: Schema.Types.Number,
+	priority: Schema.Types.Number,
 	notes: Schema.Types.String,
+	additionalField: Schema.Types.String,
 });
 const FlightRate = mongoose.model('FlightRate', scFlightRate);
 // Package Rate
@@ -119,13 +116,13 @@ const scPackageRate = new mongoose.Schema({
 	package: { type: Schema.Types.ObjectId, ref: 'TravelPackage' },
 	name: Schema.Types.String,
 	description: Schema.Types.String,
-	priority: Schema.Types.String,
-	rangeFrom: Schema.Types.Date,
-	rangeTo: Schema.Types.Date,
-	rate: Schema.Types.Number,
+	premiumFee: Schema.Types.Number,
 	minParticipant: Schema.Types.Number,
 	maxParticipant: Schema.Types.Number,
-	premiumFee: Schema.Types.Number,
+	rate: Schema.Types.Number,
+	rangeFrom: Schema.Types.Date,
+	rangeTo: Schema.Types.Date,
+	priority: Schema.Types.String,
 	notes: Schema.Types.String,
 	additionalField: Schema.Types.String,
 });
@@ -136,11 +133,18 @@ const scInstPackage = new mongoose.Schema({
 	status: Schema.Types.String,
 	startDate: Schema.Types.Date,
 	endDate: Schema.Types.Date,
+	carOption: Schema.Types.String,
 	isCustomised: Schema.Types.Boolean,
-	totalKids: Schema.Types.Number,
-	totalAdults: Schema.Types.Number,
+	isCustomisable: Schema.Types.Boolean,
+	totalDays: Schema.Types.Number,
+	totalPeople: Schema.Types.Number,
+	totalRooms: Schema.Types.Number,
+	maxParticipant: Schema.Types.Number,
+	carOption: Schema.Types.String,
 	rate: Schema.Types.Number,
-	cost: Schema.Types.Number,
+	items: [],
+	hotels: [],
+	members: [],
 	notes: Schema.Types.String,
 	additionalField: Schema.Types.String,
 	slug: Schema.Types.String,
@@ -156,6 +160,7 @@ const scInstPackageItem = new mongoose.Schema({
 	dayNo: Schema.Types.Date,
 	daySeq: Schema.Types.Date,
 	timePlannable: Schema.Types.Number,
+	isMustVisit: Schema.Types.Boolean,
 	attraction: { type: Schema.Types.ObjectId, ref: 'Attraction' },
 	notes: Schema.Types.String,
 	additionalField: Schema.Types.String,
@@ -172,7 +177,6 @@ const scInstPackageHotel = new mongoose.Schema({
 	dayNo: Schema.Types.Date,
 	isOvernight: Schema.Types.Boolean,
 	hotel: { type: Schema.Types.ObjectId, ref: 'Hotel' },
-	room: { type: Schema.Types.ObjectId, ref: 'HotelRoom' },
 	notes: Schema.Types.String,
 	additionalField: Schema.Types.String,
 	slug: Schema.Types.String,
@@ -187,8 +191,9 @@ const scInstPackageMember = new mongoose.Schema({
 	instPackage: { type: Schema.Types.ObjectId, ref: 'InstPackage' },
 	loginId: Schema.Types.String,
 	isOwner: Schema.Types.Boolean,
-	kids: Schema.Types.Number,
-	adults: Schema.Types.Number,
+	status: Schema.Types.String,
+	people: Schema.Types.Number,
+	rooms: Schema.Types.Number,
 	notes: Schema.Types.String,
 	additionalField: Schema.Types.String,
 	slug: Schema.Types.String,
@@ -232,16 +237,6 @@ const getHotelsByIds = ids => {
 	// console.log('>>>>Model >> Hotel.getHotelsByIds', input);
 	return Hotel.find()
 		.where('_id')
-		.in(input);
-};
-// Hotel Room
-const getRoomsByHotels = ids => {
-	const input = _.filter(ids, id => {
-		return !!id;
-	});
-	// console.log('>>>>Model >> HotelRoom.getRoomsByHotels', input);
-	return HotelRoom.find()
-		.where('hotel')
 		.in(input);
 };
 // Flight Rate
@@ -316,7 +311,6 @@ export default {
 	getItemsByPackageId,
 	getHotelsByIds,
 	getHotelsByPackageId,
-	getRoomsByHotels,
 	getFlightRatesByPackageId,
 	getPackageRatesByPackageId,
 	createInstPackage,

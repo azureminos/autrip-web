@@ -33,55 +33,6 @@ const getPackage = ({
 						return callback(null, helper.parsePackageHotel(items));
 					});
 				},
-				/*packageRates: callback => {
-					MongoDB.getPackageById(id)
-						.populate('packageRates')
-						.exec(function (err, item) {
-							const sortedRates = (item.packageRates || []).sort(function (
-								a,
-								b
-							) {
-								return b.priority - a.priority;
-							});
-							return callback(null, sortedRates);
-						});
-				},
-				carRates: callback => {
-					MongoDB.getPackageById(id)
-						.populate('carRates')
-						.exec(function (err, item) {
-							const sortedRates = (item.carRates || []).sort(function (a, b) {
-								return b.priority - a.priority;
-							});
-							return callback(null, sortedRates);
-						});
-				},
-				flightRates: callback => {
-					MongoDB.getPackageById(id)
-						.populate('flightRates')
-						.exec(function (err, item) {
-							const sortedRates = (item.flightRates || []).sort(function (a, b) {
-								return b.priority - a.priority;
-							});
-							return callback(null, sortedRates);
-						});
-				},
-				cities: callback => {
-					MongoDB.getItems({ package: id })
-						.populate('attraction')
-						.exec(function (err, items) {
-							const cities = _.map(items, item => {
-								return item.attraction ? item.attraction.city : null;
-							});
-							// console.log('>>>>getPackage.cityAttractions : cities', cities);
-							return City.getCities({ _id: { $in: cities } })
-								.populate('attractions hotels')
-								.exec(function (err, items) {
-									// console.log('>>>>getPackage.cityAttractions : result', items);
-									return callback(null, helper.parseCity(items, 'all'));
-								});
-						});
-				},*/
 			},
 			function (err, results) {
 				// console.log('>>>>server final callback for event[push:package:get]', results);
@@ -116,20 +67,10 @@ const getPackage = ({
 									const hotelIds = _.map(items, item => {
 										return item.hotel;
 									});
-									// console.log('>>>>Event[push:package:get].getRoomsByHotels Input', hotelIds);
+									// console.log('>>>>Event[push:package:get].packageHotels Input', hotelIds);
 									MongoDB.getHotelsByIds(hotelIds).exec(function (err, items) {
-										// console.log('>>>>Event[push:package:get].getRoomsByHotels Output',	items);
+										// console.log('>>>>Event[push:package:get].packageHotels Output',	items);
 										return callback(null, helper.parseHotel(items));
-									});
-								},
-								rooms: callback => {
-									const hotelIds = _.map(items, item => {
-										return item.hotel;
-									});
-									// console.log('>>>>Event[push:package:get].getRoomsByHotels Input', hotelIds);
-									MongoDB.getRoomsByHotels(hotelIds).exec(function (err, items) {
-										// console.log('>>>>Event[push:package:get].getRoomsByHotels Output', items);
-										return callback(null, helper.parseHotelRoom(items));
 									});
 								},
 							},
