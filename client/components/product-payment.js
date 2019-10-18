@@ -25,6 +25,8 @@ const styles = theme => ({
 		paddingRight: 200,
 		paddingBottom: 20,
 		paddingLeft: 200,
+		marginTop: 70,
+		marginBottom: 100,
 		boxSizing: 'border-box',
 	},
 	panelHeader: {

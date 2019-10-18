@@ -211,7 +211,7 @@ class App extends Component {
 		return (
 			<div>
 				<AppBarMain actionGoHome={this.actionGoHome} />
-				<div style={{ height: 80 }} />
+				<div style={{ height: 70 }} />
 				{divBricks}
 			</div>
 		);
@@ -243,7 +243,7 @@ class App extends Component {
 		return (
 			<div>
 				{divProgressBar}
-				<div style={{ height: 80 }} />
+				<div style={{ height: 70 }} />
 				{divDetails}
 			</div>
 		);
@@ -274,7 +274,6 @@ class App extends Component {
 		return (
 			<div>
 				{divProgressBar}
-				<div style={{ height: 80 }} />
 				{divCustomisation}
 			</div>
 		);
@@ -304,7 +303,6 @@ class App extends Component {
 		return (
 			<div>
 				{divProgressBar}
-				<div style={{ height: 80 }} />
 				{divAvailability}
 			</div>
 		);
@@ -334,7 +332,6 @@ class App extends Component {
 		return (
 			<div>
 				{divProgressBar}
-				<div style={{ height: 80 }} />
 				{divCheckout}
 			</div>
 		);
@@ -358,7 +355,6 @@ class App extends Component {
 		return (
 			<div>
 				<AppBarMain actionGoHome={this.actionGoHome} />
-				<div style={{ height: 80 }} />
 				{divConfirmation}
 			</div>
 		);

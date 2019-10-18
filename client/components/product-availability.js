@@ -1,5 +1,7 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -18,12 +20,29 @@ import { withStyles } from '@material-ui/core/styles';
 // ==== Additional CSS ======================================
 
 const styles = theme => ({
+	appBar: {
+		position: 'fixed',
+		bottom: 0,
+		left: 0,
+		right: 0,
+		top: 'auto',
+		height: 100,
+		paddingLeft: 200,
+		paddingRight: 200,
+	},
+	toolbar: {
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		padding: 0,
+	},
 	panel: {
 		flexGrow: 1,
 		paddingTop: 20,
 		paddingRight: 200,
 		paddingBottom: 20,
 		paddingLeft: 200,
+		marginTop: 70,
+		marginBottom: 100,
 		boxSizing: 'border-box',
 	},
 	panelHeader: {
@@ -232,41 +251,6 @@ class ProductAvailability extends React.Component {
 		// Display Component
 		return (
 			<div className={classes.panel}>
-				<Grid container spacing={0} className={classes.panelHeader}>
-					<Grid item xs={12} className={classes.headerContext}>
-						<Grid item xs={6} className={classes.headerTable}>
-							<div className={classes.totalDays}>{product.totalDays} Days</div>
-							<h1 className={classes.productName}>{product.name}</h1>
-						</Grid>
-						<Grid item xs={6} className={classes.headerTable}>
-							<div className={classes.headerTableCell}>
-								<div className={classes.priceTotal}>
-									AUD ${priceTotal} Total
-								</div>
-								<div className={classes.pricePerson}>
-									AUD ${pricePerson} / Person
-								</div>
-							</div>
-							<div
-								className={classes.headerTableCell}
-								style={{ width: '140px', verticalAlign: 'middle' }}
-							>
-								<Link to={routeLinkCheckout}>
-									<Button
-										onClick={clickCheckoutHandler}
-										variant="contained"
-										size="large"
-										color="primary"
-										aria-label="Checkout"
-									>
-										Checkout
-										<IconChevronRight className={classes.extendedIcon} />
-									</Button>
-								</Link>
-							</div>
-						</Grid>
-					</Grid>
-				</Grid>
 				<Grid container spacing={0} className={classes.panelBody}>
 					<Grid item xs={12} className={classes.bodyContext}>
 						<Grid item xs={4} className={classes.bodyBlock}>
@@ -359,6 +343,47 @@ class ProductAvailability extends React.Component {
 						</List>
 					</Grid>
 				</Grid>
+				<AppBar position="fixed" color="default" className={classes.appBar}>
+					<Toolbar className={classes.toolbar}>
+						<Grid container spacing={0} className={classes.panelHeader}>
+							<Grid item xs={12} className={classes.headerContext}>
+								<Grid item xs={6} className={classes.headerTable}>
+									<div className={classes.totalDays}>
+										{product.totalDays} Days
+									</div>
+									<h1 className={classes.productName}>{product.name}</h1>
+								</Grid>
+								<Grid item xs={6} className={classes.headerTable}>
+									<div className={classes.headerTableCell}>
+										<div className={classes.priceTotal}>
+											AUD ${priceTotal} Total
+										</div>
+										<div className={classes.pricePerson}>
+											AUD ${pricePerson} / Person
+										</div>
+									</div>
+									<div
+										className={classes.headerTableCell}
+										style={{ width: '140px', verticalAlign: 'middle' }}
+									>
+										<Link to={routeLinkCheckout}>
+											<Button
+												onClick={clickCheckoutHandler}
+												variant="contained"
+												size="large"
+												color="primary"
+												aria-label="Checkout"
+											>
+												Checkout
+												<IconChevronRight className={classes.extendedIcon} />
+											</Button>
+										</Link>
+									</div>
+								</Grid>
+							</Grid>
+						</Grid>
+					</Toolbar>
+				</AppBar>
 			</div>
 		);
 	}

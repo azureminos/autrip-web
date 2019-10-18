@@ -20,6 +20,7 @@ const styles = theme => ({
 	appBar: {
 		top: 0,
 		bottom: 'auto',
+		height: 70,
 	},
 	toolBar: {
 		paddingLeft: 200,
