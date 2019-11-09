@@ -17,25 +17,31 @@ const getPackage = ({
 		async.parallel(
 			{
 				packageSummary: callback => {
-					MongoDB.getPackageById(id).exec(function (err, item) {
-						// console.log('>>>>server async calls for event[push:package:get]', item);
+					MongoDB.getPackageById(id, (err, item) => {
+						console.log(
+							'>>>>server async calls for event[push:package:get]',
+							item
+						);
 						return callback(null, helper.parseTravelPackage(item));
 					});
 				},
 				packageItems: callback => {
-					MongoDB.getItemsByPackageId(id).exec(function (err, items) {
+					MongoDB.getItemsByPackageId(id, (err, items) => {
 						console.log('>>>>Event[push:package:get].packageItems', items);
 						return callback(null, helper.parsePackageItem(items));
 					});
 				},
 				packageHotels: callback => {
-					MongoDB.getHotels({ package: id }).exec(function (err, items) {
+					MongoDB.getHotels({ package: id }, (err, items) => {
 						return callback(null, helper.parsePackageHotel(items));
 					});
 				},
 			},
 			function (err, results) {
-				// console.log('>>>>server final callback for event[push:package:get]', results);
+				console.log(
+					'>>>>server final callback for event[push:package:get]',
+					results
+				);
 				socket.emit('product:get', results);
 			}
 		);
@@ -44,20 +50,23 @@ const getPackage = ({
 		async.parallel(
 			{
 				packageSummary: callback => {
-					MongoDB.getPackageById(id).exec(function (err, item) {
-						// console.log('>>>>server async calls for event[push:package:get]', item);
+					MongoDB.getPackageById(id, (err, item) => {
+						console.log(
+							'>>>>server async calls for event[push:package:get]',
+							item
+						);
 						return callback(null, helper.parseTravelPackage(item));
 					});
 				},
 				packageItems: callback => {
-					MongoDB.getItemsByPackageId(id).exec(function (err, items) {
-						// console.log('>>>>Event[push:package:get].packageItems', items);
+					MongoDB.getItemsByPackageId(id, (err, items) => {
+						console.log('>>>>Event[push:package:get].packageItems', items);
 						return callback(null, helper.parsePackageItem(items));
 					});
 				},
 				packageHotels: callback => {
-					MongoDB.getHotelsByPackageId(id).exec(function (err, items) {
-						// console.log('>>>>Event[push:package:get].packageHotels', items);
+					MongoDB.getHotelsByPackageId(id, (err, items) => {
+						console.log('>>>>Event[push:package:get].packageHotels', items);
 						async.parallel(
 							{
 								dayHotels: callback => {
@@ -68,7 +77,7 @@ const getPackage = ({
 										return item.hotel;
 									});
 									// console.log('>>>>Event[push:package:get].packageHotels Input', hotelIds);
-									MongoDB.getHotelsByIds(hotelIds).exec(function (err, items) {
+									MongoDB.getHotelsByIds(hotelIds, (err, items) => {
 										// console.log('>>>>Event[push:package:get].packageHotels Output',	items);
 										return callback(null, helper.parseHotel(items));
 									});
@@ -104,7 +113,7 @@ const getRatesByPackage = ({
 		async.parallel(
 			{
 				packageRates: callback => {
-					MongoDB.getPackageRatesByPackageId(id).exec(function (err, item) {
+					MongoDB.getPackageRatesByPackageId(id, (err, item) => {
 						console.log('>>>>Event[push:rate:getByProduct].packageRates', item);
 						const sortedRates = (item.packageRates || []).sort(function (a, b) {
 							return b.priority - a.priority;
@@ -113,7 +122,7 @@ const getRatesByPackage = ({
 					});
 				},
 				flightRates: callback => {
-					MongoDB.getFlightRatesByPackageId(id).exec(function (err, item) {
+					MongoDB.getFlightRatesByPackageId(id, (err, item) => {
 						console.log('>>>>Event[push:rate:getByProduct].flightRates', item);
 						const sortedRates = (item.flightRates || []).sort(function (a, b) {
 							return b.priority - a.priority;
@@ -122,14 +131,12 @@ const getRatesByPackage = ({
 					});
 				},
 				carRates: callback => {
-					MongoDB.getPackageById(id)
-						.populate('carRates')
-						.exec(function (err, item) {
-							const sortedRates = (item.carRates || []).sort(function (a, b) {
-								return b.priority - a.priority;
-							});
-							return callback(null, sortedRates);
+					MongoDB.getPackageById(id).populate('carRates', (err, item) => {
+						const sortedRates = (item.carRates || []).sort(function (a, b) {
+							return b.priority - a.priority;
 						});
+						return callback(null, sortedRates);
+					});
 				},
 				/*cities: callback => {
 					MongoDB.getItems({ package: id })
@@ -158,7 +165,7 @@ const getRatesByPackage = ({
 		async.parallel(
 			{
 				packageRates: callback => {
-					MongoDB.getPackageRatesByPackageId(id).exec(function (err, items) {
+					MongoDB.getPackageRatesByPackageId(id, (err, items) => {
 						console.log(
 							'>>>>Event[push:rate:getByProduct].packageRates',
 							items
@@ -170,7 +177,7 @@ const getRatesByPackage = ({
 					});
 				},
 				flightRates: callback => {
-					MongoDB.getFlightRatesByPackageId(id).exec(function (err, items) {
+					MongoDB.getFlightRatesByPackageId(id, (err, items) => {
 						console.log('>>>>Event[push:rate:getByProduct].flightRates', items);
 						const sortedRates = (items || []).sort(function (a, b) {
 							return b.priority - a.priority;
@@ -190,12 +197,12 @@ const getRatesByPackage = ({
 const filterPackage = ({ request, sendStatus, socket }) => {
 	// console.log('>>>>server received event[push:package:filter]', request);
 	if (process.env.LOCAL === 'true') {
-		MongoDB.deleteAllInstPackageMembers();
-		MongoDB.deleteAllInstPackageItems();
-		MongoDB.deleteAllInstPackageHotels();
-		MongoDB.deleteAllInstPackage();
+		MongoDB.deleteAllInstanceMembers();
+		MongoDB.deleteAllInstanceItems();
+		MongoDB.deleteAllInstanceHotels();
+		MongoDB.deleteAllInstances();
 	}
-	MongoDB.getFilteredPackages(request).exec((err, items) => {
+	MongoDB.getFilteredPackages(request, (err, items) => {
 		// console.log('>>>>Result of event[push:package:filter]', items);
 		socket.emit('product:refreshAll', {
 			packages: helper.parseTravelPackage(items),
@@ -244,13 +251,12 @@ const customisePackage = ({ request, sendStatus, socket }) => {
 	});
 	const handleInstPackage = (err, doc) => {
 		if (err) return console.log(err);
-		console.log('>>>>createInstPackage', { request, doc, instPackage });
+		console.log('>>>>createInstance', { request, doc, instPackage });
 		const instPackageItems = _.map(request.items, item => {
 			const instPackageItem = { ...item };
 			instPackageItem.instPackage = doc._id;
 			instPackageItem.createdBy = instPackage.createdBy;
 			instPackageItem.createdAt = instPackage.createdAt;
-			instPackageItem.slug = `${doc._id}_item_${instPackageItem.dayNo}_${instPackageItem.daySeq}`;
 			return instPackageItem;
 		});
 		const instPackageHotels = _.map(request.hotels, hotel => {
@@ -258,7 +264,6 @@ const customisePackage = ({ request, sendStatus, socket }) => {
 			instPackageHotel.instPackage = doc._id;
 			instPackageHotel.createdBy = instPackage.createdBy;
 			instPackageHotel.createdAt = instPackage.createdAt;
-			instPackageHotel.slug = `${doc._id}_hotel_${instPackageHotel.dayNo}`;
 			return instPackageHotel;
 		});
 		const instPackageMembers = _.map(request.members, member => {
@@ -266,33 +271,29 @@ const customisePackage = ({ request, sendStatus, socket }) => {
 			instPackageMember.instPackage = doc._id;
 			instPackageMember.createdBy = instPackage.createdBy;
 			instPackageMember.createdAt = instPackage.createdAt;
-			instPackageMember.slug = `${doc._id}_member_${instPackageMember.loginId}`;
 			return instPackageMember;
 		});
 
 		async.parallel(
 			{
 				items: callback => {
-					MongoDB.createInstPackageItems(instPackageItems, function (err, docs) {
-						console.log('>>>>createInstPackageItems', docs);
+					MongoDB.createInstanceItems(instPackageItems, function (err, docs) {
+						console.log('>>>>createInstanceItems', docs);
 						return callback(null, docs);
 					});
 				},
 				hotels: callback => {
-					MongoDB.createInstPackageHotels(instPackageHotels, function (
-						err,
-						docs
-					) {
-						console.log('>>>>createInstPackageHotels', docs);
+					MongoDB.createInstanceHotels(instPackageHotels, function (err, docs) {
+						console.log('>>>>createInstanceHotels', docs);
 						return callback(null, docs);
 					});
 				},
 				members: callback => {
-					MongoDB.createInstPackageMembers(instPackageMembers, function (
+					MongoDB.createInstanceMembers(instPackageMembers, function (
 						err,
 						docs
 					) {
-						console.log('>>>>createInstPackageMembers', docs);
+						console.log('>>>>createInstanceMembers', docs);
 						return callback(null, docs);
 					});
 				},
@@ -307,7 +308,7 @@ const customisePackage = ({ request, sendStatus, socket }) => {
 			}
 		);
 	};
-	MongoDB.createInstPackage(instPackage, handleInstPackage);
+	MongoDB.createInstance(instPackage, handleInstPackage);
 };
 
 const checkoutPackage = ({ request, sendStatus, socket }) => {
@@ -325,9 +326,6 @@ const checkoutPackage = ({ request, sendStatus, socket }) => {
 		instPackage.package = request.packageId;
 		instPackage.createdBy = request.createdBy;
 		instPackage.createdAt = new Date(request.createdAt);
-		instPackage.slug = `${request.createdBy}_${
-			request.packageId
-		}_${instPackage.createdAt.getTime()}`;
 		instPackage.totalKids = _.sumBy(request.members, o => {
 			return o.kids || 0;
 		});
@@ -336,58 +334,46 @@ const checkoutPackage = ({ request, sendStatus, socket }) => {
 		});
 		const handleInstPackage = (err, doc) => {
 			if (err) return console.log(err);
-			console.log('>>>>createInstPackage', { request, doc, instPackage });
-			const instPackageItems = _.map(request.items, item => {
+			console.log('>>>>createInstance', { request, doc, instPackage });
+			const instanceItems = _.map(request.items, item => {
 				const instPackageItem = { ...item };
 				instPackageItem.instPackage = doc._id;
 				instPackageItem.createdBy = instPackage.createdBy;
 				instPackageItem.createdAt = instPackage.createdAt;
-				instPackageItem.slug = `${doc._id}_item_${instPackageItem.dayNo}_${instPackageItem.daySeq}`;
 				return instPackageItem;
 			});
-			const instPackageHotels = _.map(request.hotels, hotel => {
+			const instanceHotels = _.map(request.hotels, hotel => {
 				const instPackageHotel = { ...hotel };
 				instPackageHotel.instPackage = doc._id;
 				instPackageHotel.createdBy = instPackage.createdBy;
 				instPackageHotel.createdAt = instPackage.createdAt;
-				instPackageHotel.slug = `${doc._id}_hotel_${instPackageHotel.dayNo}`;
 				return instPackageHotel;
 			});
-			const instPackageMembers = _.map(request.members, member => {
+			const instanceMembers = _.map(request.members, member => {
 				const instPackageMember = { ...member };
 				instPackageMember.instPackage = doc._id;
 				instPackageMember.createdBy = instPackage.createdBy;
 				instPackageMember.createdAt = instPackage.createdAt;
-				instPackageMember.slug = `${doc._id}_member_${instPackageMember.loginId}`;
 				return instPackageMember;
 			});
 
 			async.parallel(
 				{
 					items: callback => {
-						MongoDB.createInstPackageItems(instPackageItems, function (
-							err,
-							docs
-						) {
-							console.log('>>>>createInstPackageItems', docs);
+						MongoDB.createInstanceItems(instanceItems, (err, docs) => {
+							console.log('>>>>createInstanceItems', docs);
 							return callback(null, docs);
 						});
 					},
 					hotels: callback => {
-						MongoDB.createInstPackageHotels(instPackageHotels, function (
-							err,
-							docs
-						) {
-							console.log('>>>>createInstPackageHotels', docs);
+						MongoDB.createInstanceHotels(instanceHotels, (err, docs) => {
+							console.log('>>>>createInstanceHotels', docs);
 							return callback(null, docs);
 						});
 					},
 					members: callback => {
-						MongoDB.createInstPackageMembers(instPackageMembers, function (
-							err,
-							docs
-						) {
-							console.log('>>>>createInstPackageMembers', docs);
+						MongoDB.createInstanceMembers(instanceMembers, (err, docs) => {
+							console.log('>>>>createInstanceMembers', docs);
 							return callback(null, docs);
 						});
 					},
@@ -402,7 +388,7 @@ const checkoutPackage = ({ request, sendStatus, socket }) => {
 				}
 			);
 		};
-		MongoDB.createInstPackage(instPackage, handleInstPackage);
+		MongoDB.createInstance(instPackage, handleInstPackage);
 	} else {
 		// Existing Instance: update inst, insert members
 	}

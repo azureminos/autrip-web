@@ -392,7 +392,6 @@ class App extends Component {
 
 		// Retrieve published packages
 		var params = { isSnapshot: true, status: status.PUBLISHED };
-		console.log('>>>>App Client >> getFilteredPackages', params);
 		this.pushToRemote('product:filter', params);
 	}
 

@@ -102,7 +102,7 @@ class ProductPayment extends React.Component {
 			contactLastName: member.contactLastName || '',
 			contactMobile: member.contactMobile || '',
 			agreed: false,
-			payType: Helper.vars.payTypeCreditCard,
+			payType: Helper.vars.payTypePaypal,
 		};
 	}
 
@@ -162,20 +162,19 @@ class ProductPayment extends React.Component {
 			);
 		const dtStart = new Date(cart.startDate);
 		const dtEnd = new Date(cart.endDate);
-		const totalTravelers = (cart.totalKids || 0) + (cart.totalAdults || 0);
-		const strTotalTravelers = `${totalTravelers} Traveller${
-			totalTravelers > 1 ? 's' : ''
+
+		const totalPeople = _.sumBy(cart.members, o => {
+			return o.people || 0;
+		});
+		const totalRooms = _.sumBy(cart.members, o => {
+			return o.rooms || 0;
+		});
+		const strTotalPeople = `${totalPeople} Traveller${
+			totalPeople > 1 ? 's' : ''
 		}`;
-		const totalKids = _.sumBy(cart.members, o => {
-			return o.kids || 0;
-		});
-		const strTotalKids = `${totalKids} Kid${totalKids > 1 ? 's' : ''}`;
-		const totalAdults = _.sumBy(cart.members, o => {
-			return o.adults || 0;
-		});
-		const strTotalAdults = `${totalAdults} Adult${totalAdults > 1 ? 's' : ''}`;
+		const strTotalRooms = `${totalRooms} Rooms${totalRooms > 1 ? 's' : ''}`;
 		const rateSubtotal = cart.rate || 0;
-		const rateTotal = rateSubtotal * (totalAdults + totalKids);
+		const rateTotal = rateSubtotal * totalPeople;
 		const titleImageUrl = Helper.resizeImage(
 			product.imageUrl,
 			'w_200,h_100,c_scale'
@@ -222,22 +221,6 @@ class ProductPayment extends React.Component {
 			<div className={classes.panelBody}>
 				<h4>Select your preferred payment method:</h4>
 				<ExpansionPanel
-					expanded={payType === Helper.vars.payTypeCreditCard}
-					onChange={clickPayTypeHandler(Helper.vars.payTypeCreditCard)}
-					style={{ margin: 0 }}
-				>
-					<ExpansionPanelSummary
-						expandIcon={<ExpandMoreIcon />}
-						aria-controls="panel1bh-content"
-						id="panel1bh-header"
-					>
-						<div>Credit Cards</div>
-					</ExpansionPanelSummary>
-					<ExpansionPanelDetails>
-						<div>ToDo: Pay by credit card</div>
-					</ExpansionPanelDetails>
-				</ExpansionPanel>
-				<ExpansionPanel
 					expanded={payType === Helper.vars.payTypePaypal}
 					onChange={clickPayTypeHandler(Helper.vars.payTypePaypal)}
 					style={{ margin: 0 }}
@@ -251,6 +234,22 @@ class ProductPayment extends React.Component {
 					</ExpansionPanelSummary>
 					<ExpansionPanelDetails>
 						<div style={{ width: '100%' }}>{btnPaypal}</div>
+					</ExpansionPanelDetails>
+				</ExpansionPanel>
+				<ExpansionPanel
+					expanded={payType === Helper.vars.payTypeCreditCard}
+					onChange={clickPayTypeHandler(Helper.vars.payTypeCreditCard)}
+					style={{ margin: 0 }}
+				>
+					<ExpansionPanelSummary
+						expandIcon={<ExpandMoreIcon />}
+						aria-controls="panel1bh-content"
+						id="panel1bh-header"
+					>
+						<div>Credit Cards</div>
+					</ExpansionPanelSummary>
+					<ExpansionPanelDetails>
+						<div>ToDo: Pay by credit card</div>
 					</ExpansionPanelDetails>
 				</ExpansionPanel>
 			</div>
@@ -292,7 +291,7 @@ class ProductPayment extends React.Component {
 								</div>
 								<div className={classes.bodyContext}>
 									<IconPeople fontSize="default" className={classes.icon} />
-									<div>{strTotalTravelers}</div>
+									<div>{strTotalPeople}</div>
 								</div>
 							</Grid>
 							<Grid item xs={3} className={classes.bodyBlock}>
@@ -382,11 +381,11 @@ class ProductPayment extends React.Component {
 						</Grid>
 						<Grid item xs={12} className={classes.bodyBlock}>
 							<div className={classes.bodyElementLeft}>
-								<b>Total Travellers</b>
+								<b>Total Travellers / Rooms</b>
 							</div>
 							<div className={classes.bodyElementRight}>
 								<div className={classes.bodyContext}>
-									{`${strTotalAdults}, ${strTotalKids}`}
+									{`${strTotalPeople}, ${strTotalRooms}`}
 								</div>
 							</div>
 						</Grid>

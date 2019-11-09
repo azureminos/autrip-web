@@ -159,7 +159,7 @@ class ProductDetails extends React.Component {
 			= isLoggedIn && isCustomisable && isOwner ? (
 				<div className={classes.productPremium}>
 					<h4>Premium Tour</h4>
-					<div>Want to visit somewhere special?</div>
+					<div>Choose the attractions and hotels you like</div>
 					<Link to={routeLinkDiy}>
 						<Button
 							onClick={clickDiyHandler}
@@ -211,12 +211,6 @@ class ProductDetails extends React.Component {
 														</td>
 														<td style={{ width: '50%' }}>
 															${product.startingPrice} per person
-														</td>
-													</tr>
-													<tr>
-														<td style={{ width: '50%' }}>Twin Share</td>
-														<td style={{ width: '50%' }}>
-															Value up to ${product.retailPrice}
 														</td>
 													</tr>
 												</tbody>

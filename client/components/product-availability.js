@@ -15,9 +15,12 @@ import IconFlightTakeoff from '@material-ui/icons/FlightTakeoff';
 import IconChevronRight from '@material-ui/icons/ChevronRight';
 import { Link } from 'react-router-dom';
 import Helper from '../../lib/helper';
+import CONSTATNS from '../../lib/constants';
 // ==== Styles ==============================================
 import { withStyles } from '@material-ui/core/styles';
 // ==== Additional CSS ======================================
+
+const { Global } = CONSTATNS.get();
 
 const styles = theme => ({
 	appBar: {
@@ -121,8 +124,8 @@ class ProductAvailability extends React.Component {
 		// Bind handler
 		// Set state
 		this.state = {
-			adults: 1,
-			kids: 0,
+			people: 2,
+			rooms: 1,
 			rate: 1000,
 			startDate: '',
 			endDate: '',
@@ -145,8 +148,8 @@ class ProductAvailability extends React.Component {
 			isOwner,
 		} = this.props;
 		const {
-			adults,
-			kids,
+			people,
+			rooms,
 			startDate,
 			endDate,
 			rate,
@@ -166,8 +169,8 @@ class ProductAvailability extends React.Component {
 					{
 						loginId: user.loginId,
 						isOwner: isOwner,
-						kids: kids,
-						adults: adults,
+						people: people,
+						rooms: rooms,
 						contact: `${contactFirstName} ${contactLastName}`,
 					},
 				  ];
@@ -196,13 +199,14 @@ class ProductAvailability extends React.Component {
 			console.log('>>>>ProductAvailability input LastName', e);
 			this.setState({ contactLastName: e.target.value });
 		};
-		const selectAdultHandler = e => {
-			console.log('>>>>ProductAvailability selected Adult', e);
-			this.setState({ adults: e.target.value });
+		const selectPeopleHandler = e => {
+			console.log('>>>>ProductAvailability selected people', e);
+			const rooms = Math.ceil(e.target.value / Global.maxRoomCapacity);
+			this.setState({ people: e.target.value, rooms });
 		};
-		const selectKidHandler = e => {
-			console.log('>>>>ProductAvailability selected Kid', e);
-			this.setState({ kids: e.target.value });
+		const selectRoomsHandler = e => {
+			console.log('>>>>ProductAvailability selected rooms', e);
+			this.setState({ rooms: e.target.value });
 		};
 		const selectStartDateHandler = input => {
 			console.log('>>>>ProductAvailability selected Start Date', input);
@@ -212,7 +216,7 @@ class ProductAvailability extends React.Component {
 		// Sub Components
 		const routeLinkCheckout = `/booking/payment`;
 		const pricePerson = this.state.rate;
-		const priceTotal = pricePerson * (this.state.kids + this.state.adults);
+		const priceTotal = pricePerson * this.state.people;
 		// Get data string
 		const strStartDate = startDate ? startDate.toLocaleDateString() : '';
 		const strEndDate = endDate ? endDate.toLocaleDateString() : '';
@@ -284,29 +288,32 @@ class ProductAvailability extends React.Component {
 							style={{ height: '72px' }}
 						>
 							<div className={classes.bodyTableCell} style={{ width: '50%' }}>
-								<InputLabel htmlFor="adults">Adults</InputLabel>
+								<InputLabel htmlFor="people">People</InputLabel>
 								<Select
-									value={adults}
-									onChange={selectAdultHandler}
+									value={people}
+									onChange={selectPeopleHandler}
 									inputProps={{
-										name: 'adults',
-										id: 'adults',
+										name: 'people',
+										id: 'people',
 									}}
 								>
 									<MenuItem value={1}>1</MenuItem>
 									<MenuItem value={2}>2</MenuItem>
 									<MenuItem value={3}>3</MenuItem>
 									<MenuItem value={4}>4</MenuItem>
+									<MenuItem value={5}>5</MenuItem>
+									<MenuItem value={6}>6</MenuItem>
 								</Select>
 							</div>
 							<div className={classes.bodyTableCell} styles={{ width: '50%' }}>
-								<InputLabel htmlFor="kids">Kids</InputLabel>
+								<InputLabel htmlFor="rooms">Rooms</InputLabel>
 								<Select
-									value={kids}
-									onChange={selectKidHandler}
+									value={rooms}
+									disabled
+									onChange={selectRoomsHandler}
 									inputProps={{
-										name: 'kids',
-										id: 'kids',
+										name: 'rooms',
+										id: 'rooms',
 									}}
 								>
 									<MenuItem value={0}>0</MenuItem>

@@ -7,7 +7,7 @@ import Swiper from 'react-id-swiper';
 import { Link } from 'react-router-dom';
 import Helper from '../../lib/helper';
 // Styles
-import { withStyles, withTheme } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 // ==== Additional CSS ==============================================
 import 'react-id-swiper/src/styles/css/swiper.css';
 
@@ -65,18 +65,19 @@ class ProductBrick extends React.Component {
 	/* ===== State & Event Handlers ===== */
 
 	render () {
-		const { classes, product, key, actionGetProduct } = this.props;
-		console.log('>>>>ProductBrick.render()', product);
+		const { classes, key, actionGetProduct } = this.props;
+		const p = this.props.product;
+		console.log('>>>>ProductBrick.render()', p);
 		// Register click handler
 		const clickHandler = e => {
 			console.log('>>>>ProductBrick clicked', e);
-			actionGetProduct(product.id);
+			actionGetProduct(p.id);
 		};
 		// Route Link
-		const routeLink = `/product/${product.id}`;
+		const routeLink = `/product/${p.id}`;
 		// Title Image
 		const titleImageUrl = Helper.resizeImage(
-			product.titleImageUrl,
+			p.titleImageUrl,
 			'w_394,h_400,c_scale'
 		);
 		// Photo Swiper
@@ -90,15 +91,15 @@ class ProductBrick extends React.Component {
 				clickable: true,
 			},
 		};
-		const itemsSwiper = _.map(product.carouselImages, (img, idx) => {
+		const itemsSwiper = _.map(p.carouselImages, (img, idx) => {
 			const carouselImage = Helper.resizeImage(img, 'w_788,h_400,c_scale');
 			return (
-				<div key={product.name + '_' + idx}>
+				<div key={p.name + '_' + idx}>
 					<div onClick={clickHandler}>
 						<Link to={routeLink}>
 							<img
 								src={carouselImage}
-								alt={product.name}
+								alt={p.name}
 								className={classes.sectionImage}
 							/>
 						</Link>
@@ -116,7 +117,7 @@ class ProductBrick extends React.Component {
 									<Link to={routeLink}>
 										<img
 											src={titleImageUrl}
-											alt={product.name}
+											alt={p.name}
 											className={classes.sectionImage}
 										/>
 									</Link>
@@ -144,15 +145,14 @@ class ProductBrick extends React.Component {
 												</div>
 												<div>China</div>
 											</div>
-											<div className={classes.titleProduct}>{product.name}</div>
+											<div className={classes.titleProduct}>{p.name}</div>
 										</div>
 									</Grid>
 									<Grid item xs={2}>
 										<div>
-											<div>{product.totalDays} Days From</div>
-											<div>{product.startingPrice} per person</div>
-											<div>Twin Share</div>
-											<div>value up to {product.retailPrice}</div>
+											<div>
+												{p.totalDays} Days From {p.startingPrice} per person
+											</div>
 										</div>
 									</Grid>
 									<Grid item xs={2}>
