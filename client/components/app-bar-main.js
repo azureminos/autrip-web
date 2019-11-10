@@ -165,12 +165,12 @@ class AppHeaderBar extends React.Component {
 				<AppBar position="fixed" color="primary" className={classes.appBar}>
 					<Toolbar className={classes.toolBar}>
 						<Typography className={classes.title} variant="h6">
-							AUTrip
+							Make My Holiday
 						</Typography>
 						<div className={classes.links}>
 							<div onClick={actionGoHome}>
 								<Link to={routeGoHome}>
-									<div style={{ color: 'white' }}>Holiday Packages</div>
+									<div style={{ color: 'white' }}>Hot Deals</div>
 								</Link>
 							</div>
 						</div>
