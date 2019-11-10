@@ -150,9 +150,7 @@ class ProductBrick extends React.Component {
 									</Grid>
 									<Grid item xs={2}>
 										<div>
-											<div>
-												{p.totalDays} Days From {p.startingPrice} per person
-											</div>
+											<div>{p.totalDays} Days From $1000 per person</div>
 										</div>
 									</Grid>
 									<Grid item xs={2}>

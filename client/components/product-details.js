@@ -209,9 +209,7 @@ class ProductDetails extends React.Component {
 														<td style={{ width: '50%' }}>
 															{product.totalDays} Days From
 														</td>
-														<td style={{ width: '50%' }}>
-															${product.startingPrice} per person
-														</td>
+														<td style={{ width: '50%' }}>$1000 per person</td>
 													</tr>
 												</tbody>
 											</table>
