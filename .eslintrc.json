@@ -1,10 +1,10 @@
 {
-  "extends": "keystone",
+  "extends": ["metalab", "metalab/react"],
   "env": {
     "browser": true,
     "node": true
   },
   "rules": {
-    "import/no-commonjs": 0
+    "no-console": 0
   }
 }

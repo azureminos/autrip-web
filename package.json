@@ -12,7 +12,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "build:watch": "webpack --watch",
-    "build": "webpack --progress --colors",
+    "build": "webpack --mode=development --progress --colors",
     "lint-js": "eslint ."
   },
   "dependencies": {
@@ -74,7 +74,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "eslint": "^3.19.0",
-    "eslint-config-keystone": "3.0.0",
+    "eslint-config-metalab": "^5.0.1",
     "eslint-import-resolver-babel-module": "^3.0.0",
     "eslint-plugin-babel": "^4.0.1",
     "eslint-plugin-filenames": "^1.1.0",
