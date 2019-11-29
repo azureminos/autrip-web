@@ -52,6 +52,7 @@
     "react-collapsible": "^2.3.1",
     "react-countdown-now": "^2.0.2",
     "react-dom": "^16.3.0",
+    "react-facebook-login": "^4.1.1",
     "react-id-swiper": "^1.6.8",
     "react-loader-advanced": "^1.7.1",
     "react-router": "^5.0.1",
