@@ -68,6 +68,41 @@ class AppDialog extends React.Component {
     // Sub Components
     if (model === Modal.USER_LOGIN.key) {
       modelTitle = Modal.USER_LOGIN.title;
+      /*
+        <Divider />
+        <TextField
+          required
+          id='username-input'
+          label='Username'
+          className={classes.item}
+          margin='normal'
+          variant='outlined'
+          InputProps={{
+            className: classes.itemChild,
+          }}
+        />
+        <TextField
+          id='password-input'
+          label='Password'
+          className={classes.item}
+          type='password'
+          margin='normal'
+          variant='outlined'
+          InputProps={{
+            className: classes.itemChild,
+          }}
+        />
+        <Button variant='contained' color='primary' className={classes.item}>
+          Login
+        </Button>
+        <Button variant='contained' className={classes.item}>
+          Forgot Password?
+        </Button>
+        <Divider />
+        <Button variant='contained' className={classes.item}>
+          Sign up
+        </Button>
+      */
       modelContent = (
         <div>
           <div className={classes.item}>
@@ -90,39 +125,6 @@ class AppDialog extends React.Component {
               className={classes.item}
             />
           </div>
-          <Divider />
-          <TextField
-            required
-            id='username-input'
-            label='Username'
-            className={classes.item}
-            margin='normal'
-            variant='outlined'
-            InputProps={{
-              className: classes.itemChild,
-            }}
-          />
-          <TextField
-            id='password-input'
-            label='Password'
-            className={classes.item}
-            type='password'
-            margin='normal'
-            variant='outlined'
-            InputProps={{
-              className: classes.itemChild,
-            }}
-          />
-          <Button variant='contained' color='primary' className={classes.item}>
-            Login
-          </Button>
-          <Button variant='contained' className={classes.item}>
-            Forgot Password?
-          </Button>
-          <Divider />
-          <Button variant='contained' className={classes.item}>
-            Sign up
-          </Button>
         </div>
       );
     }
