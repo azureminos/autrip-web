@@ -5,15 +5,12 @@ import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
-import Badge from '@material-ui/core/Badge';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import RouteLink from 'react-router-dom/Link';
+import {Link as RouteLink} from 'react-router-dom';
 import CONSTANTS from '../../lib/constants';
 // ==== Icons and CSS ====
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import MailIcon from '@material-ui/icons/Mail';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 // Variables
@@ -128,6 +125,24 @@ class AppHeaderBar extends React.Component {
         <MenuItem onClick={handleMenuClose}>My account</MenuItem>
       </Menu>
     );
+    /*
+    <MenuItem>
+      <IconButton aria-label='show new mails' color='inherit'>
+        <Badge badgeContent={0} color='secondary'>
+          <MailIcon />
+        </Badge>
+      </IconButton>
+      <p>Messages</p>
+    </MenuItem>
+    <MenuItem>
+      <IconButton aria-label='show new notifications' color='inherit'>
+        <Badge badgeContent={0} color='secondary'>
+          <NotificationsIcon />
+        </Badge>
+      </IconButton>
+      <p>Notifications</p>
+    </MenuItem>
+    */
     const renderMobileMenu = (
       <Menu
         anchorEl={mobileMoreAnchorEl}
@@ -138,22 +153,6 @@ class AppHeaderBar extends React.Component {
         open={isMobileMenuOpen}
         onClose={handleMobileMenuClose}
       >
-        <MenuItem>
-          <IconButton aria-label='show new mails' color='inherit'>
-            <Badge badgeContent={0} color='secondary'>
-              <MailIcon />
-            </Badge>
-          </IconButton>
-          <p>Messages</p>
-        </MenuItem>
-        <MenuItem>
-          <IconButton aria-label='show new notifications' color='inherit'>
-            <Badge badgeContent={0} color='secondary'>
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-          <p>Notifications</p>
-        </MenuItem>
         <MenuItem onClick={handleProfileMenuOpen}>
           <IconButton
             aria-label='account of current user'
@@ -167,19 +166,21 @@ class AppHeaderBar extends React.Component {
         </MenuItem>
       </Menu>
     );
+    /*
+    <IconButton aria-label='show new mails' color='inherit'>
+      <Badge badgeContent={0} color='secondary'>
+        <MailIcon />
+      </Badge>
+    </IconButton>
+    <IconButton aria-label='show new notifications' color='inherit'>
+      <Badge badgeContent={0} color='secondary'>
+        <NotificationsIcon />
+      </Badge>
+    </IconButton>
+    */
     const secDeskControls =
       user && user.loginId !== Global.anonymousUser ? (
         <div className={classes.sectionDesktop}>
-          <IconButton aria-label='show new mails' color='inherit'>
-            <Badge badgeContent={0} color='secondary'>
-              <MailIcon />
-            </Badge>
-          </IconButton>
-          <IconButton aria-label='show new notifications' color='inherit'>
-            <Badge badgeContent={0} color='secondary'>
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
           <IconButton
             edge='end'
             aria-label='account of current user'

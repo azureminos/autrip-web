@@ -1,9 +1,11 @@
 import React, {createElement} from 'react';
 import ReactDOM from 'react-dom';
-import '../public/index.css';
 import App from './app';
 import InvalidPage from './invalid-page';
 import {BrowserRouter as Router} from 'react-router-dom';
+// Variables
+// Styles
+import '../public/index.css';
 
 window.attachApp = (params) => {
   console.log('>>>>window.attachApp()', params);

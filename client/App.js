@@ -256,7 +256,11 @@ class App extends React.Component {
         <AppBarMain user={user} actions={barActions} />
         <div style={{height: 70}} />
         {divBricks}
-        <AppDialog open={!!modalType} actions={modalActions} model={modalType} />
+        <AppDialog
+          open={!!modalType}
+          actions={modalActions}
+          model={modalType}
+        />
       </div>
     );
   }

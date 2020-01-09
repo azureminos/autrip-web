@@ -74,8 +74,8 @@ class AppDialog extends React.Component {
             <FacebookLogin
               appId={Global.appId}
               autoLoad
-              callback={() => {
-                console.log('>>>>FacebookLogin.callback');
+              callback={(result) => {
+                console.log('>>>>FacebookLogin.callback', result);
               }}
               render={(renderProps) => (
                 <Button

@@ -9,23 +9,23 @@
 
 /* ----------  External Libraries  ---------- */
 
-import React from 'react';
+import React, {createElement} from 'react';
 
 /*
  * MessengerExtensions are only available on iOS and Android,
  * so show an error page if MessengerExtensions was unable to start
  */
 const InvalidPage = () => {
-	return (
-		<div id="ivp">
-			<div id="ivp-body">
-				<h1>Invalid Page</h1>
-				<div id="ivp-subtitle">
-					<p>It looks like you're a invalid page.</p>
-				</div>
-			</div>
-		</div>
-	);
+  return (
+    <div id='ivp'>
+      <div id='ivp-body'>
+        <h1>Invalid Page</h1>
+        <div id='ivp-subtitle'>
+          <p>It looks like you're a invalid page.</p>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default InvalidPage;
