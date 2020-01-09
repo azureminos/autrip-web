@@ -1,6 +1,6 @@
 import React, {createElement} from 'react';
 import ReactDOM from 'react-dom';
-import App from './app';
+import App from './my-app';
 import InvalidPage from './invalid-page';
 import {BrowserRouter as Router} from 'react-router-dom';
 // Styles
