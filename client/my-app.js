@@ -57,9 +57,11 @@ class App extends React.Component {
     this.actionPaid = this.actionPaid.bind(this);
     this.goHome = this.goHome.bind(this);
     this.actionGoBack = this.actionGoBack.bind(this);
-    this.modalSignIn = this.modalSignIn.bind(this);
-    this.modalSignUp = this.modalSignUp.bind(this);
+    this.modalOpenSignIn = this.modalOpenSignIn.bind(this);
+    this.modalOpenSignOpen = this.modalOpenSignOpen.bind(this);
     this.modalClose = this.modalClose.bind(this);
+    this.handleSignIn = this.handleSignIn.bind(this);
+    this.handleSignUp = this.handleSignUp.bind(this);
     // Helpers
     this.findProduct = this.findProduct.bind(this);
     this.getInstance = this.getInstance.bind(this);
@@ -75,11 +77,10 @@ class App extends React.Component {
       selectedProduct: null,
       cart: null,
       user: {
-        firstName: '',
-        lastName: '',
-        fullName: '',
+        name: '',
         loginId: Global.anonymousUser,
-        mobile: '',
+        profilePic: '',
+        contactNumber: '',
         email: '',
         currency: Payment.currency,
         source: UserSource.WEB,
@@ -171,17 +172,17 @@ class App extends React.Component {
     });
   }
   /* ============ Component Action Handler ============*/
-  modalSignIn() {
+  modalOpenSignIn() {
     const {user} = this.state;
-    console.log('>>>>App.modalSignIn', {user});
+    console.log('>>>>App.modalOpenSignIn', {user});
     this.setState({
       modalType: Modal.USER_LOGIN.key,
       modalRef: null,
     });
   }
-  modalSignUp() {
+  modalOpenSignOpen() {
     const {user} = this.state;
-    console.log('>>>>App.modalSignUp', {user});
+    console.log('>>>>App.modalOpenSignOpen', {user});
     this.setState({
       modalType: Modal.USER_SIGNUP.key,
       modalRef: null,
@@ -194,6 +195,12 @@ class App extends React.Component {
       modalType: '',
       modalRef: null,
     });
+  }
+  handleSignIn(resp) {
+    console.log('>>>>App.handleSignIn', resp);
+  }
+  handleSignUp(resp) {
+    console.log('>>>>App.handleSignIn', resp);
   }
   actionGetProduct(id) {
     const params = {id: id, isCustomisable: false};
@@ -231,11 +238,13 @@ class App extends React.Component {
     const {products, user, modalType} = this.state;
     const barActions = {
       goHome: this.goHome,
-      signIn: this.modalSignIn,
-      signUp: this.modalSignUp,
+      signIn: this.modalOpenSignIn,
+      signUp: this.modalOpenSignOpen,
     };
     const modalActions = {
       close: this.modalClose,
+      signIn: this.handleSignIn,
+      signUp: this.handleSignUp,
     };
     const divBricks =
       products && products.length > 0 ? (

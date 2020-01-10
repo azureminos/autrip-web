@@ -48,6 +48,7 @@ class AppDialog extends React.Component {
   constructor(props) {
     super(props);
     this.doHandleClose = this.doHandleClose.bind(this);
+    this.doHandleLogin = this.doHandleLogin.bind(this);
   }
   // Local Variables
 
@@ -57,7 +58,12 @@ class AppDialog extends React.Component {
       this.props.actions.close();
     }
   }
-
+  doHandleLogin(result) {
+    console.log('>>>>Modal.doHandleLogin', result);
+    if (this.props.actions && this.props.actions.signIn) {
+      this.props.actions.signIn(result);
+    }
+  }
   // Sub Components
   // Display Widget
   render() {
@@ -109,9 +115,7 @@ class AppDialog extends React.Component {
             <FacebookLogin
               appId={Global.appId}
               autoLoad
-              callback={(result) => {
-                console.log('>>>>FacebookLogin.callback', result);
-              }}
+              callback={this.doHandleLogin}
               render={(renderProps) => (
                 <Button
                   variant='contained'
