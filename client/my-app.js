@@ -204,7 +204,7 @@ class App extends React.Component {
       currency: Payment.currency,
       source: UserSource.FACEBOOK,
     };
-    this.setState({user: user});
+    this.setState({user: user, modalType: '', modalRef: null});
   }
   handleSignUp(resp) {
     console.log('>>>>App.handleSignIn', resp);

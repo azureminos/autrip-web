@@ -121,8 +121,8 @@ class AppHeaderBar extends React.Component {
         open={isMenuOpen}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-        <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+        <MenuItem onClick={handleMenuClose}>My Trips</MenuItem>
+        <MenuItem onClick={handleMenuClose}>My Profile</MenuItem>
       </Menu>
     );
     /*
@@ -155,6 +155,17 @@ class AppHeaderBar extends React.Component {
       >
         <MenuItem onClick={handleProfileMenuOpen}>
           <IconButton
+            aria-label='trips of current user'
+            aria-controls='primary-search-account-menu'
+            aria-haspopup='true'
+            color='inherit'
+          >
+            <AccountCircle />
+          </IconButton>
+          <p>My Trips</p>
+        </MenuItem>
+        <MenuItem onClick={handleProfileMenuOpen}>
+          <IconButton
             aria-label='account of current user'
             aria-controls='primary-search-account-menu'
             aria-haspopup='true'
@@ -162,7 +173,7 @@ class AppHeaderBar extends React.Component {
           >
             <AccountCircle />
           </IconButton>
-          <p>Profile</p>
+          <p>My Profile</p>
         </MenuItem>
       </Menu>
     );
