@@ -198,6 +198,13 @@ class App extends React.Component {
   }
   handleSignIn(resp) {
     console.log('>>>>App.handleSignIn', resp);
+    const user = {
+      name: resp.name,
+      loginId: resp.userID,
+      currency: Payment.currency,
+      source: UserSource.FACEBOOK,
+    };
+    this.setState({user: user});
   }
   handleSignUp(resp) {
     console.log('>>>>App.handleSignIn', resp);
