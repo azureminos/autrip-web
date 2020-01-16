@@ -66,7 +66,7 @@ class AppDialog extends React.Component {
   // Display Widget
   render() {
     // Local Variables
-    const {classes, open, model, reference} = this.props;
+    const {classes, model, reference} = this.props;
     let modelContent = '';
     let modelTitle = '';
     // Sub Components
@@ -112,7 +112,6 @@ class AppDialog extends React.Component {
           <div className={classes.item}>
             <FacebookLogin
               appId={Global.appId}
-              autoLoad
               callback={this.doHandleLogin}
               render={(renderProps) => (
                 <Button
@@ -133,7 +132,7 @@ class AppDialog extends React.Component {
     // Display widget
     return (
       <Dialog
-        open={open}
+        open={!!model}
         onClose={this.doHandleClose}
         TransitionComponent={Transition}
         classes={{root: classes.root, paper: classes.paper}}

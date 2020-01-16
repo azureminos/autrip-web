@@ -7,7 +7,6 @@ import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import {Link as RouteLink} from 'react-router-dom';
 import CONSTANTS from '../../lib/constants';
 // ==== Icons and CSS ====
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -20,13 +19,15 @@ const styles = (theme) => ({
     flexGrow: 1,
   },
   appBar: {
+    position: 'fixed',
+    width: '100%',
     top: 0,
     bottom: 'auto',
-    height: 70,
   },
   toolBar: {
-    paddingLeft: 200,
-    paddingRight: 200,
+    width: Global.DesktopView.contentWidth,
+    marginLeft: 'auto',
+    marginRight: 'auto',
   },
   title: {
     display: 'none',
@@ -83,7 +84,6 @@ class AppHeaderBar extends React.Component {
     // Local Variables
     const {classes, user, actions} = this.props;
     const {anchorEl, mobileMoreAnchorEl} = this.state;
-    const routeGoHome = '/';
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
     const menuId = 'primary-search-account-menu';
@@ -123,6 +123,16 @@ class AppHeaderBar extends React.Component {
       >
         <MenuItem onClick={handleMenuClose}>My Trips</MenuItem>
         <MenuItem onClick={handleMenuClose}>My Profile</MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleMenuClose();
+            if (actions && actions.signOut) {
+              actions.signOut();
+            }
+          }}
+        >
+          Sign Out
+        </MenuItem>
       </Menu>
     );
     /*
@@ -175,6 +185,17 @@ class AppHeaderBar extends React.Component {
           </IconButton>
           <p>My Profile</p>
         </MenuItem>
+        <MenuItem onClick={handleProfileMenuOpen}>
+          <IconButton
+            aria-label='account signout'
+            aria-controls='primary-search-account-menu'
+            aria-haspopup='true'
+            color='inherit'
+          >
+            <AccountCircle />
+          </IconButton>
+          <p>Sign Out</p>
+        </MenuItem>
       </Menu>
     );
     /*
@@ -190,7 +211,7 @@ class AppHeaderBar extends React.Component {
     </IconButton>
     */
     const secDeskControls =
-      user && user.loginId !== Global.anonymousUser ? (
+      user && user.id !== Global.anonymousUser ? (
         <div className={classes.sectionDesktop}>
           <IconButton
             edge='end'
@@ -238,11 +259,9 @@ class AppHeaderBar extends React.Component {
               Make My Holiday
             </Typography>
             <div className={classes.links}>
-              <div onClick={actions.goHome}>
-                <RouteLink to={routeGoHome}>
-                  <div style={{color: 'white'}}>Hot Deals</div>
-                </RouteLink>
-              </div>
+              <Link href='#' onClick={actions.goHome}>
+                <div style={{color: 'white'}}>Hot Deals</div>
+              </Link>
             </div>
             <div className={classes.grow} />
             {secDeskControls}
