@@ -13,7 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import AttractionSlider from './attraction-slider';
+import AttractionSlider from './attraction-slider-v2';
 import HotelOverview from './hotel-overview';
 import PackageSummary from './package-summary';
 import BotFooter from './bot-footer';
@@ -51,10 +51,8 @@ const styles = (theme) => ({
     display: 'flex',
     flexGrow: 1,
     width: '100%',
+    paddingBottom: 100,
     backgroundColor: theme.palette.background.paper,
-  },
-  whitespaceBottom: {
-    height: 100,
   },
   tabLabel: {
     width: tabWidth,
@@ -223,8 +221,8 @@ class PackageItinerary extends React.Component {
                 dayNo={it.dayNo}
                 width={contentWidth - tabWidth - 32}
                 showLiked
-                timePlannable={it.timePlannable}
-                attractions={it.attractions}
+                timePlannable={it.attractionSelected}
+                attractions={likedAttractions}
                 handleLikeAttraction={handleLikeAttraction}
                 ref={(el) => (this.container = el)}
               />
@@ -254,7 +252,7 @@ class PackageItinerary extends React.Component {
                 width={contentWidth - tabWidth - 32}
                 loop
                 timePlannable={it.timePlannable}
-                attractions={it.attractions}
+                attractions={notLikedAttractions}
                 handleLikeAttraction={handleLikeAttraction}
               />
             </ListItem>
@@ -303,7 +301,6 @@ class PackageItinerary extends React.Component {
           {tabLabels}
         </Tabs>
         {tabPanels}
-        <div className={classes.whitespaceBottom} />
         <BotFooter
           instPackage={instPackage}
           instPackageExt={instPackageExt}

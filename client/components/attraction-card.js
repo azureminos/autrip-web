@@ -23,8 +23,12 @@ import IconLock from '@material-ui/icons/Lock';
 import IconUnlock from '@material-ui/icons/LockOpen';
 
 const styles = (theme) => ({
-  flex: {
-    display: 'flex',
+  card: {
+    margin: 8,
+  },
+  dialogContent: {
+    width: 600,
+    height: 800,
   },
   appBar: {
     position: 'absolute',
@@ -38,7 +42,11 @@ const styles = (theme) => ({
     justifyContent: 'space-between',
     padding: 0,
   },
-  imgWrapper: {
+  cardContent: {
+    display: 'flex',
+    cursor: 'pointer',
+  },
+  cardImage: {
     height: 0,
     overflow: 'hidden',
     paddingTop: '100%',
@@ -146,10 +154,10 @@ class AttractionCard extends React.Component {
     );
     const modal = (
       <Dialog
-        fullScreen
         open={open}
         onClose={this.doHandleClose}
         TransitionComponent={Transition}
+        classes={{paper: classes.dialogContent}}
       >
         <List className={classes.root}>
           <ListItem key={'attraction-images'} dense>
@@ -175,15 +183,15 @@ class AttractionCard extends React.Component {
     );
     // Display Widget
     return (
-      <Card>
-        <div className={classes.imgWrapper} onClick={this.handleClick}>
+      <Card className={classes.card}>
+        <div className={classes.cardImage}>
           <img
             src={item.imageUrl}
             alt={item.name}
             className={classes.imgItem}
           />
         </div>
-        <div className={classes.flex}>
+        <div className={classes.cardContent}>
           <div
             className={classes.cardIcon}
             onClick={(e) => this.doLikeAttraction(e, item)}

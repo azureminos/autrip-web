@@ -6,7 +6,7 @@ import {withStyles} from '@material-ui/core/styles';
 import AppBarMain from './components/app-bar-main';
 import AppDialog from './components/app-dialog';
 import InvalidPage from './invalid-page';
-import TravelPackageCard from './components/travel-package-card';
+import TravelPackageCard from './components/travel-package-card-v2';
 import PackageItinerary from './components/package-itinerary';
 // Libs
 import Helper from '../lib/helper';
@@ -14,7 +14,9 @@ import PackageHelper from '../lib/package-helper';
 import CONSTANT from '../lib/constants';
 // Stylesheets
 // import '../public/bootstrap.min.css';
-import 'swiper/css/swiper.css';
+// import 'swiper/css/swiper.css';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 import '../public/App.css';
 
 // Variables
@@ -321,7 +323,7 @@ class App extends React.Component {
       cart: null,
     });
     const params = {isSnapshot: true, status: PackageStatus.PUBLISHED};
-    this.pushToRemote('product:filter', params);
+    this.pushToRemote('package:filter', params);
   }
   actionGoBack() {
     console.log('>>>>Triggered App.actionGoBack');

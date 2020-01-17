@@ -390,7 +390,6 @@ class BotModal extends React.Component {
     // Display Widget
     return (
       <Dialog
-        fullScreen
         open
         onClose={actions.handleClose}
         TransitionComponent={Transition}

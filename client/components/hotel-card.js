@@ -169,7 +169,6 @@ class HotelCard extends React.Component {
     }
     const modal = open ? (
       <Dialog
-        fullScreen
         open={open}
         onClose={this.doCloseHotelModal}
         TransitionComponent={Transition}

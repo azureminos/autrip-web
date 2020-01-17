@@ -13,7 +13,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Slide from '@material-ui/core/Slide';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import HotelCard from './hotel-card';
+import HotelCard from './hotel-card-v2';
 import CONSTANTS from '../../lib/constants';
 // Styles and Icons
 import IconHotel from '@material-ui/icons/Tune';
@@ -132,7 +132,6 @@ class HotelOverview extends React.Component {
     });
     const modal = open ? (
       <Dialog
-        fullScreen
         open={open}
         onClose={this.doCloseSelectHotel}
         TransitionComponent={Transition}

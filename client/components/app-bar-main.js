@@ -38,20 +38,16 @@ const styles = (theme) => ({
       color: theme.palette.common.white,
     },
   },
-  divLink: {
+  link: {
+    display: 'flex',
     paddingLeft: 4,
     paddingRight: 4,
     color: theme.palette.common.white,
+    cursor: 'pointer',
+    textDecoration: 'none',
   },
-  links: {
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    '&:hover': {
-      textDecoration: 'underline',
-      cursor: 'pointer',
-    },
-    marginRight: 2,
-    marginLeft: 0,
+  linkText: {
+    paddingTop: 4,
   },
   sectionDesktop: {
     display: 'none',
@@ -226,15 +222,14 @@ class AppHeaderBar extends React.Component {
         </div>
       ) : (
         <div className={classes.sectionDesktop}>
-          <Link href='#' onClick={actions.signUp} className={classes.divLink}>
+          <a href='#' onClick={actions.signUp} className={classes.link}>
             <PermIdentityIcon />
-            Sign Up
-          </Link>
-          <div className={classes.divLink}>/</div>
-          <Link href='#' onClick={actions.signIn} className={classes.divLink}>
+            <div className={classes.linkText}>Sign Up</div>
+          </a>
+          <a href='#' onClick={actions.signIn} className={classes.link}>
             <PermIdentityIcon />
-            Sign In
-          </Link>
+            <div className={classes.linkText}>Sign In</div>
+          </a>
         </div>
       );
     const secMobileControls = (
@@ -258,11 +253,9 @@ class AppHeaderBar extends React.Component {
             <Typography className={classes.title} variant='h6'>
               Make My Holiday
             </Typography>
-            <div className={classes.links}>
-              <Link href='#' onClick={actions.goHome}>
-                <div style={{color: 'white'}}>Hot Deals</div>
-              </Link>
-            </div>
+            <a href='#' onClick={actions.goHome} className={classes.link}>
+              Hot Deals
+            </a>
             <div className={classes.grow} />
             {secDeskControls}
             {secMobileControls}
