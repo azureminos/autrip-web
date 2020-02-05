@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import React, {createElement} from 'react';
 import {withStyles} from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
@@ -13,7 +12,7 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import AttractionSlider from './attraction-slider-v2';
+import AttractionSlider from './attraction-slider-v3';
 import HotelOverview from './hotel-overview';
 import PackageSummary from './package-summary';
 import BotFooter from './bot-footer';
@@ -202,61 +201,30 @@ class PackageItinerary extends React.Component {
         );
       const attractionSelected =
         likedAttractions && likedAttractions.length > 0 ? (
-          <List className={classes.list}>
-            <ListItem
-              className={classes.listItem}
-              key={`Day ${it.dayNo}, Selected Attractions Label`}
-            >
-              <ListItemText
-                primary={'Attractions to visit'}
-                classes={{primary: classes.listItemText}}
-              />
-              {btnCustomise}
-            </ListItem>
-            <ListItem
-              className={classes.listItem}
-              key={`Day ${it.dayNo}, Selected Attractions Slider`}
-            >
-              <AttractionSlider
-                dayNo={it.dayNo}
-                width={contentWidth - tabWidth - 32}
-                showLiked
-                timePlannable={it.attractionSelected}
-                attractions={likedAttractions}
-                handleLikeAttraction={handleLikeAttraction}
-                ref={(el) => (this.container = el)}
-              />
-            </ListItem>
-          </List>
+          <div>
+            <AttractionSlider
+              dayNo={it.dayNo}
+              width={contentWidth - tabWidth - 32}
+              timePlannable={it.timePlannable}
+              attractions={likedAttractions}
+              handleLikeAttraction={handleLikeAttraction}
+              ref={(el) => (this.container = el)}
+            />
+          </div>
         ) : (
           ''
         );
       const attractionToSelect =
         notLikedAttractions && notLikedAttractions.length > 0 ? (
-          <List className={classes.list}>
-            <ListItem
-              className={classes.listItem}
-              key={`Day ${it.dayNo}, Unselected Attractions Label`}
-            >
-              <ListItemText
-                primary={'Other attractions you may be interested'}
-                classes={{primary: classes.listItemText}}
-              />
-            </ListItem>
-            <ListItem
-              className={classes.listItem}
-              key={`Day ${it.dayNo}, Unselected Attractions Slider`}
-            >
-              <AttractionSlider
-                dayNo={it.dayNo}
-                width={contentWidth - tabWidth - 32}
-                loop
-                timePlannable={it.timePlannable}
-                attractions={notLikedAttractions}
-                handleLikeAttraction={handleLikeAttraction}
-              />
-            </ListItem>
-          </List>
+          <div>
+            <AttractionSlider
+              dayNo={it.dayNo}
+              width={contentWidth - tabWidth - 32}
+              timePlannable={it.timePlannable}
+              attractions={notLikedAttractions}
+              handleLikeAttraction={handleLikeAttraction}
+            />
+          </div>
         ) : (
           ''
         );

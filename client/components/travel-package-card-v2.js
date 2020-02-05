@@ -60,7 +60,7 @@ class TravelPackageCard extends React.Component {
     const {classes, travelPackage} = this.props;
     const settings = {
       dots: true,
-      arrows: false,
+      arrows: true,
       infinite: true,
       speed: 500,
       slidesToShow: 1,

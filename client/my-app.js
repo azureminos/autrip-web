@@ -6,17 +6,16 @@ import {withStyles} from '@material-ui/core/styles';
 import AppBarMain from './components/app-bar-main';
 import AppDialog from './components/app-dialog';
 import InvalidPage from './invalid-page';
-import TravelPackageCard from './components/travel-package-card-v2';
+import TravelPackageCard from './components/travel-package-card-v3';
 import PackageItinerary from './components/package-itinerary';
 // Libs
 import Helper from '../lib/helper';
 import PackageHelper from '../lib/package-helper';
 import CONSTANT from '../lib/constants';
 // Stylesheets
-// import '../public/bootstrap.min.css';
-// import 'swiper/css/swiper.css';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+// import 'slick-carousel/slick/slick.css';
+// import 'slick-carousel/slick/slick-theme.css';
+import 'react-multi-carousel/lib/styles.css';
 import '../public/App.css';
 
 // Variables
@@ -73,6 +72,12 @@ class App extends React.Component {
     this.handleSignUp = this.handleSignUp.bind(this);
     this.handleSignOut = this.handleSignOut.bind(this);
     this.handleViewDetails = this.handleViewDetails.bind(this);
+    this.enablePackageDiy = this.enablePackageDiy.bind(this);
+    this.handleLikeAttraction = this.handleLikeAttraction.bind(this);
+    this.confirmAddItinerary = this.confirmAddItinerary.bind(this);
+    this.handleAddItinerary = this.handleAddItinerary.bind(this);
+    this.confirmDeleteItinerary = this.confirmDeleteItinerary.bind(this);
+    this.handleDeleteItinerary = this.handleDeleteItinerary.bind(this);
     // Helpers
     this.findProduct = this.findProduct.bind(this);
     this.getInstance = this.getInstance.bind(this);
@@ -298,6 +303,193 @@ class App extends React.Component {
       senderId: user.id,
     });
   }
+  enablePackageDiy() {
+    console.log('>>>>MobileApp.enablePackageDiy');
+    const {instPackage} = this.state;
+    instPackage.isCustomised = true;
+    this.setState({
+      instPackage: instPackage,
+      modalType: '',
+      modalRef: null,
+    });
+  }
+  confirmAddItinerary(ref) {
+    console.log('>>>>MobileApp.confirmAddItinerary', ref);
+    this.setState({
+      modalType: Modal.ADD_ITINERARY.key,
+      modalRef: ref,
+    });
+  }
+  handleAddItinerary() {
+    const ref = this.state.modalRef;
+    console.log('>>>>MobileApp.handleAddItinerary', ref);
+    const instPackage = PackageHelper.addItinerary(
+      this.state.instPackage,
+      ref.dayNo
+    );
+    if (PackageHelper.validateInstance(instPackage)) {
+      instPackage.status = Instance.status.SELECT_ATTRACTION;
+      this.setState({
+        instPackage: instPackage,
+        modalType: '',
+        modalRef: null,
+      });
+    } else {
+      // Todo
+    }
+  }
+  confirmDeleteItinerary(ref) {
+    console.log('>>>>MobileApp.confirmDeleteItinerary', ref);
+    this.setState({
+      modalType: Modal.DELETE_ITINERARY.key,
+      modalRef: ref,
+    });
+  }
+  handleDeleteItinerary() {
+    const ref = this.state.modalRef;
+    const userId = this.state.userId;
+    console.log('>>>>MobileApp.handleDeleteItinerary', ref);
+    if (ref.isRequired) {
+      this.setState({
+        modalType: Modal.FAILED_DELETE_ITINERARY.key,
+        modalRef: null,
+      });
+    } else {
+      const instPackage = PackageHelper.deleteItinerary(
+        this.state.instPackage,
+        ref.dayNo
+      );
+      if (PackageHelper.validateInstance(instPackage, userId)) {
+        instPackage.status = Instance.status.SELECT_HOTEL;
+        this.setState({
+          instPackage: instPackage,
+          modalType: '',
+          modalRef: null,
+        });
+      } else {
+        // Todo
+      }
+    }
+  }
+  handleLikeAttraction(dayNo, timePlannable, item, attractions) {
+    console.log('>>>>MobileApp.handleLikeAttraction', {
+      dayNo,
+      item,
+      attractions,
+      instPackage: this.state.instPackage,
+    });
+    // Functions
+    const hasNearBy = (target, idx, existing) => {
+      for (let i = 0; i < idx && existing.length; i++) {
+        if (
+          _.findIndex(existing[i].nearByAttractions, (aid) => {
+            return aid === target.id;
+          }) > -1
+        ) {
+          return true;
+        }
+      }
+      return false;
+    };
+    const isOverloaded = (existing, target) => {
+      if (timePlannable === 0) {
+        return true;
+      }
+      let timePlanned = 0;
+      for (let i = 0; i < existing.length; i++) {
+        const attraction = existing[i];
+        timePlanned =
+          timePlanned + attraction.timeTraffic + attraction.timeVisit;
+        if (i > 0 && hasNearBy(attraction, i, existing)) {
+          timePlanned = timePlanned - 1;
+        }
+      }
+      if (timePlanned >= timePlannable) {
+        return true;
+      }
+      timePlanned = timePlanned + target.timeTraffic + target.timeVisit;
+      if (hasNearBy(target, existing.length, existing)) {
+        timePlanned = timePlanned - 1;
+      }
+      if (timePlanned >= timePlannable + 1) {
+        return true;
+      }
+      return false;
+    };
+    const mergeDayItems = (dayItems) => {
+      const items = [];
+      const days = Object.keys(dayItems);
+      _.each(days, (day) => {
+        _.each(dayItems[day], (item) => {
+          items.push(item);
+        });
+      });
+      return items;
+    };
+    // Logic starts here
+    const {instPackage} = this.state;
+    if (!instPackage.isCustomised) {
+      // Package is not customised (DIY) yet, ask customer to confirm
+      this.setState({
+        modalType: Modal.ENABLE_DIY.key,
+        modalRef: {isSmallPopup: true},
+      });
+    } else {
+      // Package is customised (DIY) already, move on with rest of logic
+      const action = item.isLiked ? 'DELETE' : 'ADD';
+      if (action === 'ADD') {
+        const fAttractions = _.filter(attractions, (a) => {
+          return a.isLiked && a.id !== item.id;
+        });
+        if (isOverloaded(fAttractions, item)) {
+          // Activities over booked
+          this.setState({
+            modalType: Modal.FULL_ITINERARY.key,
+            modalRef: {dayNo: dayNo},
+          });
+        } else {
+          // Enough time for extra Activity
+          const dayItems = _.groupBy(instPackage.items, (item) => {
+            return item.dayNo;
+          });
+          const newItem = {
+            id: -1,
+            isMustVisit: false,
+            timePlannable: Global.timePlannable,
+            description: '',
+            dayNo: dayNo,
+            daySeq: Global.idxLastItem,
+            attraction: {...item},
+          };
+          dayItems[dayNo].push(newItem);
+          instPackage.items = mergeDayItems(dayItems);
+          this.setState({instPackage: instPackage});
+        }
+      } else if (action === 'DELETE') {
+        const dayItems = _.groupBy(instPackage.items, (item) => {
+          return item.dayNo;
+        });
+        if (dayItems[dayNo].length === 1) {
+          // Only one activity, can not be deleted
+          this.setState({
+            modalType: Modal.ONLY_ITINERARY.key,
+            modalRef: {dayNo: dayNo},
+          });
+        } else {
+          const newItems = [];
+          _.each(dayItems[dayNo], (it) => {
+            if (it.attraction.id !== item.id) {
+              newItems.push({...it});
+            }
+          });
+          dayItems[dayNo] = newItems;
+          instPackage.items = mergeDayItems(dayItems);
+          this.setState({instPackage: instPackage});
+        }
+      }
+    }
+  }
+
   actionGetProduct(id) {
     const params = {id: id, isCustomisable: false};
     this.pushToRemote('product:get', params);
@@ -363,7 +555,7 @@ class App extends React.Component {
         <div className={classes.emptyHeader} />
         {divTravelPackages}
         <div className={classes.emptyFooter} />
-        <AppDialog actions={modalActions} model={modalType} />
+        <AppDialog actions={modalActions} modal={modalType} />
       </div>
     );
   }
@@ -393,7 +585,7 @@ class App extends React.Component {
       handleDeleteItinerary: this.confirmDeleteItinerary,
     };
     const modalActions = {
-      handleClose: this.handleModalClose,
+      handleClose: this.modalClose,
       handleDeleteItinerary: this.handleDeleteItinerary,
       handleAddItinerary: this.handleAddItinerary,
       handlePayment: this.handleFtBtnPayment,
@@ -402,7 +594,7 @@ class App extends React.Component {
     // Sub Components
     const dialog = modalType ? (
       <AppDialog
-        model={modalType}
+        modal={modalType}
         actions={modalActions}
         reference={modalRef}
       />
@@ -438,7 +630,7 @@ class App extends React.Component {
     return <InvalidPage />;
   }
 
-  componentWillMount() {
+  componentDidMount() {
     // Connect to socket.
     socket = io.connect(this.props.socketAddress, {
       reconnect: true,
