@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import Moment from 'moment';
 import io from 'socket.io-client';
 import React, {createElement} from 'react';
 // Components
@@ -20,9 +21,11 @@ import '../public/App.css';
 
 // Variables
 let socket;
-const {Global, TravelPackage, User, Payment, Modal, Instance} = CONSTANT.get();
+const {Global, TravelPackage, User, Payment} = CONSTANT.get();
+const {Modal, Instance, SocketChannel} = CONSTANT.get();
 const PackageStatus = TravelPackage.status;
 const InstanceStatus = Instance.status;
+const SocketAction = SocketChannel.Action;
 const UserSource = User.Source;
 const styles = (theme) => ({
   emptyHeader: {
@@ -66,18 +69,27 @@ class App extends React.Component {
     this.goHome = this.goHome.bind(this);
     this.actionGoBack = this.actionGoBack.bind(this);
     this.modalOpenSignIn = this.modalOpenSignIn.bind(this);
-    this.modalOpenSignOpen = this.modalOpenSignOpen.bind(this);
+    this.modalOpenSignUp = this.modalOpenSignUp.bind(this);
     this.modalClose = this.modalClose.bind(this);
     this.handleSignIn = this.handleSignIn.bind(this);
     this.handleSignUp = this.handleSignUp.bind(this);
     this.handleSignOut = this.handleSignOut.bind(this);
     this.handleViewDetails = this.handleViewDetails.bind(this);
+    // Package Instance
     this.enablePackageDiy = this.enablePackageDiy.bind(this);
     this.handleLikeAttraction = this.handleLikeAttraction.bind(this);
     this.confirmAddItinerary = this.confirmAddItinerary.bind(this);
     this.handleAddItinerary = this.handleAddItinerary.bind(this);
     this.confirmDeleteItinerary = this.confirmDeleteItinerary.bind(this);
     this.handleDeleteItinerary = this.handleDeleteItinerary.bind(this);
+    this.handleSelectHotel = this.handleSelectHotel.bind(this);
+    this.handleSelectFlight = this.handleSelectFlight.bind(this);
+    this.handleSelectCar = this.handleSelectCar.bind(this);
+    this.handlePeopleChange = this.handlePeopleChange.bind(this);
+    this.handleRoomChange = this.handleRoomChange.bind(this);
+    this.handlePayment = this.handlePayment.bind(this);
+    this.handlePaymentDone = this.handlePaymentDone.bind(this);
+
     // Helpers
     this.findProduct = this.findProduct.bind(this);
     this.getInstance = this.getInstance.bind(this);
@@ -131,7 +143,7 @@ class App extends React.Component {
       }
     });
   }
-  /* =========== Socket Event Handlers ============ */
+  /* =========== Socket Event Callback Handlers ============ */
   showAll(resp) {
     console.log('>>>>Result from socket [package:showAll]', resp);
     this.setState({
@@ -243,23 +255,8 @@ class App extends React.Component {
       updating: false,
     });
   }
-  /* ============ Component Action Handler ============*/
-  modalOpenSignIn() {
-    const {user} = this.state;
-    console.log('>>>>App.modalOpenSignIn', {user});
-    this.setState({
-      modalType: Modal.USER_LOGIN.key,
-      modalRef: null,
-    });
-  }
-  modalOpenSignOpen() {
-    const {user} = this.state;
-    console.log('>>>>App.modalOpenSignOpen', {user});
-    this.setState({
-      modalType: Modal.USER_SIGNUP.key,
-      modalRef: null,
-    });
-  }
+  /* ============ Component Action Handlers ============*/
+  // ------------  Common Action Handlers -------------
   modalClose() {
     const {user} = this.state;
     console.log('>>>>App.modalClose', {user});
@@ -268,6 +265,24 @@ class App extends React.Component {
       modalRef: null,
     });
   }
+  // ------------  User Action Handlers ---------------
+  modalOpenSignIn() {
+    const {user} = this.state;
+    console.log('>>>>App.modalOpenSignIn', {user});
+    this.setState({
+      modalType: Modal.USER_LOGIN.key,
+      modalRef: null,
+    });
+  }
+  modalOpenSignUp() {
+    const {user} = this.state;
+    console.log('>>>>App.modalOpenSignUp', {user});
+    this.setState({
+      modalType: Modal.USER_SIGNUP.key,
+      modalRef: null,
+    });
+  }
+
   handleSignIn(resp) {
     console.log('>>>>App.handleSignIn', resp);
     const user = {
@@ -302,6 +317,196 @@ class App extends React.Component {
       packageId: p.id,
       senderId: user.id,
     });
+  }
+  // ----------  Payment  -------------------------
+  handlePayment() {
+    console.log('>>>>MobileApp.handlePayment');
+    const {instPackage} = this.state;
+    const {startDate, endDate, totalPeople, totalRooms, rate} = instPackage;
+    if (PackageHelper.validateInstance(instPackage)) {
+      const ref = {
+        dtStart: startDate,
+        dtEnd: endDate,
+        people: totalPeople,
+        rooms: totalRooms,
+        rate: rate,
+        totalRate: totalPeople * rate,
+      };
+      this.setState({
+        modalType: Modal.SUBMIT_PAYMENT.key,
+        modalRef: ref,
+      });
+    } else {
+      // Todo
+    }
+  }
+  handlePaymentDone(outcome) {
+    console.log('>>>>MobileApp.handlePaymentDone', outcome);
+    const {instPackage} = this.state;
+    if (PackageHelper.validateInstance(instPackage)) {
+      instPackage.status = outcome.status;
+      this.setState({
+        instPackage: instPackage,
+        modalType: '',
+        modalRef: null,
+      });
+    } else {
+      // Todo
+    }
+  }
+  // ----------  People and Room  ----------
+  handlePeopleChange(input) {
+    console.log('>>>>MobileApp.handlePeopleChange', input);
+    const {viewerId} = this.props;
+    const {user, instPackage, instPackageExt} = this.state;
+    if (user.id === Global.anonymousUser) {
+      this.modalOpenSignIn();
+    } else {
+      let tmpMember = null;
+      const isExist = !!_.find(instPackage.members, (m) => {
+        return m.loginId === viewerId;
+      });
+      if (isExist) {
+        for (let i = 0; i < instPackage.members.length; i++) {
+          if (instPackage.members[i].loginId === viewerId) {
+            instPackage.members[i].people = input.people;
+            instPackage.members[i].rooms = input.rooms;
+          }
+        }
+      } else {
+        tmpMember = {
+          memberId: user._id,
+          loginId: user.loginId,
+          name: user.name,
+          isOwner: false,
+          status: InstanceStatus.IN_PROGRESS,
+          people: input.people,
+          rooms: input.rooms,
+        };
+        instPackage.members.push(tmpMember);
+      }
+      instPackageExt.people = input.people;
+      instPackageExt.rooms = input.rooms;
+      const matchingRates = PackageHelper.doRating({
+        instPackage: instPackage,
+        instPackageExt: instPackageExt,
+        rates: input.rates,
+      });
+      this.setState({
+        instPackage: {...instPackage, rate: matchingRates.curRate},
+        instPackageExt: {...instPackageExt, ...matchingRates},
+      });
+      const action = isExist
+        ? SocketAction.UPDATE_PEOPLE
+        : SocketAction.ADD_MEMBER;
+      const params = isExist
+        ? {
+          people: input.people,
+          rooms: input.rooms,
+          statusInstance: InstanceStatus.IN_PROGRESS,
+          statusMember: InstanceStatus.IN_PROGRESS,
+        }
+        : tmpMember;
+      const req = {
+        senderId: viewerId,
+        instId: instPackage._id,
+        action: action,
+        params: params,
+      };
+      this.pushToRemote('package:update', req);
+    }
+  }
+  handleRoomChange(input) {
+    console.log('>>>>MobileApp.handleRoomChange', input);
+    const {viewerId} = this.props;
+    const {user, instPackage, instPackageExt} = this.state;
+    if (user.id === Global.anonymousUser) {
+      this.modalOpenSignIn();
+    } else {
+      let tmpMember = null;
+      const isExist = !!_.find(instPackage.members, (m) => {
+        return m.loginId === viewerId;
+      });
+      if (isExist) {
+        for (let i = 0; i < instPackage.members.length; i++) {
+          if (instPackage.members[i].loginId === viewerId) {
+            instPackage.members[i].rooms = input.rooms;
+          }
+        }
+      } else {
+        tmpMember = {
+          memberId: user._id,
+          loginId: user.loginId,
+          name: user.name,
+          isOwner: false,
+          status: InstanceStatus.IN_PROGRESS,
+          people: input.people,
+          rooms: input.rooms,
+        };
+        instPackage.members.push(tmpMember);
+      }
+      instPackageExt.rooms = input.rooms;
+      const matchingRates = PackageHelper.doRating({
+        instPackage: instPackage,
+        instPackageExt: instPackageExt,
+        rates: input.rates,
+      });
+      this.setState({
+        instPackage: {...instPackage, rate: matchingRates.curRate},
+        instPackageExt: {...instPackageExt, ...matchingRates},
+      });
+      // Update status and sync to server
+      const action = isExist
+        ? SocketAction.UPDATE_ROOMS
+        : SocketAction.ADD_MEMBER;
+      const params = isExist
+        ? {
+          rooms: input.rooms,
+          statusInstance: InstanceStatus.IN_PROGRESS,
+          statusMember: InstanceStatus.IN_PROGRESS,
+        }
+        : tmpMember;
+      const req = {
+        senderId: viewerId,
+        instId: instPackage._id,
+        action: action,
+        params: params,
+      };
+      this.pushToRemote('package:update', req);
+    }
+  }
+  // ----------  Package Instance Hotel  ----------
+  handleSelectHotel(dayNo, item) {
+    const {user, instPackage} = this.state;
+    if (user.id === Global.anonymousUser) {
+      this.modalOpenSignIn();
+    } else {
+      console.log('>>>>MobileApp.handleSelectHotel', instPackage);
+      for (let i = 0; i < instPackage.hotels.length; i++) {
+        const hotel = instPackage.hotels[i];
+        if (Number(hotel.dayNo) === Number(dayNo)) {
+          const city = hotel.hotel.city;
+          hotel.hotel = {...item, city};
+        }
+      }
+      this.setState({instPackage: instPackage});
+    }
+  }
+  // ----------  Package Instance Flight  ----------
+  handleSelectFlight(stStartDate) {
+    console.log('>>>>MobileApp.handleSelectFlight', stStartDate);
+    const {instPackage} = this.state;
+    const {totalDays} = instPackage;
+    const mStartDate = Moment(stStartDate, Global.dateFormat);
+    instPackage.startDate = mStartDate.toDate();
+    instPackage.endDate = mStartDate.add(totalDays, 'days').toDate();
+    this.setState({instPackage: instPackage});
+  }
+  // ----------  Package Instance Car  ----------
+  handleSelectCar(carOption) {
+    console.log('>>>>MobileApp.handleSelectCar', carOption);
+    const {instPackage} = this.state;
+    instPackage.carOption = carOption;
   }
   enablePackageDiy() {
     console.log('>>>>MobileApp.enablePackageDiy');
@@ -529,7 +734,7 @@ class App extends React.Component {
     const headerActions = {
       goHome: this.goHome,
       signIn: this.modalOpenSignIn,
-      signUp: this.modalOpenSignOpen,
+      signUp: this.modalOpenSignUp,
       signOut: this.handleSignOut,
     };
     const modalActions = {
@@ -541,6 +746,11 @@ class App extends React.Component {
       viewDetails: this.handleViewDetails,
     };
     // Sub Components
+    const dialog = modalType ? (
+      <AppDialog modal={modalType} actions={modalActions} />
+    ) : (
+      ''
+    );
     const divTravelPackages = _.map(travelPackages, (p) => {
       return (
         <div key={p.name} className={classes.content}>
@@ -555,7 +765,7 @@ class App extends React.Component {
         <div className={classes.emptyHeader} />
         {divTravelPackages}
         <div className={classes.emptyFooter} />
-        <AppDialog actions={modalActions} modal={modalType} />
+        {dialog}
       </div>
     );
   }
@@ -569,14 +779,14 @@ class App extends React.Component {
     const headerActions = {
       goHome: this.goHome,
       signIn: this.modalOpenSignIn,
-      signUp: this.modalOpenSignOpen,
+      signUp: this.modalOpenSignUp,
       signOut: this.handleSignOut,
     };
     const itineraryActions = {
-      handlePeople: this.handleHdPeopleChange,
-      handleRoom: this.handleHdRoomChange,
-      handleShare: this.handleFtBtnShare,
-      handlePayment: this.confirmSubmitPayment,
+      handlePeople: this.handlePeopleChange,
+      handleRoom: this.handleRoomChange,
+      handleShare: null,
+      handlePayment: this.handlePayment,
       handleSelectHotel: this.handleSelectHotel,
       handleSelectFlight: this.handleSelectFlight,
       handleSelectCar: this.handleSelectCar,
@@ -588,7 +798,7 @@ class App extends React.Component {
       handleClose: this.modalClose,
       handleDeleteItinerary: this.handleDeleteItinerary,
       handleAddItinerary: this.handleAddItinerary,
-      handlePayment: this.handleFtBtnPayment,
+      handlePayment: this.handlePaymentDone,
       handleCustomise: this.enablePackageDiy,
     };
     // Sub Components

@@ -21,6 +21,40 @@ const styles = (theme) => ({
   itinerary: {
     display: 'block',
   },
+  figure: {
+    marginInlineStart: 0,
+    marginInlineEnd: 0,
+    cursor: 'pointer',
+  },
+  imageWrapper: {
+    display: 'block',
+    height: 0,
+    paddingBottom: '100%',
+  },
+  image: {
+    width: '100%',
+    border: 0,
+    display: 'block',
+    maxWidth: '100%',
+  },
+  captionWrapper: {
+    height: '100%',
+    left: 0,
+    padding: '20px 15px',
+    position: 'absolute',
+    top: '100%',
+    width: '100%',
+  },
+  caption: {
+    bottom: '100%',
+    color: '#fff',
+    left: 15,
+    marginTop: 0,
+    marginBottom: 20,
+    position: 'absolute',
+    right: 15,
+    fontWeight: 'bold',
+  },
 });
 
 class PackageSummary extends React.Component {
@@ -35,7 +69,7 @@ class PackageSummary extends React.Component {
       duration: 0,
       delay: 0,
       smooth: 'easeInOutQuart',
-      offset: -50,
+      offset: -170,
     });
   }
   // Event Handlers
@@ -74,9 +108,6 @@ class PackageSummary extends React.Component {
       const cityImageUrl = packageHelper.getCityImage(it, cities) || '';
       return (
         <ListItem key={it.dayNo} className={classes.itinerary}>
-          <Typography variant='h6' component='h4'>
-            {divLabelItinerary}
-          </Typography>
           <GridList cellHeight={160} className={classes.gridList} cols={1}>
             <GridListTile
               cols={1}
@@ -86,7 +117,18 @@ class PackageSummary extends React.Component {
                 }
               }}
             >
-              <img src={cityImageUrl} alt={labelItinerary} />
+              <figure className={classes.figure}>
+                <span className={classes.imageWrapper}>
+                  <img
+                    src={cityImageUrl}
+                    alt={labelItinerary}
+                    className={classes.image}
+                  />
+                </span>
+                <figcaption className={classes.captionWrapper}>
+                  <h4 className={classes.caption}>{divLabelItinerary}</h4>
+                </figcaption>
+              </figure>
             </GridListTile>
           </GridList>
         </ListItem>

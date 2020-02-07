@@ -26,8 +26,11 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction='up' ref={ref} {...props} />;
 });
 const styles = (theme) => ({
-  paper: {
-    height: 800,
+  smallPaper: {
+    height: 'auto',
+  },
+  fullPaper: {
+    height: '100%',
   },
   headerBar: {
     position: 'absolute',
@@ -60,6 +63,14 @@ const styles = (theme) => ({
   bodyContent: {
     marginTop: 80,
   },
+  modalItem: {
+    marginTop: 8,
+    marginBottom: 8,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    display: 'block',
+    width: '100%',
+  },
 });
 // Helpers
 const format = (input, replacements) => {
@@ -75,13 +86,16 @@ class AppDialog extends React.Component {
     super(props);
     this.doHandleClose = this.doHandleClose.bind(this);
     this.doHandleLogin = this.doHandleLogin.bind(this);
+    this.state = {
+      isTermsAgreed: false,
+    };
   }
   // Local Variables
 
   // Event Handlers
   doHandleClose() {
-    if (this.props.actions && this.props.actions.handleClose) {
-      this.props.actions.handleClose();
+    if (this.props.actions && this.props.actions.close) {
+      this.props.actions.close();
     }
   }
   doHandleLogin(result) {
@@ -95,7 +109,6 @@ class AppDialog extends React.Component {
   render() {
     // Local Variables
     const {classes, modal, reference, actions} = this.props;
-    const {isSmallPopup} = reference || {};
     // Show nothing if modal is empty
     if (!modal) {
       return '';
@@ -105,9 +118,10 @@ class AppDialog extends React.Component {
     // Sub Components
     if (modal === ModalConst.USER_LOGIN.key) {
       secModal.title = ModalConst.USER_LOGIN.title;
+      secModal.fullscreen = false;
       secModal.contents = (
         <div>
-          <div className={classes.item}>
+          <div className={classes.modalItem}>
             <FacebookLogin
               appId={Global.appId}
               callback={this.doHandleLogin}
@@ -127,32 +141,39 @@ class AppDialog extends React.Component {
             required
             id='username-input'
             label='Username'
-            className={classes.item}
+            fullWidth
+            className={classes.modalItem}
             margin='normal'
             variant='outlined'
             InputProps={{
-              className: classes.itemChild,
+              className: classes.modalItemChild,
             }}
           />
           <TextField
             id='password-input'
             label='Password'
-            className={classes.item}
+            fullWidth
+            className={classes.modalItem}
             type='password'
             margin='normal'
             variant='outlined'
             InputProps={{
-              className: classes.itemChild,
+              className: classes.modalItemChild,
             }}
           />
-          <Button variant='contained' color='primary' className={classes.item}>
+          <Button
+            fullWidth
+            variant='contained'
+            color='primary'
+            className={classes.modalItem}
+          >
             Login
           </Button>
-          <Button variant='contained' className={classes.item}>
+          <Button fullWidth variant='contained' className={classes.modalItem}>
             Forgot Password?
           </Button>
           <Divider />
-          <Button variant='contained' className={classes.item}>
+          <Button fullWidth variant='contained' className={classes.modalItem}>
             Sign up
           </Button>
         </div>
@@ -185,6 +206,7 @@ class AppDialog extends React.Component {
         {title: ModalConst.button.CLOSE, handleClick: this.doHandleClose},
       ];
       secModal.title = ModalConst.ENABLE_DIY.title;
+      secModal.fullscreen = false;
       secModal.description = ModalConst.ENABLE_DIY.description;
       secModal.buttons = pBtnModal;
     } else if (modal === ModalConst.INVALID_DATE.key) {
@@ -448,6 +470,7 @@ class AppDialog extends React.Component {
       secModal.buttons = pBtnModal;
     }
     // Sub Components
+    secModal.fullscreen = secModal.fullscreen !== false;
     const dButtons = _.map(secModal.buttons, (b) => {
       return (
         <Button
@@ -461,27 +484,34 @@ class AppDialog extends React.Component {
         </Button>
       );
     });
+    const footer = dButtons && dButtons.length > 0 ? (
+      <AppBar position='fixed' color='default' className={classes.footerBar}>
+        <Toolbar className={classes.footerToolbar}>{dButtons}</Toolbar>
+      </AppBar>
+    ) : '';
     // Display widget
     return (
       <Dialog
         open
-        fullScreen={!isSmallPopup}
+        fullScreen={!!secModal.fullscreen}
         onClose={this.doHandleClose}
         TransitionComponent={Transition}
-        classes={{paper: classes.paper}}
+        classes={{
+          paper: secModal.fullscreen ? classes.fullPaper : classes.smallPaper,
+        }}
       >
         <AppBar color='default' className={classes.headerBar}>
           <Toolbar>
-            <Typography variant='h6' color='inherit'>
-              {secModal.title}
-            </Typography>
             <IconButton
               color='inherit'
-              onClick={actions.handleClose}
+              onClick={this.doHandleClose}
               aria-label='Close'
             >
               <CloseIcon />
             </IconButton>
+            <Typography variant='h6' color='inherit'>
+              {secModal.title}
+            </Typography>
           </Toolbar>
         </AppBar>
         <DialogContent classes={{root: classes.bodyContent}}>
@@ -492,9 +522,7 @@ class AppDialog extends React.Component {
           )}
           {secModal.contents ? secModal.contents : ''}
         </DialogContent>
-        <AppBar position='fixed' color='default' className={classes.footerBar}>
-          <Toolbar className={classes.footerToolbar}>{dButtons}</Toolbar>
-        </AppBar>
+        {footer}
       </Dialog>
     );
   }
