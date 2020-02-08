@@ -28,6 +28,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const styles = (theme) => ({
   smallPaper: {
     height: 'auto',
+    minHeight: 400,
   },
   fullPaper: {
     height: '100%',
@@ -335,6 +336,7 @@ class AppDialog extends React.Component {
         },
       ];
       secModal.title = ModalConst.SUBMIT_PAYMENT.title;
+      secModal.fullscreen = false;
       secModal.description = ModalConst.SUBMIT_PAYMENT.description;
       secModal.buttons = pBtnModal;
       secModal.contents = (
@@ -484,11 +486,14 @@ class AppDialog extends React.Component {
         </Button>
       );
     });
-    const footer = dButtons && dButtons.length > 0 ? (
-      <AppBar position='fixed' color='default' className={classes.footerBar}>
-        <Toolbar className={classes.footerToolbar}>{dButtons}</Toolbar>
-      </AppBar>
-    ) : '';
+    const footer =
+      dButtons && dButtons.length > 0 ? (
+        <AppBar position='fixed' color='default' className={classes.footerBar}>
+          <Toolbar className={classes.footerToolbar}>{dButtons}</Toolbar>
+        </AppBar>
+      ) : (
+        ''
+      );
     // Display widget
     return (
       <Dialog
@@ -516,7 +521,9 @@ class AppDialog extends React.Component {
         </AppBar>
         <DialogContent classes={{root: classes.bodyContent}}>
           {secModal.description ? (
-            <Typography component='p'>{secModal.description}</Typography>
+            <div>
+              <p>{secModal.description}</p>
+            </div>
           ) : (
             ''
           )}

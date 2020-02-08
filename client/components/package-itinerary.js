@@ -4,10 +4,6 @@ import {withStyles} from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
@@ -176,32 +172,32 @@ class PackageItinerary extends React.Component {
       const notLikedAttractions = _.filter(it.attractions, (a) => {
         return !a.isLiked;
       });
-      const btnCustomise =
-        notLikedAttractions && notLikedAttractions.length > 0 ? (
-          <ListItemSecondaryAction>
-            <IconButton
-              onClick={() => {
-                handleAddItinerary(it);
-              }}
-              aria-label='AddDay'
-            >
-              <AddIcon />
-            </IconButton>
-            <IconButton
-              onClick={() => {
-                handleDeleteItinerary(it);
-              }}
-              aria-label='DeleteDay'
-            >
-              <DeleteIcon />
-            </IconButton>
-          </ListItemSecondaryAction>
-        ) : (
-          ''
-        );
+      /* const btnCustomise = (
+        <div>
+          <IconButton
+            onClick={() => {
+              handleAddItinerary(it);
+            }}
+            aria-label='AddDay'
+          >
+            <AddIcon />
+          </IconButton>
+          <IconButton
+            onClick={() => {
+              handleDeleteItinerary(it);
+            }}
+            aria-label='DeleteDay'
+          >
+            <DeleteIcon />
+          </IconButton>
+        </div>
+      ); */
       const attractionSelected =
         likedAttractions && likedAttractions.length > 0 ? (
           <div>
+            <div>
+              <div>Attractions to visit</div>
+            </div>
             <AttractionSlider
               dayNo={it.dayNo}
               width={contentWidth - tabWidth - 32}
@@ -217,6 +213,9 @@ class PackageItinerary extends React.Component {
       const attractionToSelect =
         notLikedAttractions && notLikedAttractions.length > 0 ? (
           <div>
+            <div>
+              <div>Other attractions you may be interested</div>
+            </div>
             <AttractionSlider
               dayNo={it.dayNo}
               width={contentWidth - tabWidth - 32}

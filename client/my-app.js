@@ -577,119 +577,123 @@ class App extends React.Component {
     }
   }
   handleLikeAttraction(dayNo, timePlannable, item, attractions) {
-    console.log('>>>>MobileApp.handleLikeAttraction', {
-      dayNo,
-      item,
-      attractions,
-      instPackage: this.state.instPackage,
-    });
-    // Functions
-    const hasNearBy = (target, idx, existing) => {
-      for (let i = 0; i < idx && existing.length; i++) {
-        if (
-          _.findIndex(existing[i].nearByAttractions, (aid) => {
-            return aid === target.id;
-          }) > -1
-        ) {
+    const {user, instPackage} = this.state;
+    if (user.id === Global.anonymousUser) {
+      this.modalOpenSignIn();
+    } else {
+      console.log('>>>>MobileApp.handleLikeAttraction', {
+        dayNo,
+        item,
+        attractions,
+        instPackage: this.state.instPackage,
+      });
+      // Functions
+      const hasNearBy = (target, idx, existing) => {
+        for (let i = 0; i < idx && existing.length; i++) {
+          if (
+            _.findIndex(existing[i].nearByAttractions, (aid) => {
+              return aid === target.id;
+            }) > -1
+          ) {
+            return true;
+          }
+        }
+        return false;
+      };
+      const isOverloaded = (existing, target) => {
+        if (timePlannable === 0) {
           return true;
         }
-      }
-      return false;
-    };
-    const isOverloaded = (existing, target) => {
-      if (timePlannable === 0) {
-        return true;
-      }
-      let timePlanned = 0;
-      for (let i = 0; i < existing.length; i++) {
-        const attraction = existing[i];
-        timePlanned =
-          timePlanned + attraction.timeTraffic + attraction.timeVisit;
-        if (i > 0 && hasNearBy(attraction, i, existing)) {
+        let timePlanned = 0;
+        for (let i = 0; i < existing.length; i++) {
+          const attraction = existing[i];
+          timePlanned =
+            timePlanned + attraction.timeTraffic + attraction.timeVisit;
+          if (i > 0 && hasNearBy(attraction, i, existing)) {
+            timePlanned = timePlanned - 1;
+          }
+        }
+        if (timePlanned >= timePlannable) {
+          return true;
+        }
+        timePlanned = timePlanned + target.timeTraffic + target.timeVisit;
+        if (hasNearBy(target, existing.length, existing)) {
           timePlanned = timePlanned - 1;
         }
-      }
-      if (timePlanned >= timePlannable) {
-        return true;
-      }
-      timePlanned = timePlanned + target.timeTraffic + target.timeVisit;
-      if (hasNearBy(target, existing.length, existing)) {
-        timePlanned = timePlanned - 1;
-      }
-      if (timePlanned >= timePlannable + 1) {
-        return true;
-      }
-      return false;
-    };
-    const mergeDayItems = (dayItems) => {
-      const items = [];
-      const days = Object.keys(dayItems);
-      _.each(days, (day) => {
-        _.each(dayItems[day], (item) => {
-          items.push(item);
-        });
-      });
-      return items;
-    };
-    // Logic starts here
-    const {instPackage} = this.state;
-    if (!instPackage.isCustomised) {
-      // Package is not customised (DIY) yet, ask customer to confirm
-      this.setState({
-        modalType: Modal.ENABLE_DIY.key,
-        modalRef: {isSmallPopup: true},
-      });
-    } else {
-      // Package is customised (DIY) already, move on with rest of logic
-      const action = item.isLiked ? 'DELETE' : 'ADD';
-      if (action === 'ADD') {
-        const fAttractions = _.filter(attractions, (a) => {
-          return a.isLiked && a.id !== item.id;
-        });
-        if (isOverloaded(fAttractions, item)) {
-          // Activities over booked
-          this.setState({
-            modalType: Modal.FULL_ITINERARY.key,
-            modalRef: {dayNo: dayNo},
+        if (timePlanned >= timePlannable + 1) {
+          return true;
+        }
+        return false;
+      };
+      const mergeDayItems = (dayItems) => {
+        const items = [];
+        const days = Object.keys(dayItems);
+        _.each(days, (day) => {
+          _.each(dayItems[day], (item) => {
+            items.push(item);
           });
-        } else {
-          // Enough time for extra Activity
+        });
+        return items;
+      };
+      // Logic starts here
+      if (!instPackage.isCustomised) {
+        // Package is not customised (DIY) yet, ask customer to confirm
+        this.setState({
+          modalType: Modal.ENABLE_DIY.key,
+          modalRef: {isSmallPopup: true},
+        });
+      } else {
+        // Package is customised (DIY) already, move on with rest of logic
+        const action = item.isLiked ? 'DELETE' : 'ADD';
+        if (action === 'ADD') {
+          const fAttractions = _.filter(attractions, (a) => {
+            return a.isLiked && a.id !== item.id;
+          });
+          if (isOverloaded(fAttractions, item)) {
+            // Activities over booked
+            this.setState({
+              modalType: Modal.FULL_ITINERARY.key,
+              modalRef: {dayNo: dayNo},
+            });
+          } else {
+            // Enough time for extra Activity
+            const dayItems = _.groupBy(instPackage.items, (item) => {
+              return item.dayNo;
+            });
+            const newItem = {
+              id: -1,
+              isMustVisit: false,
+              timePlannable: Global.timePlannable,
+              description: '',
+              dayNo: dayNo,
+              daySeq: Global.idxLastItem,
+              attraction: {...item},
+            };
+            dayItems[dayNo].push(newItem);
+            instPackage.items = mergeDayItems(dayItems);
+            this.setState({instPackage: instPackage});
+          }
+        } else if (action === 'DELETE') {
           const dayItems = _.groupBy(instPackage.items, (item) => {
             return item.dayNo;
           });
-          const newItem = {
-            id: -1,
-            isMustVisit: false,
-            timePlannable: Global.timePlannable,
-            description: '',
-            dayNo: dayNo,
-            daySeq: Global.idxLastItem,
-            attraction: {...item},
-          };
-          dayItems[dayNo].push(newItem);
-          instPackage.items = mergeDayItems(dayItems);
-          this.setState({instPackage: instPackage});
-        }
-      } else if (action === 'DELETE') {
-        const dayItems = _.groupBy(instPackage.items, (item) => {
-          return item.dayNo;
-        });
-        if (dayItems[dayNo].length === 1) {
-          // Only one activity, can not be deleted
-          this.setState({
-            modalType: Modal.ONLY_ITINERARY.key,
-            modalRef: {dayNo: dayNo},
-          });
-        } else {
-          const newItems = [];
-          _.each(dayItems[dayNo], (it) => {
-            if (it.attraction.id !== item.id) {
-              newItems.push({...it});
-            }
-          });
-          dayItems[dayNo] = newItems;
-          instPackage.items = mergeDayItems(dayItems);
-          this.setState({instPackage: instPackage});
+          if (dayItems[dayNo].length === 1) {
+            // Only one activity, can not be deleted
+            this.setState({
+              modalType: Modal.ONLY_ITINERARY.key,
+              modalRef: {dayNo: dayNo},
+            });
+          } else {
+            const newItems = [];
+            _.each(dayItems[dayNo], (it) => {
+              if (it.attraction.id !== item.id) {
+                newItems.push({...it});
+              }
+            });
+            dayItems[dayNo] = newItems;
+            instPackage.items = mergeDayItems(dayItems);
+            this.setState({instPackage: instPackage});
+          }
         }
       }
     }
@@ -727,21 +731,12 @@ class App extends React.Component {
     this.props.history.goBack();
   }
   /* ============ Component Display Handler ============*/
-  renderList() {
+  renderList(actions) {
+    console.log('>>>>MobileApp.renderList', this.state);
     // Function Variables
     const {travelPackages, user, modalType} = this.state;
     const {classes} = this.props;
-    const headerActions = {
-      goHome: this.goHome,
-      signIn: this.modalOpenSignIn,
-      signUp: this.modalOpenSignUp,
-      signOut: this.handleSignOut,
-    };
-    const modalActions = {
-      close: this.modalClose,
-      signIn: this.handleSignIn,
-      signUp: this.handleSignUp,
-    };
+    const {headerActions, modalActions} = actions;
     const cardActions = {
       viewDetails: this.handleViewDetails,
     };
@@ -769,19 +764,14 @@ class App extends React.Component {
       </div>
     );
   }
-  renderDetails() {
-    console.log('>>>>MobileApp.render', this.state);
+  renderDetails(actions) {
+    console.log('>>>>MobileApp.renderDetails', this.state);
     // Function Variables
     const {updating, modalType, modalRef, reference} = this.state;
     const {instPackage, instPackageExt, rates, user} = this.state;
     const {cities, packageSummary} = reference;
     const {classes} = this.props;
-    const headerActions = {
-      goHome: this.goHome,
-      signIn: this.modalOpenSignIn,
-      signUp: this.modalOpenSignUp,
-      signOut: this.handleSignOut,
-    };
+    const {headerActions, modalActions} = actions;
     const itineraryActions = {
       handlePeople: this.handlePeopleChange,
       handleRoom: this.handleRoomChange,
@@ -793,13 +783,6 @@ class App extends React.Component {
       handleLikeAttraction: this.handleLikeAttraction,
       handleAddItinerary: this.confirmAddItinerary,
       handleDeleteItinerary: this.confirmDeleteItinerary,
-    };
-    const modalActions = {
-      handleClose: this.modalClose,
-      handleDeleteItinerary: this.handleDeleteItinerary,
-      handleAddItinerary: this.handleAddItinerary,
-      handlePayment: this.handlePaymentDone,
-      handleCustomise: this.enablePackageDiy,
     };
     // Sub Components
     const dialog = modalType ? (
@@ -876,18 +859,34 @@ class App extends React.Component {
 
   render() {
     const {stage, instPackage, travelPackages} = this.state;
+    const headerActions = {
+      goHome: this.goHome,
+      signIn: this.modalOpenSignIn,
+      signUp: this.modalOpenSignUp,
+      signOut: this.handleSignOut,
+    };
+    const modalActions = {
+      close: this.modalClose,
+      signIn: this.handleSignIn,
+      signUp: this.handleSignUp,
+      handleDeleteItinerary: this.handleDeleteItinerary,
+      handleAddItinerary: this.handleAddItinerary,
+      handlePayment: this.handlePaymentDone,
+      handleCustomise: this.enablePackageDiy ,
+    };
+    const actions = {headerActions, modalActions};
     if (stage === '') {
       if (!travelPackages || travelPackages.length === 0) {
         if (instPackage) {
-          return this.renderDetails();
+          return this.renderDetails(actions);
         }
         return <div>Loading...</div>;
       }
-      return this.renderList();
+      return this.renderList(actions);
     } else if (stage === InstanceStatus.IN_PROGRESS) {
-      this.renderDetails();
+      this.renderDetails(actions);
     } else if (stage === InstanceStatus.PENDING_PAYMENT) {
-      this.renderPayment();
+      this.renderPayment(actions);
     }
     return this.renderDefault();
   }
