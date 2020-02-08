@@ -494,19 +494,27 @@ class App extends React.Component {
   }
   // ----------  Package Instance Flight  ----------
   handleSelectFlight(stStartDate) {
-    console.log('>>>>MobileApp.handleSelectFlight', stStartDate);
-    const {instPackage} = this.state;
-    const {totalDays} = instPackage;
-    const mStartDate = Moment(stStartDate, Global.dateFormat);
-    instPackage.startDate = mStartDate.toDate();
-    instPackage.endDate = mStartDate.add(totalDays, 'days').toDate();
-    this.setState({instPackage: instPackage});
+    const {user, instPackage} = this.state;
+    if (user.id === Global.anonymousUser) {
+      this.modalOpenSignIn();
+    } else {
+      console.log('>>>>MobileApp.handleSelectFlight', stStartDate);
+      const {totalDays} = instPackage;
+      const mStartDate = Moment(stStartDate, Global.dateFormat);
+      instPackage.startDate = mStartDate.toDate();
+      instPackage.endDate = mStartDate.add(totalDays, 'days').toDate();
+      this.setState({instPackage: instPackage});
+    }
   }
   // ----------  Package Instance Car  ----------
   handleSelectCar(carOption) {
-    console.log('>>>>MobileApp.handleSelectCar', carOption);
-    const {instPackage} = this.state;
-    instPackage.carOption = carOption;
+    const {user, instPackage} = this.state;
+    if (user.id === Global.anonymousUser) {
+      this.modalOpenSignIn();
+    } else {
+      console.log('>>>>MobileApp.handleSelectCar', carOption);
+      instPackage.carOption = carOption;
+    }
   }
   enablePackageDiy() {
     console.log('>>>>MobileApp.enablePackageDiy');
@@ -872,7 +880,7 @@ class App extends React.Component {
       handleDeleteItinerary: this.handleDeleteItinerary,
       handleAddItinerary: this.handleAddItinerary,
       handlePayment: this.handlePaymentDone,
-      handleCustomise: this.enablePackageDiy ,
+      handleCustomise: this.enablePackageDiy,
     };
     const actions = {headerActions, modalActions};
     if (stage === '') {
