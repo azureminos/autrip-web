@@ -326,7 +326,7 @@ class App extends React.Component {
       this.modalOpenSignIn();
     } else {
       const {startDate, endDate, totalPeople, totalRooms, rate} = instPackage;
-      const msgError = PackageHelper.validateInstance(instPackage);
+      const msgError = PackageHelper.validateInstance(instPackage, instPackageExt);
       if (!msgError) {
         if (instPackage.status === InstanceStatus.INITIATED) {
           instPackage.status = InstanceStatus.IN_PROGRESS;
