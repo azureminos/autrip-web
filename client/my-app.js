@@ -321,38 +321,46 @@ class App extends React.Component {
   // ----------  Payment  -------------------------
   handlePayment() {
     console.log('>>>>MobileApp.handlePayment');
-    const {instPackage} = this.state;
-    const {startDate, endDate, totalPeople, totalRooms, rate} = instPackage;
-    if (PackageHelper.validateInstance(instPackage)) {
-      const ref = {
-        dtStart: startDate,
-        dtEnd: endDate,
-        people: totalPeople,
-        rooms: totalRooms,
-        rate: rate,
-        totalRate: totalPeople * rate,
-      };
-      this.setState({
-        modalType: Modal.SUBMIT_PAYMENT.key,
-        modalRef: ref,
-      });
+    const {user, instPackage, instPackageExt} = this.state;
+    if (user.id === Global.anonymousUser) {
+      this.modalOpenSignIn();
     } else {
-      // Todo
+      const {startDate, endDate, totalPeople, totalRooms, rate} = instPackage;
+      const msgError = PackageHelper.validateInstance(instPackage);
+      if (!msgError) {
+        if (instPackage.status === InstanceStatus.INITIATED) {
+          instPackage.status = InstanceStatus.IN_PROGRESS;
+        }
+        const ref = {
+          dtStart: startDate,
+          dtEnd: endDate,
+          people: totalPeople,
+          rooms: totalRooms,
+          rate: rate,
+          totalRate: totalPeople * rate,
+        };
+        this.setState({
+          modalType: Modal.SUBMIT_PAYMENT.key,
+          modalRef: ref,
+          instPackage: instPackage,
+        });
+      } else if (msgError) {
+        this.setState({
+          modalType: msgError,
+          modalRef: instPackageExt,
+        });
+      }
     }
   }
   handlePaymentDone(outcome) {
     console.log('>>>>MobileApp.handlePaymentDone', outcome);
     const {instPackage} = this.state;
-    if (PackageHelper.validateInstance(instPackage)) {
-      instPackage.status = outcome.status;
-      this.setState({
-        instPackage: instPackage,
-        modalType: '',
-        modalRef: null,
-      });
-    } else {
-      // Todo
-    }
+    instPackage.status = outcome.status;
+    this.setState({
+      instPackage: instPackage,
+      modalType: '',
+      modalRef: null,
+    });
   }
   // ----------  People and Room  ----------
   handlePeopleChange(input) {
@@ -362,6 +370,9 @@ class App extends React.Component {
     if (user.id === Global.anonymousUser) {
       this.modalOpenSignIn();
     } else {
+      if (instPackage.status === InstanceStatus.INITIATED) {
+        instPackage.status = InstanceStatus.IN_PROGRESS;
+      }
       let tmpMember = null;
       const isExist = !!_.find(instPackage.members, (m) => {
         return m.loginId === viewerId;
@@ -423,6 +434,9 @@ class App extends React.Component {
     if (user.id === Global.anonymousUser) {
       this.modalOpenSignIn();
     } else {
+      if (instPackage.status === InstanceStatus.INITIATED) {
+        instPackage.status = InstanceStatus.IN_PROGRESS;
+      }
       let tmpMember = null;
       const isExist = !!_.find(instPackage.members, (m) => {
         return m.loginId === viewerId;
@@ -481,6 +495,9 @@ class App extends React.Component {
     if (user.id === Global.anonymousUser) {
       this.modalOpenSignIn();
     } else {
+      if (instPackage.status === InstanceStatus.INITIATED) {
+        instPackage.status = InstanceStatus.IN_PROGRESS;
+      }
       console.log('>>>>MobileApp.handleSelectHotel', instPackage);
       for (let i = 0; i < instPackage.hotels.length; i++) {
         const hotel = instPackage.hotels[i];
@@ -498,6 +515,9 @@ class App extends React.Component {
     if (user.id === Global.anonymousUser) {
       this.modalOpenSignIn();
     } else {
+      if (instPackage.status === InstanceStatus.INITIATED) {
+        instPackage.status = InstanceStatus.IN_PROGRESS;
+      }
       console.log('>>>>MobileApp.handleSelectFlight', stStartDate);
       const {totalDays} = instPackage;
       const mStartDate = Moment(stStartDate, Global.dateFormat);
@@ -512,6 +532,9 @@ class App extends React.Component {
     if (user.id === Global.anonymousUser) {
       this.modalOpenSignIn();
     } else {
+      if (instPackage.status === InstanceStatus.INITIATED) {
+        instPackage.status = InstanceStatus.IN_PROGRESS;
+      }
       console.log('>>>>MobileApp.handleSelectCar', carOption);
       instPackage.carOption = carOption;
     }
@@ -520,6 +543,9 @@ class App extends React.Component {
     console.log('>>>>MobileApp.enablePackageDiy');
     const {instPackage} = this.state;
     instPackage.isCustomised = true;
+    if (instPackage.status === InstanceStatus.INITIATED) {
+      instPackage.status = InstanceStatus.IN_PROGRESS;
+    }
     this.setState({
       instPackage: instPackage,
       modalType: '',
@@ -540,16 +566,12 @@ class App extends React.Component {
       this.state.instPackage,
       ref.dayNo
     );
-    if (PackageHelper.validateInstance(instPackage)) {
-      instPackage.status = Instance.status.SELECT_ATTRACTION;
-      this.setState({
-        instPackage: instPackage,
-        modalType: '',
-        modalRef: null,
-      });
-    } else {
-      // Todo
-    }
+    instPackage.status = Instance.status.SELECT_ATTRACTION;
+    this.setState({
+      instPackage: instPackage,
+      modalType: '',
+      modalRef: null,
+    });
   }
   confirmDeleteItinerary(ref) {
     console.log('>>>>MobileApp.confirmDeleteItinerary', ref);
@@ -572,16 +594,12 @@ class App extends React.Component {
         this.state.instPackage,
         ref.dayNo
       );
-      if (PackageHelper.validateInstance(instPackage, userId)) {
-        instPackage.status = Instance.status.SELECT_HOTEL;
-        this.setState({
-          instPackage: instPackage,
-          modalType: '',
-          modalRef: null,
-        });
-      } else {
-        // Todo
-      }
+      instPackage.status = Instance.status.SELECT_HOTEL;
+      this.setState({
+        instPackage: instPackage,
+        modalType: '',
+        modalRef: null,
+      });
     }
   }
   handleLikeAttraction(dayNo, timePlannable, item, attractions) {
@@ -651,6 +669,9 @@ class App extends React.Component {
           modalRef: {isSmallPopup: true},
         });
       } else {
+        if (instPackage.status === InstanceStatus.INITIATED) {
+          instPackage.status = InstanceStatus.IN_PROGRESS;
+        }
         // Package is customised (DIY) already, move on with rest of logic
         const action = item.isLiked ? 'DELETE' : 'ADD';
         if (action === 'ADD') {
@@ -662,6 +683,7 @@ class App extends React.Component {
             this.setState({
               modalType: Modal.FULL_ITINERARY.key,
               modalRef: {dayNo: dayNo},
+              instPackage: instPackage,
             });
           } else {
             // Enough time for extra Activity
@@ -690,6 +712,7 @@ class App extends React.Component {
             this.setState({
               modalType: Modal.ONLY_ITINERARY.key,
               modalRef: {dayNo: dayNo},
+              instPackage: instPackage,
             });
           } else {
             const newItems = [];
