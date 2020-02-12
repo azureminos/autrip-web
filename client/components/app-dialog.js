@@ -190,17 +190,6 @@ class AppDialog extends React.Component {
       secModal.title = format(ModalConst.LESS_THAN_MIN.title, replacements);
       secModal.description = ModalConst.LESS_THAN_MIN.description;
       secModal.buttons = pBtnModal;
-    } else if (modal === ModalConst.ZERO_OWNER.key) {
-      const replacements = {'#Min#': reference.min};
-      const pBtnModal = [
-        {
-          title: ModalConst.button.CLOSE,
-          handleClick: this.doHandleClose,
-        },
-      ];
-      secModal.title = format(ModalConst.ZERO_OWNER.title, replacements);
-      secModal.description = ModalConst.ZERO_OWNER.description;
-      secModal.buttons = pBtnModal;
     } else if (modal === ModalConst.ENABLE_DIY.key) {
       const pBtnModal = [
         {title: ModalConst.button.DIY, handleClick: actions.handleCustomise},
