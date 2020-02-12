@@ -188,6 +188,7 @@ class AppDialog extends React.Component {
         },
       ];
       secModal.title = format(ModalConst.LESS_THAN_MIN.title, replacements);
+      secModal.fullscreen = false;
       secModal.description = ModalConst.LESS_THAN_MIN.description;
       secModal.buttons = pBtnModal;
     } else if (modal === ModalConst.ENABLE_DIY.key) {
@@ -204,6 +205,7 @@ class AppDialog extends React.Component {
         {title: ModalConst.button.OK, handleClick: this.doHandleClose},
       ];
       secModal.title = ModalConst.INVALID_DATE.title;
+      secModal.fullscreen = false;
       secModal.description = ModalConst.INVALID_DATE.description;
       secModal.buttons = pBtnModal;
     } else if (modal === ModalConst.SUBMIT_PAYMENT.key) {
@@ -356,6 +358,7 @@ class AppDialog extends React.Component {
         {title: ModalConst.button.NO, handleClick: this.doHandleClose},
       ];
       secModal.title = format(ModalConst.DELETE_ITINERARY.title, replacements);
+      secModal.fullscreen = false;
       secModal.description = format(
         ModalConst.DELETE_ITINERARY.description,
         replacements
@@ -398,6 +401,7 @@ class AppDialog extends React.Component {
         {title: ModalConst.button.NO, handleClick: this.doHandleClose},
       ];
       secModal.title = format(ModalConst.ADD_ITINERARY.title, replacements);
+      secModal.fullscreen = false;
       secModal.description = format(
         ModalConst.ADD_ITINERARY.description,
         replacements
@@ -412,6 +416,7 @@ class AppDialog extends React.Component {
         {title: ModalConst.button.OK, handleClick: this.doHandleClose},
       ];
       secModal.title = format(ModalConst.FULL_ITINERARY.title, replacements);
+      secModal.fullscreen = false;
       secModal.description = format(
         ModalConst.FULL_ITINERARY.description,
         replacements
@@ -426,6 +431,7 @@ class AppDialog extends React.Component {
         {title: ModalConst.button.OK, handleClick: this.doHandleClose},
       ];
       secModal.title = format(ModalConst.ONLY_ITINERARY.title, replacements);
+      secModal.fullscreen = false;
       secModal.description = format(
         ModalConst.ONLY_ITINERARY.description,
         replacements
@@ -440,6 +446,7 @@ class AppDialog extends React.Component {
         {title: ModalConst.button.OK, handleClick: this.doHandleClose},
       ];
       secModal.title = ModalConst.INVALID_MAX_PARTICIPANT.title;
+      secModal.fullscreen = false;
       secModal.description = format(
         ModalConst.INVALID_MAX_PARTICIPANT.description,
         replacements
@@ -454,6 +461,7 @@ class AppDialog extends React.Component {
         {title: ModalConst.button.OK, handleClick: this.doHandleClose},
       ];
       secModal.title = ModalConst.INVALID_MIN_PARTICIPANT.title;
+      secModal.fullscreen = false;
       secModal.description = format(
         ModalConst.INVALID_MIN_PARTICIPANT.description,
         replacements
